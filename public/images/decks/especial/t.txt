@@ -1,0 +1,65 @@
+ El volumen de la unidad D no tiene etiqueta.
+ El n£mero de serie del volumen es: E01F-9E54
+
+ Directorio de D:\Proyectos\truco\images\decks\especial
+
+04-08-2025  05:32    <DIR>          .
+04-08-2025  05:32    <DIR>          ..
+04-08-2025  09:22            30.388 card-back.jpg
+03-08-2025  11:40            34.320 card-back_.jpg
+03-08-2025  11:56         1.443.677 deck-preview.jpg
+04-08-2025  09:22            26.436 image10x1.jpg
+04-08-2025  09:22            26.679 image10x2.jpg
+04-08-2025  09:22            27.486 image10x3.jpg
+04-08-2025  09:22            25.119 image10x4.jpg
+04-08-2025  09:22            35.925 image11x1.jpg
+04-08-2025  09:22            33.500 image11x2.jpg
+04-08-2025  09:22            36.657 image11x3.jpg
+04-08-2025  09:22            31.833 image11x4.jpg
+04-08-2025  09:22            33.196 image12x1.jpg
+04-08-2025  09:22            33.012 image12x2.jpg
+04-08-2025  09:22            33.270 image12x3.jpg
+04-08-2025  09:22            32.662 image12x4.jpg
+04-08-2025  09:22            37.679 image13x1.jpg
+04-08-2025  09:22            37.057 image13x2.jpg
+04-08-2025  09:22            37.931 image13x3.jpg
+04-08-2025  09:22            35.059 image13x4.jpg
+04-08-2025  09:22            30.800 image1x1.jpg
+04-08-2025  09:22            30.770 image1x2.jpg
+04-08-2025  09:22            31.106 image1x3.jpg
+04-08-2025  09:22            30.464 image1x4.jpg
+04-08-2025  09:22            18.467 image2x1.jpg
+04-08-2025  09:22            19.295 image2x2.jpg
+04-08-2025  09:22            18.735 image2x3.jpg
+04-08-2025  09:22            18.001 image2x4.jpg
+04-08-2025  09:22            18.765 image3x1.jpg
+04-08-2025  09:22            18.922 image3x2.jpg
+04-08-2025  09:22            19.010 image3x3.jpg
+04-08-2025  09:22            17.858 image3x4.jpg
+04-08-2025  09:22            20.789 image4x1.jpg
+04-08-2025  09:22            21.159 image4x2.jpg
+04-08-2025  09:22            20.725 image4x3.jpg
+04-08-2025  09:22            19.409 image4x4.jpg
+04-08-2025  09:22            20.776 image5x1.jpg
+04-08-2025  09:22            20.954 image5x2.jpg
+04-08-2025  09:22            21.153 image5x3.jpg
+04-08-2025  09:22            19.449 image5x4.jpg
+04-08-2025  09:22            21.722 image6x1.jpg
+04-08-2025  09:22            22.309 image6x2.jpg
+04-08-2025  09:22            22.000 image6x3.jpg
+04-08-2025  09:22            20.836 image6x4.jpg
+04-08-2025  09:22            22.093 image7x1.jpg
+04-08-2025  09:22            22.665 image7x2.jpg
+04-08-2025  09:22            22.965 image7x3.jpg
+04-08-2025  09:22            20.935 image7x4.jpg
+04-08-2025  09:22            23.310 image8x1.jpg
+04-08-2025  09:22            24.116 image8x2.jpg
+04-08-2025  09:22            24.338 image8x3.jpg
+04-08-2025  09:22            22.329 image8x4.jpg
+04-08-2025  09:22            24.420 image9x1.jpg
+04-08-2025  09:22            24.705 image9x2.jpg
+04-08-2025  09:22            25.386 image9x3.jpg
+04-08-2025  09:22            23.474 image9x4.jpg
+04-08-2025  05:32                 0 t.txt
+              56 archivos      2.836.096 bytes
+               2 dirs  105.495.179.264 bytes libres

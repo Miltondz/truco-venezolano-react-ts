@@ -21,6 +21,7 @@ export interface GameState {
   computerPlayedCard: Card | null;
   isPlayerTurn: boolean;
   difficulty: 'easy' | 'medium' | 'hard' | 'master';
+  aiPersonality: 'balanced' | 'aggressive' | 'conservative' | 'unpredictable';
   activeCalls: string[];
   roundsWon: { player: number; computer: number };
   gameInProgress: boolean;
@@ -78,6 +79,7 @@ export interface PlayerStats {
   floresAchieved: number;
   totalPoints: number;
   bestStreak: number;
+  currentStreak: number;
   timePlayed: number;
   playerLevel: number;
   experience: number;
@@ -123,8 +125,11 @@ export interface CardProps {
   showPower?: boolean;
 }
 
-export interface ScreenProps {
+export interface BaseScreenProps {
   onNavigate: (screen: string) => void;
+}
+
+export interface ScreenProps extends BaseScreenProps {
   gameState: GameState;
   setGameState: React.Dispatch<React.SetStateAction<GameState>>;
   gameSettings: GameSettings;
@@ -135,10 +140,19 @@ export interface ScreenProps {
   setAchievements: React.Dispatch<React.SetStateAction<Record<string, Achievement>>>;
 }
 
-export interface GameBoardProps extends ScreenProps {
-  onPause: () => void;
-  onResume: () => void;
-  onRestart: () => void;
+export interface GameBoardProps extends BaseScreenProps {
+  gameState: GameState;
+  setGameState: React.Dispatch<React.SetStateAction<GameState>>;
+  gameSettings: GameSettings;
+  onPlayCard: (cardIndex: number) => void;
+  onCallTruco: () => void;
+  onCallRetruco: () => void;
+  onCallVale4: () => void;
+  onCallEnvido: () => void;
+  onAcceptCall: () => void;
+  onRejectCall: () => void;
+  onCallFlor: () => void;
+  onFoldHand: () => void;
 }
 
 // Audio types

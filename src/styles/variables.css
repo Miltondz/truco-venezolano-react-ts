@@ -1,0 +1,22 @@
+:root {
+  --primary-bg: #2a1810;
+  --secondary-bg: #3d2817;
+  --accent-bg: #4a3220;
+  --card-bg: #f4e4c1;
+  --card-border: #8b6914;
+  --text-primary: #f4e4c1;
+  --text-secondary: #d4c4a1;
+  --text-accent: #ffd700;
+  --red-suit: #dc2626;
+  --black-suit: #1f2937;
+  --green-felt: #0f5132;
+  --blue-accent: #1e40af;
+  --purple-accent: #7c3aed;
+  --orange-accent: #ea580c;
+  --card-width: min(120px, 18vw);
+  --card-height: min(168px, 25.2vw);
+  --shadow-soft: 0 4px 8px rgba(0, 0, 0, 0.3);
+  --shadow-strong: 0 8px 16px rgba(0, 0, 0, 0.4);
+  --glow-gold: 0 0 20px rgba(255, 215, 0, 0.6);
+  --glow-blue: 0 0 20px rgba(30, 64, 175, 0.6);
+}
