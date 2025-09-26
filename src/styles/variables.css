@@ -13,8 +13,8 @@
   --blue-accent: #1e40af;
   --purple-accent: #7c3aed;
   --orange-accent: #ea580c;
-  --card-width: min(120px, 18vw);
-  --card-height: min(168px, 25.2vw);
+  --card-width: min(96px, 14.4vw);
+  --card-height: min(134.4px, 20.16vw);
   --shadow-soft: 0 4px 8px rgba(0, 0, 0, 0.3);
   --shadow-strong: 0 8px 16px rgba(0, 0, 0, 0.4);
   --glow-gold: 0 0 20px rgba(255, 215, 0, 0.6);

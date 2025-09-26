@@ -55,7 +55,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
         <div className="game-area">
           <div className="computer-section">
             <div className="computer-info">
-              <img id="computer-avatar" src={`/images/avatars/${gameState.selectedAvatar}`} alt="Avatar del Oponente" className="avatar-image" />
+              <img id="computer-avatar" src={`/images/avatars/${gameState.selectedAvatar}`} alt="Avatar del Oponente" className="avatar-image computer-avatar" />
               {gameSettings.showAiThinking && (
                 <div className="ai-thinking" id="ai-thinking" style={{ opacity: gameState.isPlayerTurn ? 0 : 1 }}>
                   Pensando...
@@ -97,6 +97,9 @@ const GameBoard: React.FC<GameBoardProps> = ({
           </div>
 
           <div className="player-section">
+            <div className="player-info">
+              <img id="player-avatar" src="/images/avatars/avatar7.jpg" alt="Tu Avatar" className="avatar-image player-avatar" />
+            </div>
             <div className="player-hand" id="player-hand">
               {gameState.playerHand.map((card, index) => (
                 <Card

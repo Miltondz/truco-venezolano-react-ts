@@ -195,10 +195,12 @@ La aplicación utiliza React hooks para manejar el estado:
 
 #### 🎨 Diseño Visual
 - **Estilo Balatro**: Inspirado en el popular juego de cartas
+- **Canvas Optimizado**: Área de juego fija 1280x720 con fondo negro
 - **Pixel Art**: Gráficos retro con estética nostálgica
 - **Animaciones CSS**: Transiciones fluidas y efectos hover
 - **Responsive Design**: Adaptable a móviles y desktop
 - **Tema Oscuro**: Interfaz oscura con acentos dorados
+- **Efectos de Zoom**: Vista previa 2x en selección de cartas y tableros
 
 #### 🎵 Sistema de Audio
 - **Audio Procedural**: Sonidos generados con Web Audio API

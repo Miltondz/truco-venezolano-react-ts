@@ -334,7 +334,9 @@ const App: React.FC = () => {
 
       {!loading && (
         <div className="main-container">
-          {renderScreen()}
+          <div className="game-canvas">
+            {renderScreen()}
+          </div>
         </div>
       )}
 

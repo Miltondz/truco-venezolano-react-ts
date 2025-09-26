@@ -1,6 +1,8 @@
-/* Screen styles */
+/* ========================================
+   SCREEN STYLES - Main screen overlays
+   ======================================== */
 .screen {
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   width: 100%;
@@ -12,11 +14,15 @@
   background: rgba(42, 24, 16, 0.95);
   z-index: 1000;
   transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-  padding: 1rem;
+  padding: 0.5rem;
   backdrop-filter: blur(10px);
   opacity: 0;
   transform: scale(0.95);
   pointer-events: none;
+}
+
+.screen:hover {
+  overflow: visible;
 }
 
 .screen.active {
@@ -27,16 +33,20 @@
 
 .screen-content {
   width: 100%;
-  max-width: 1200px;
+  max-width: 1100px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2rem;
+  gap: 0.8rem;
   animation: screen-enter 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-  overflow-y: auto;
-  max-height: 95vh;
-  padding: 1rem;
+  overflow-y: hidden;
+  max-height: 85vh;
+  padding: 0.3rem;
   border-radius: 12px;
+}
+
+.screen-content:hover {
+  overflow: visible;
 }
 
 @keyframes screen-enter {
@@ -44,11 +54,13 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Game title and subtitles */
+/* ========================================
+   GAME TITLE AND SUBTITLES
+   ======================================== */
 .game-title {
-  font-size: clamp(2rem, 8vw, 4rem);
+  font-size: clamp(0.8rem, 2.5vw, 1.3rem);
   color: var(--text-accent);
-  margin-bottom: 2rem;
+  margin-bottom: 0.5rem;
   text-shadow: 2px 2px 0px var(--black-suit), 4px 4px 8px rgba(0, 0, 0, 0.5);
   letter-spacing: 0.1em;
   animation: title-glow 3s ease-in-out infinite;
@@ -69,14 +81,16 @@
   text-align: center;
 }
 
-/* Button styles */
+/* ========================================
+   BUTTON STYLES - Menu, action, and navigation buttons
+   ======================================== */
 .menu-buttons {
   display: flex;
   gap: 1rem;
-  margin-top: 2rem;
+  margin-top: 1rem;
   flex-wrap: wrap;
   justify-content: center;
-  width: 100%;
+  width: 80%;
 }
 
 .menu-button, .action-button, .nav-button {
@@ -90,7 +104,7 @@
   text-transform: uppercase;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: var(--shadow-soft);
-  min-width: 140px;
+  min-width: 120px;
   position: relative;
   overflow: hidden;
 }
@@ -128,7 +142,9 @@
   box-shadow: var(--shadow-soft);
 }
 
-/* Card styles */
+/* ========================================
+   CARD STYLES - Playing cards and animations
+   ======================================== */
 .card {
   width: var(--card-width);
   height: var(--card-height);
@@ -224,9 +240,11 @@
 .computer-hand .card:nth-child(2) { animation-delay: 0.2s; }
 .computer-hand .card:nth-child(3) { animation-delay: 0.3s; }
 
-/* Game board styles */
+/* ========================================
+   GAME BOARD STYLES - Main game layout and sections
+   ======================================== */
 .game-board {
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   width: 100%;
@@ -238,6 +256,8 @@
   background-position: center;
   background-repeat: no-repeat;
   transition: background-image 0.5s ease-in-out;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .game-board.active {
@@ -250,6 +270,8 @@
   display: grid;
   grid-template-rows: auto 1fr auto;
   gap: 1rem;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .game-header {
@@ -263,15 +285,17 @@
   border-radius: 12px;
   border: 2px solid var(--card-border);
   backdrop-filter: blur(10px);
-}
-
-.nav-button {
-  padding: 0.5rem 1rem;
-  font-size: clamp(0.6rem, 1.5vw, 0.8rem);
-  min-width: 80px;
+  position: relative;
+  min-height: 80px;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .game-status {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
   background: rgba(42, 24, 16, 0.9);
   padding: 0.8rem 1.5rem;
   border-radius: 12px;
@@ -282,47 +306,13 @@
   flex-wrap: wrap;
   justify-content: center;
   backdrop-filter: blur(10px);
+  z-index: 10;
 }
 
-.turn-indicator {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.status-icon {
-  font-size: 1.5rem;
-  animation: status-pulse 2s infinite;
-}
-
-@keyframes status-pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.1); }
-}
-
-.status-text {
-  font-size: clamp(0.6rem, 1.8vw, 0.8rem);
-  color: var(--text-accent);
-}
-
-.round-info {
-  color: var(--text-secondary);
-  font-size: clamp(0.6rem, 1.8vw, 0.8rem);
-}
-
-.active-calls {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-}
-
-.call-badge {
-  background: rgba(124, 58, 237, 0.3);
-  border: 1px solid var(--purple-accent);
-  border-radius: 8px;
-  padding: 0.3rem 0.8rem;
-  font-size: clamp(0.5rem, 1.5vw, 0.7rem);
-  color: var(--text-primary);
+.nav-button {
+  padding: 0.5rem 1rem;
+  font-size: clamp(0.6rem, 1.5vw, 0.8rem);
+  min-width: 80px;
 }
 
 .scoreboard {
@@ -361,63 +351,93 @@
 }
 
 .game-area {
-  display: grid;
-  grid-template-rows: auto 1fr auto;
-  gap: 1rem;
-  height: 100%;
-  min-height: 0;
-}
-
-.computer-section {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  justify-content: space-between;
   gap: 1rem;
+  height: calc(100% - 5px);
+  min-height: 0;
+  padding: 0.5rem;
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* ========================================
+   COMPUTER SECTION - AI player area (top)
+   CORRECCIÓN: Avatar a la izquierda, cartas a la derecha
+   ======================================== */
+.computer-section {
+  position: absolute;
+  top: 0px;
+  left: 0;
+  right: 0;
+  height: 150px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 0 2rem;
+  z-index: 20;
 }
 
 .computer-info {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
+  position: absolute;
+  left: 2rem;
+  top: 0;
 }
 
-.avatar-image {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  border: 3px solid var(--card-border);
-  box-shadow: var(--shadow-soft);
-  background-color: var(--secondary-bg);
+.computer-avatar {
+  width: 240px !important;
+  height: 240px !important;
+  border-radius: 15px !important;
+  border: 4px solid var(--text-accent) !important;
+  box-shadow: var(--shadow-strong), var(--glow-gold) !important;
+  object-fit: cover !important;
+  background: var(--card-bg);
 }
 
 .computer-hand {
+  position: absolute;
+  left: 50%;
+  top: 10px;
+  transform: translateX(-50%);
   display: flex;
   gap: 0.5rem;
   justify-content: center;
-  flex-wrap: wrap;
+  align-items: center;
+  flex-wrap: nowrap;
 }
 
 .play-area {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   gap: 2rem;
-  min-height: 200px;
-  background: rgba(15, 81, 50, 0.3);
+  width: 650px;
+  height: 180px;
+  background: rgba(15, 81, 50, 0.4);
   border-radius: 20px;
   border: 3px solid var(--green-felt);
-  padding: 1rem;
-  position: relative;
+  padding: 1.5rem;
+  position: absolute;
+  top: calc(50% - 25px);
+  left: 50%;
+  transform: translate(-50%, -50%);
   backdrop-filter: blur(5px);
+  box-shadow: var(--shadow-strong);
+  z-index: 15;
 }
 
 .played-cards {
   display: flex;
   gap: 2rem;
   align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
 }
 
 .played-card-slot {
@@ -426,52 +446,84 @@
   align-items: center;
   gap: 0.5rem;
   min-width: var(--card-width);
+  flex: 1;
+}
+
+.played-card-slot.computer-side {
+  justify-content: flex-start;
+}
+
+.played-card-slot.player-side {
+  justify-content: flex-end;
 }
 
 .card-label {
   font-size: clamp(0.5rem, 1.5vw, 0.7rem);
   color: var(--text-secondary);
   text-align: center;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
 }
 
-.vs-indicator {
-  font-size: clamp(1.5rem, 4vw, 2.5rem);
-  color: var(--text-accent);
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-  animation: vs-pulse 2s infinite;
-}
 
-@keyframes vs-pulse {
-  0%, 100% { transform: scale(1); opacity: 0.8; }
-  50% { transform: scale(1.1); opacity: 1; }
-}
-
+/* ========================================
+   PLAYER SECTION - Human player area (bottom)
+   CORRECCIÓN: Cartas centradas abajo, avatar abajo derecha, botones abajo centro
+   ======================================== */
 .player-section {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
+  position: absolute;
+  bottom: 0px;
+  left: 0;
+  right: 0;
+  height: 250px;
+  z-index: 20;
 }
 
 .player-hand {
+  position: absolute;
+  bottom: 60px;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
   gap: 0.5rem;
   justify-content: center;
-  flex-wrap: wrap;
+  align-items: center;
+  flex-wrap: nowrap;
+}
+
+.player-info {
+  position: absolute;
+  bottom: 0;
+  right: 2rem;
+}
+
+.player-avatar {
+  width: 240px !important;
+  height: 240px !important;
+  border-radius: 15px !important;
+  border: 4px solid var(--blue-accent) !important;
+  box-shadow: var(--shadow-strong), var(--glow-blue) !important;
+  object-fit: cover !important;
+  background: var(--card-bg);
 }
 
 .action-buttons {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
+  gap: 0.3rem;
+  flex-wrap: nowrap;
   justify-content: center;
-  margin-top: 1rem;
+  max-width: 500px;
 }
 
 .action-button {
-  padding: 0.8rem 1.5rem;
-  font-size: clamp(0.6rem, 1.8vw, 0.8rem);
-  min-width: 100px;
+  padding: 0.6rem 1rem;
+  font-size: clamp(0.5rem, 1.5vw, 0.7rem);
+  min-width: 80px;
 }
 
 .difficulty-buttons {
@@ -505,11 +557,13 @@
   color: var(--black-suit);
 }
 
-/* Setup screen styles */
+/* ========================================
+   SETUP SCREEN STYLES - Game configuration screens
+   ======================================== */
 .setup-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 0.6rem;
   width: 100%;
   align-items: start;
 }
@@ -518,35 +572,61 @@
   background: rgba(61, 40, 23, 0.8);
   border: 2px solid var(--card-border);
   border-radius: 12px;
-  padding: 1.5rem;
+  padding: 0.7rem;
   backdrop-filter: blur(10px);
 }
 
+.setup-section:hover {
+  overflow: visible;
+}
+
 .setup-title {
-  font-size: clamp(0.8rem, 2.5vw, 1.2rem);
+  font-size: clamp(0.5rem, 1.8vw, 0.9rem);
   color: var(--text-accent);
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
   text-align: center;
 }
 
 .selection-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.selection-grid:hover {
+  overflow: visible;
 }
 
 .selection-item {
-  border: 3px solid var(--card-border);
-  border-radius: 8px;
+  border: 2px solid var(--card-border);
+  border-radius: 6px;
   cursor: pointer;
   transition: all 0.3s;
   overflow: hidden;
   position: relative;
+  height: 180px;
+  width: 70%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
 }
 
 .selection-item:hover {
   transform: scale(1.05);
   box-shadow: var(--glow-gold);
+  z-index: 100;
+  overflow: visible;
+}
+
+.selection-item:hover img {
+  transform: scale(2);
+  transition: transform 0.3s ease-in-out;
+  z-index: 101;
+  border: 3px solid var(--text-accent);
+  border-radius: 8px;
+  box-shadow: var(--shadow-strong), var(--glow-gold);
 }
 
 .selection-item.selected {
@@ -558,7 +638,7 @@
 .selection-item img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   display: block;
 }
 
@@ -569,8 +649,8 @@
   right: 0;
   background: rgba(0,0,0,0.7);
   color: var(--text-primary);
-  padding: 0.5rem;
-  font-size: 0.7rem;
+  padding: 0.2rem;
+  font-size: 0.5rem;
   text-align: center;
 }
 
@@ -759,7 +839,9 @@
   border-color: var(--text-accent);
 }
 
-/* Modal styles */
+/* ========================================
+   MODAL STYLES - Pop-up dialogs and overlays
+   ======================================== */
 .modal {
   position: fixed;
   top: 0;
@@ -1061,7 +1143,7 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-/* Hand strength meter */
+/* Hand strength meter
 .hand-strength-meter {
   width: 100%;
   height: 8px;
@@ -1070,7 +1152,7 @@
   overflow: hidden;
   margin: 0.5rem 0;
   border: 1px solid var(--card-border);
-}
+}  */
 
 .hand-strength-fill {
   height: 100%;
@@ -1280,59 +1362,119 @@
   color: var(--black-suit);
 }
 
-/* Responsive design */
+/* ========================================
+   RESPONSIVE DESIGN - Mobile and tablet breakpoints
+   ======================================== */
 @media (max-width: 768px) {
   .menu-buttons {
     flex-direction: column;
     align-items: center;
   }
+  
   .menu-button {
     width: 100%;
     max-width: 300px;
   }
+  
   .game-header {
     flex-direction: column;
     gap: 0.5rem;
   }
+  
+  .computer-section {
+    top: 80px;
+    height: 120px;
+  }
+  
+  .computer-info {
+    left: 1rem;
+  }
+  
+  .computer-hand {
+    left: 100px;
+    top: 5px;
+  }
+  
+  .computer-avatar {
+    width: 80px !important;
+    height: 80px !important;
+  }
+  
+  .player-section {
+    bottom: 10px;
+    height: 140px;
+  }
+  
+  .player-hand {
+    bottom: 50px;
+  }
+  
+  .player-info {
+    right: 1rem;
+  }
+  
+  .player-avatar {
+    width: 80px !important;
+    height: 80px !important;
+  }
+  
+  .play-area {
+    width: 350px;
+    height: 90px;
+    padding: 1rem;
+    gap: 1.5rem;
+    top: calc(50% - 25px);
+  }
+  
   .played-cards {
     gap: 1rem;
   }
+  
   .action-buttons {
     flex-direction: column;
     align-items: center;
   }
+  
   .action-button {
     width: 100%;
     max-width: 200px;
   }
+  
   .stats-grid {
     grid-template-columns: 1fr;
   }
+  
   .settings-grid {
     grid-template-columns: 1fr;
   }
+  
   .setup-grid {
     grid-template-columns: 1fr;
   }
+  
   .back-button {
     top: 1rem;
     left: 1rem;
     padding: 0.6rem 1rem;
   }
+  
   .sound-toggle {
     top: 0.5rem;
     right: 0.5rem;
     width: 40px;
     height: 40px;
   }
+  
   .notification {
     top: 1rem;
     right: 1rem;
     max-width: 250px;
   }
+  
   .modal-content {
     padding: 1.5rem;
   }
+  
   .tutorial-step {
     max-width: 250px;
     padding: 1rem;
@@ -1343,36 +1485,86 @@
   .screen {
     padding: 0.5rem;
   }
+  
   .screen-content {
     padding: 0.5rem;
     gap: 1rem;
   }
+  
   .game-title {
     font-size: clamp(1.5rem, 6vw, 2.5rem);
     margin-bottom: 1rem;
   }
+  
   .card {
-    --card-width: min(100px, 20vw);
-    --card-height: min(140px, 28vw);
+    --card-width: min(56px, 16vw);
+    --card-height: min(78.4px, 22.4vw);
   }
+  
+  .computer-section {
+    top: 70px;
+    height: 100px;
+  }
+  
+  .computer-info {
+    left: 0.5rem;
+  }
+  
+  .computer-hand {
+    left: 80px;
+    top: 0px;
+  }
+  
+  .computer-avatar, .player-avatar {
+    width: 60px !important;
+    height: 60px !important;
+  }
+  
+  .player-section {
+    bottom: 5px;
+    height: 120px;
+  }
+  
+  .player-hand {
+    bottom: 40px;
+  }
+  
+  .player-info {
+    right: 0.5rem;
+  }
+  
   .play-area {
-    min-height: 150px;
-    padding: 0.5rem;
+    width: 280px;
+    height: 75px;
+    padding: 0.8rem;
+    gap: 1rem;
+    top: calc(50% - 25px);
   }
+  
   .instruction-section {
     padding: 1rem;
   }
+  
   .setting-card {
     padding: 1rem;
   }
+  
   .modal-content {
     padding: 1rem;
   }
+  
   .achievement {
     padding: 1.5rem;
   }
+  
   .tutorial-step {
     max-width: 200px;
     padding: 0.8rem;
+  }
+  
+  .action-button {
+    padding: 0.6rem 1rem;
+    font-size: clamp(0.5rem, 1.5vw, 0.7rem);
+    min-width: 80px;
   }
 }
