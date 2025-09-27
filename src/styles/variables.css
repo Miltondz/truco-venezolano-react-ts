@@ -1,24 +1,109 @@
 :root {
-  --primary-bg: #2a1810;
-  --secondary-bg: #3d2817;
-  --accent-bg: #4a3220;
-  --card-bg: #f4e4c1;
-  --card-border: #8b6914;
-  --text-primary: #f4e4c1;
-  --text-secondary: #d4c4a1;
-  --text-accent: #ffd700;
-  --red-suit: #dc2626;
-  --black-suit: #1f2937;
-  --green-felt: #0f5132;
-  --blue-accent: #1e40af;
-  --purple-accent: #7c3aed;
-  --orange-accent: #ea580c;
+  /* Paleta Principal - Pixel Art/Retro-Futurista */
+  --primary-bg: #0F0A30; /* Fondo principal púrpura oscuro */
+  --secondary-bg: #1a1143; /* Fondo secundario más claro */
+  --accent-bg: #2a1e5c; /* Fondo de acentos */
+  
+  /* Colores de Texto */
+  --text-primary: #FFFFFF; /* Blanco puro */
+  --text-secondary: #C0C0C0; /* Gris claro */
+  --text-muted: #8A8A8A; /* Gris medio */
+  --text-accent: #00FFFF; /* Cian brillante para acentos */
+  
+  /* Colores de Bordes y Contornos */
+  --border-electric: #00FFFF; /* Cian brillante eléctrico */
+  --border-teal: #00CCFF; /* Verde azulado vibrante */
+  --border-glow: #00BFFF; /* Azul brillante para glow */
+  
+  /* Botones - Estilo 1 (Púrpura) */
+  --btn1-bg: #8A2BE2; /* Púrpura intenso */
+  --btn1-bg-hover: #9932CC; /* Púrpura hover */
+  --btn1-text: #FFFFFF;
+  --btn1-icon: #FF69B4; /* Rosa brillante */
+  --btn1-border: #DA70D6; /* Púrpura más claro */
+  
+  /* Botones - Estilo 2 (Cian) */
+  --btn2-bg: #00BFFF; /* Azul cian */
+  --btn2-bg-hover: #1E90FF; /* Azul cian hover */
+  --btn2-text: #FFFFFF;
+  --btn2-icon: #87CEEB; /* Azul claro/cian */
+  --btn2-border: #87CEFA; /* Azul más claro */
+  
+  /* Colores específicos del juego */
+  --card-bg: #f4e4c1; /* Mantener para las cartas */
+  --card-border: #00FFFF; /* Borde cian para las cartas */
+  --red-suit: #FF1493; /* Rosa brillante para palos rojos */
+  --black-suit: #FFFFFF; /* Blanco para palos negros */
+  --green-felt: var(--primary-bg); /* Usar fondo principal */
+  --blue-accent: var(--btn2-bg);
+  --purple-accent: var(--btn1-bg);
+  --orange-accent: #FF8C00; /* Naranja brillante */
+  
+  /* Colores de estado con glow */
+  --success-color: #00FF7F; /* Verde brillante */
+  --warning-color: #FFD700; /* Dorado brillante */
+  --danger-color: #FF1493; /* Rosa brillante */
+  --info-color: var(--border-electric);
+  
+  /* Tamaños - Optimizados para pixel art */
+  --border-radius: 12px;
+  --border-radius-sm: 8px;
   --card-width: min(96px, 14.4vw);
   --card-height: min(134.4px, 20.16vw);
   --card-width-mobile: min(60px, 18.75vw);
   --card-height-mobile: min(84px, 26.25vw);
-  --shadow-soft: 0 4px 8px rgba(0, 0, 0, 0.3);
-  --shadow-strong: 0 8px 16px rgba(0, 0, 0, 0.4);
-  --glow-gold: 0 0 20px rgba(255, 215, 0, 0.6);
-  --glow-blue: 0 0 20px rgba(30, 64, 175, 0.6);
+  --avatar-size: 80px; /* Aumentado para mejor visibilidad */
+  --avatar-size-lg: 100px;
+  --button-padding: 14px 28px;
+  --button-padding-sm: 10px 20px;
+  
+  /* Espaciado */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-xxl: 48px;
+  
+  /* Tipografía - Pixel Art + Modern */
+  --font-pixel: 'Press Start 2P', 'Courier New', monospace;
+  --font-modern: 'Montserrat', 'Roboto', 'Open Sans', sans-serif;
+  --font-fallback: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  
+  /* Tamaños de fuente en rem para accesibilidad */
+  --font-size-xs: 0.75rem; /* 12px */
+  --font-size-sm: 0.875rem; /* 14px */
+  --font-size-md: 1rem; /* 16px */
+  --font-size-lg: 1.125rem; /* 18px */
+  --font-size-xl: 1.25rem; /* 20px */
+  --font-size-xxl: 1.5rem; /* 24px */
+  --font-size-title: 2rem; /* 32px */
+  
+  /* Efectos de Glow/Resplandor */
+  --glow-primary: 0 0 10px var(--border-electric), 0 0 20px var(--border-electric), 0 0 30px var(--border-electric);
+  --glow-secondary: 0 0 8px var(--border-teal), 0 0 16px var(--border-teal);
+  --glow-button1: 0 0 15px var(--btn1-icon);
+  --glow-button2: 0 0 15px var(--btn2-icon);
+  --glow-text: 0 0 8px currentColor;
+  --glow-gold: 0 0 20px rgba(255, 215, 0, 0.8);
+  --glow-blue: 0 0 20px rgba(0, 255, 255, 0.8);
+  
+  /* Sombras mejoradas */
+  --shadow-pixel: 4px 4px 0px rgba(0, 0, 0, 0.5);
+  --shadow-soft: 0 4px 20px rgba(0, 255, 255, 0.2);
+  --shadow-strong: 0 8px 32px rgba(0, 255, 255, 0.4);
+  --shadow-inset: inset 0 0 10px rgba(0, 0, 0, 0.3);
+  
+  /* Transiciones optimizadas para animaciones */
+  --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-bounce: 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  
+  /* Patrón de fondo estrellado/puntos */
+  --bg-pattern: radial-gradient(circle at 25% 25%, #00FFFF 2px, transparent 2px),
+                radial-gradient(circle at 75% 75%, #8A2BE2 1px, transparent 1px),
+                radial-gradient(circle at 50% 10%, #FF69B4 1px, transparent 1px),
+                radial-gradient(circle at 20% 80%, #00BFFF 1px, transparent 1px);
+  --bg-pattern-size: 50px 50px, 30px 30px, 40px 40px, 60px 60px;
 }
