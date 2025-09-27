@@ -1,12 +1,30 @@
 import React from 'react';
-import { BaseScreenProps, GameSettings, DECKS, BOARDS } from '../types';
+import { BaseScreenProps, GameSettings, GameState, DECKS, BOARDS } from '../types';
 
 interface SetupScreenProps extends BaseScreenProps {
   gameSettings: GameSettings;
   setGameSettings: React.Dispatch<React.SetStateAction<GameSettings>>;
+  gameState: GameState;
 }
 
-const SetupScreen: React.FC<SetupScreenProps> = ({ onNavigate, gameSettings, setGameSettings }) => {
+const SetupScreen: React.FC<SetupScreenProps> = ({ onNavigate, gameSettings, setGameSettings, gameState }) => {
+  const [avatarError, setAvatarError] = React.useState(false);
+  
+  // Handle avatar image loading errors
+  const handleAvatarError = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    const img = e.target as HTMLImageElement;
+    const fallbackSrc = '/images/avatars/avatar1-default.jpg';
+    
+    if (!avatarError && img.src !== fallbackSrc) {
+      img.src = fallbackSrc;
+      setAvatarError(true);
+    }
+  };
+  
+  // Reset error state when selected avatar changes
+  React.useEffect(() => {
+    setAvatarError(false);
+  }, [gameState.selectedAvatar]);
   return (
     <div id="setup-screen" className="screen active">
       <button className="back-button" onClick={() => onNavigate('main-screen')}>← Volver</button>
@@ -46,12 +64,18 @@ const SetupScreen: React.FC<SetupScreenProps> = ({ onNavigate, gameSettings, set
           <div className="setup-section">
             <h3 className="setup-title">Tu Oponente</h3>
             <div className="avatar-preview">
-              <img id="setup-avatar-preview" src="/images/avatars/avatar1.jpg" alt="Avatar del Oponente" className="avatar-image" style={{ width: '120px', height: '120px' }} />
+              <img 
+                id="setup-avatar-preview" 
+                src={`/images/avatars/${gameState.selectedAvatar}`} 
+                alt="Avatar del Oponente" 
+                className="avatar-image"
+                onError={handleAvatarError}
+              />
               <p className="game-subtitle">Un nuevo retador te espera...</p>
             </div>
           </div>
         </div>
-        <button id="continue-to-difficulty-btn" className="menu-button" style={{ marginTop: '2rem' }} onClick={() => onNavigate('difficulty-screen')}>
+        <button id="continue-to-difficulty-btn" className="menu-button" onClick={() => onNavigate('difficulty-screen')}>
           Continuar →
         </button>
       </div>

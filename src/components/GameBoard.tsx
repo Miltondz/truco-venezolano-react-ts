@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { GameBoardProps } from '../types';
 import Card from './Card';
+import AIPersonalityDisplay from './AIPersonalityDisplay';
+import { getAvatarImagePath, resetAvatarsToDefault, getFallbackAvatarPath, getSmartFallbackPath } from '../utils/avatarMoods';
 
 const GameBoard: React.FC<GameBoardProps> = ({
   onNavigate,
@@ -15,15 +17,70 @@ const GameBoard: React.FC<GameBoardProps> = ({
   onAcceptCall,
   onRejectCall,
   onCallFlor,
-  onFoldHand
+  onFoldHand,
+  onCallValeNueve,
+  onCallValeJuego,
+  onCallRealEnvido,
+  onCallFaltaEnvido,
+  onCallEstarCantando
 }) => {
-  const handlePause = () => {
-    onNavigate('pause-screen');
+  const [showPersonalityModal, setShowPersonalityModal] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+  const [avatarErrors, setAvatarErrors] = useState<{computer: boolean, player: boolean}>({computer: false, player: false});
+  
+  // Reset avatars to default at the beginning of each turn
+  useEffect(() => {
+    resetAvatarsToDefault(gameState, setGameState);
+    setAvatarErrors({computer: false, player: false}); // Reset error states
+  }, [gameState.isPlayerTurn, gameState.currentRound]);
+  
+  // Reset error states when moods change to allow new images to load
+  useEffect(() => {
+    setAvatarErrors({computer: false, player: false});
+  }, [gameState.computerAvatarMood, gameState.playerAvatarMood]);
+  
+  // Handle avatar image loading errors
+  const handleAvatarError = (e: React.SyntheticEvent<HTMLImageElement>, isPlayer: boolean) => {
+    const img = e.target as HTMLImageElement;
+    const errorKey = isPlayer ? 'player' : 'computer';
+    
+    // Prevent infinite loop by checking if we already had an error
+    if (!avatarErrors[errorKey]) {
+      const mood = isPlayer ? gameState.playerAvatarMood : gameState.computerAvatarMood;
+      const fallbackSrc = getSmartFallbackPath(gameState.selectedAvatar, mood, isPlayer);
+      img.src = fallbackSrc;
+      setAvatarErrors(prev => ({ ...prev, [errorKey]: true }));
+    }
   };
+
+  const handlePause = () => {
+    setIsPaused(true);
+  };
+
+  const handleResume = () => {
+    setIsPaused(false);
+  };
+
+  const handleQuitGame = () => {
+    onNavigate('main-screen');
+  };
+
+  const handleShowPersonality = () => {
+    setShowPersonalityModal(true);
+  };
+
+  const handleClosePersonality = () => {
+    setShowPersonalityModal(false);
+  };
+
+  const { agresividad, intimidacion, calculo, adaptabilidad, archetype } = gameState.aiPersonality;
+  
+  // Common disabled state for all interactive elements
+  const isActionDisabled = gameState.waitingForResponse || gameState.isProcessingAction;
 
   return (
     <div id="game-board" className="game-board active" style={{ backgroundImage: `url('/images/backgrounds/${gameSettings.selectedBoard}')` }}>
-      <div className="game-layout">
+      <div className="game-layout" style={{ touchAction: 'manipulation' }}>
         <div className="game-header">
           <button className="nav-button" onClick={handlePause}>⏸️ Pausa</button>
           <div className="game-status">
@@ -55,12 +112,13 @@ const GameBoard: React.FC<GameBoardProps> = ({
         <div className="game-area">
           <div className="computer-section">
             <div className="computer-info">
-              <img id="computer-avatar" src={`/images/avatars/${gameState.selectedAvatar}`} alt="Avatar del Oponente" className="avatar-image computer-avatar" />
-              {gameSettings.showAiThinking && (
-                <div className="ai-thinking" id="ai-thinking" style={{ opacity: gameState.isPlayerTurn ? 0 : 1 }}>
-                  Pensando...
-                </div>
-              )}
+              <img 
+                id="computer-avatar" 
+                src={getAvatarImagePath(gameState.selectedAvatar, gameState.computerAvatarMood, false)} 
+                alt="Avatar del Oponente" 
+                className="avatar-image computer-avatar"
+                onError={(e) => handleAvatarError(e, false)}
+              />
             </div>
             <div className="computer-hand" id="computer-hand">
               {gameState.computerHand.map((_, index) => (
@@ -72,6 +130,35 @@ const GameBoard: React.FC<GameBoardProps> = ({
                 <div className="hand-strength-fill" style={{ width: '0%' }}></div>
               </div>
             )}
+          </div>
+
+          {/* AI Thinking Indicator */}
+          {gameSettings.showAiThinking && (
+            <div className="ai-thinking" id="ai-thinking" style={{ opacity: gameState.isPlayerTurn ? 0 : 1 }}>
+              Pensando...
+            </div>
+          )}
+
+          {/* Personality Indicators */}
+          <div className="personality-indicators">
+            <div className="personality-indicator" onClick={handleShowPersonality} title="Ver personalidad completa">
+              <div className="indicator-label">🤖 {archetype}</div>
+              <div className="indicator-value">IA Personalizada</div>
+              <div className="indicator-bar">
+                <div
+                  className="indicator-fill"
+                  style={{
+                    width: `${Math.max(agresividad, intimidacion, calculo, adaptabilidad) * 10}%`,
+                    background: `linear-gradient(90deg,
+                      ${agresividad >= 7 ? '#ef4444,' : ''}
+                      ${intimidacion >= 7 ? '#f59e0b,' : ''}
+                      ${calculo >= 7 ? '#10b981,' : ''}
+                      ${adaptabilidad >= 7 ? '#3b82f6,' : ''}
+                      var(--text-accent))`
+                  }}
+                />
+              </div>
+            </div>
           </div>
 
           <div className="play-area">
@@ -98,7 +185,13 @@ const GameBoard: React.FC<GameBoardProps> = ({
 
           <div className="player-section">
             <div className="player-info">
-              <img id="player-avatar" src="/images/avatars/avatar7.jpg" alt="Tu Avatar" className="avatar-image player-avatar" />
+              <img 
+                id="player-avatar" 
+                src={getAvatarImagePath('avatar7.jpg', gameState.playerAvatarMood, true)} 
+                alt="Tu Avatar" 
+                className="avatar-image player-avatar"
+                onError={(e) => handleAvatarError(e, true)}
+              />
             </div>
             <div className="player-hand" id="player-hand">
               {gameState.playerHand.map((card, index) => (
@@ -106,9 +199,10 @@ const GameBoard: React.FC<GameBoardProps> = ({
                   key={index}
                   card={card}
                   faceUp={true}
-                  onClick={() => onPlayCard(index)}
-                  showPower={true}
+                  onClick={isActionDisabled ? undefined : () => onPlayCard(index)}
+                  showPower={false}
                   settings={gameSettings}
+                  className={isActionDisabled ? 'disabled' : ''}
                 />
               ))}
             </div>
@@ -122,15 +216,15 @@ const GameBoard: React.FC<GameBoardProps> = ({
                 className="action-button"
                 id="envido-btn"
                 onClick={onCallEnvido}
-                disabled={gameState.currentEnvidoLevel !== 0 || gameState.waitingForResponse}
-                style={{ display: gameState.currentEnvidoLevel === 0 && !gameState.waitingForResponse ? 'block' : 'none' }}
+                disabled={gameState.currentEnvidoLevel !== 0 || isActionDisabled}
+                style={{ display: gameState.currentEnvidoLevel === 0 && !isActionDisabled ? 'block' : 'none' }}
               >
                 🎵 Envido
               </button>
               <button
                 className="action-button"
                 id="real-envido-btn"
-                onClick={() => {}} // TODO: Implement
+                onClick={onCallRealEnvido}
                 disabled={gameState.currentEnvidoLevel !== 1 || gameState.waitingForResponse}
                 style={{ display: gameState.currentEnvidoLevel === 1 && !gameState.waitingForResponse ? 'block' : 'none' }}
               >
@@ -139,7 +233,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
               <button
                 className="action-button"
                 id="falta-envido-btn"
-                onClick={() => {}} // TODO: Implement
+                onClick={onCallFaltaEnvido}
                 disabled={gameState.currentEnvidoLevel <= 2 || gameState.waitingForResponse}
                 style={{ display: gameState.currentEnvidoLevel <= 2 && !gameState.waitingForResponse ? 'block' : 'none' }}
               >
@@ -171,6 +265,24 @@ const GameBoard: React.FC<GameBoardProps> = ({
                 style={{ display: gameState.currentTrucoLevel === 2 && !gameState.waitingForResponse ? 'block' : 'none' }}
               >
                 ⚡⚡⚡ Vale 4
+              </button>
+              <button
+                className="action-button"
+                id="vale-nueve-btn"
+                onClick={onCallValeNueve}
+                disabled={gameState.waitingForResponse}
+                style={{ display: !gameState.waitingForResponse ? 'block' : 'none' }}
+              >
+                🎯 Vale Nueve
+              </button>
+              <button
+                className="action-button"
+                id="vale-juego-btn"
+                onClick={onCallValeJuego}
+                disabled={gameState.waitingForResponse}
+                style={{ display: !gameState.waitingForResponse ? 'block' : 'none' }}
+              >
+                🎲 Vale Juego
               </button>
               <button
                 className="action-button"
@@ -208,10 +320,44 @@ const GameBoard: React.FC<GameBoardProps> = ({
               >
                 🚪 Me Voy
               </button>
+              <button
+                className="action-button"
+                id="estar-cantando-btn"
+                onClick={onCallEstarCantando}
+                disabled={gameState.playerScore !== 23 || gameState.waitingForResponse}
+                style={{ display: gameState.playerScore === 23 && !gameState.waitingForResponse ? 'block' : 'none' }}
+              >
+                🎵 Estar Cantando
+              </button>
             </div>
           </div>
         </div>
       </div>
+
+      {/* AI Personality Modal */}
+      <AIPersonalityDisplay
+        personality={gameState.aiPersonality}
+        isVisible={showPersonalityModal}
+        onClose={handleClosePersonality}
+      />
+
+      {/* Pause Modal */}
+      {isPaused && (
+        <div className="modal active">
+          <div className="modal-content">
+            <h2 className="modal-title">Juego Pausado</h2>
+            <p className="modal-text">¿Qué deseas hacer?</p>
+            <div className="modal-buttons">
+              <button className="modal-button primary" onClick={handleResume}>
+                ▶️ Continuar Juego
+              </button>
+              <button className="modal-button" onClick={handleQuitGame}>
+                🏠 Volver al Menú
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

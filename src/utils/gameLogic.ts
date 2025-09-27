@@ -1,18 +1,24 @@
 import { Card, GameState, GameSettings, PlayerStats } from '../types';
-import { shuffleDeck, calculateEnvidoPoints, hasFlor, calculateHandStrength } from './cards';
+import { shuffleDeck, calculateEnvidoPoints, hasFlor, calculateHandStrength, getPericoCard } from './cards';
 import { getAIResponse, selectBestCardForAI } from './ai';
 import { playSound } from './sound';
+import { generateRandomPersonality, getRandomArchetypeName } from './personality';
 
-export function dealCards(): { playerHand: Card[], computerHand: Card[] } {
+export function dealCards(): { playerHand: Card[], computerHand: Card[], viraCard: Card } {
   const shuffledCards = shuffleDeck();
 
   const playerHand = shuffledCards.slice(0, 3);
   const computerHand = shuffledCards.slice(3, 6);
+  const viraCard = shuffledCards[6]; // Bottom card becomes the vira
 
-  return { playerHand, computerHand };
+  return { playerHand, computerHand, viraCard };
 }
 
 export function initializeGameState(difficulty: string, selectedAvatar: string): GameState {
+  // Generate a random personality for each new game
+  const randomArchetype = getRandomArchetypeName();
+  const aiPersonality = generateRandomPersonality();
+
   return {
     playerScore: 0,
     computerScore: 0,
@@ -24,7 +30,7 @@ export function initializeGameState(difficulty: string, selectedAvatar: string):
     computerPlayedCard: null,
     isPlayerTurn: true,
     difficulty: difficulty as 'easy' | 'medium' | 'hard' | 'master',
-    aiPersonality: 'balanced',
+    aiPersonality,
     activeCalls: [],
     roundsWon: { player: 0, computer: 0 },
     gameInProgress: true,
@@ -40,12 +46,21 @@ export function initializeGameState(difficulty: string, selectedAvatar: string):
     gameStartTime: Date.now(),
     currentStreak: 0,
     bestStreak: 0,
-    selectedAvatar
+    selectedAvatar,
+    viraCard: null,
+    pericoCard: null,
+    // Avatar mood system
+    computerAvatarMood: 'default' as const,
+    playerAvatarMood: 'default' as const,
+    avatarMoodTimer: null,
+    // Action protection
+    isProcessingAction: false
   };
 }
 
 export function startNewHand(gameState: GameState): GameState {
-  const { playerHand, computerHand } = dealCards();
+  const { playerHand, computerHand, viraCard } = dealCards();
+  const pericoCard = getPericoCard(viraCard);
 
   return {
     ...gameState,
@@ -64,7 +79,9 @@ export function startNewHand(gameState: GameState): GameState {
     playerHand,
     computerHand,
     playerPlayedCard: null,
-    computerPlayedCard: null
+    computerPlayedCard: null,
+    viraCard,
+    pericoCard
   };
 }
 
@@ -157,9 +174,22 @@ export function endHand(gameState: GameState, winner: 'player' | 'computer' | 't
 }
 
 export function checkGameEnd(gameState: GameState): 'player' | 'computer' | null {
-  if (gameState.playerScore >= 30) return 'player';
-  if (gameState.computerScore >= 30) return 'computer';
+  if (gameState.playerScore >= 24) return 'player';
+  if (gameState.computerScore >= 24) return 'computer';
   return null;
+}
+
+export function callEstarCantando(gameState: GameState, settings: GameSettings): GameState {
+  if (!gameState.isPlayerTurn || gameState.playerScore !== 23 || gameState.waitingForResponse) return gameState;
+
+  playSound('call', settings);
+
+  return {
+    ...gameState,
+    activeCalls: [...gameState.activeCalls, 'Estar Cantando'],
+    playerScore: 24, // Player wins immediately with 24 points
+    gameInProgress: false
+  };
 }
 
 export function callTruco(gameState: GameState, settings: GameSettings): GameState {
@@ -204,6 +234,32 @@ export function callVale4(gameState: GameState, settings: GameSettings): GameSta
   };
 }
 
+export function callValeNueve(gameState: GameState, settings: GameSettings): GameState {
+  if (!gameState.isPlayerTurn || gameState.waitingForResponse) return gameState;
+
+  playSound('call', settings);
+
+  return {
+    ...gameState,
+    activeCalls: [...gameState.activeCalls, 'Vale Nueve'],
+    lastCall: 'valeNueve',
+    waitingForResponse: true
+  };
+}
+
+export function callValeJuego(gameState: GameState, settings: GameSettings): GameState {
+  if (!gameState.isPlayerTurn || gameState.waitingForResponse) return gameState;
+
+  playSound('call', settings);
+
+  return {
+    ...gameState,
+    activeCalls: [...gameState.activeCalls, 'Vale Juego'],
+    lastCall: 'valeJuego',
+    waitingForResponse: true
+  };
+}
+
 export function callEnvido(gameState: GameState, settings: GameSettings): GameState {
   if (!gameState.isPlayerTurn || gameState.waitingForResponse) return gameState;
 
@@ -214,6 +270,34 @@ export function callEnvido(gameState: GameState, settings: GameSettings): GameSt
     activeCalls: [...gameState.activeCalls, 'Envido'],
     currentEnvidoLevel: 1,
     lastCall: 'envido',
+    waitingForResponse: true
+  };
+}
+
+export function callRealEnvido(gameState: GameState, settings: GameSettings): GameState {
+  if (!gameState.isPlayerTurn || gameState.currentEnvidoLevel !== 1 || gameState.waitingForResponse) return gameState;
+
+  playSound('call', settings);
+
+  return {
+    ...gameState,
+    activeCalls: [...gameState.activeCalls, 'Real Envido'],
+    currentEnvidoLevel: 2,
+    lastCall: 'realEnvido',
+    waitingForResponse: true
+  };
+}
+
+export function callFaltaEnvido(gameState: GameState, settings: GameSettings): GameState {
+  if (!gameState.isPlayerTurn || gameState.currentEnvidoLevel <= 2 || gameState.waitingForResponse) return gameState;
+
+  playSound('call', settings);
+
+  return {
+    ...gameState,
+    activeCalls: [...gameState.activeCalls, 'Falta Envido'],
+    currentEnvidoLevel: 3,
+    lastCall: 'faltaEnvido',
     waitingForResponse: true
   };
 }
@@ -279,10 +363,13 @@ export function callFlor(gameState: GameState, settings: GameSettings): GameStat
 
   playSound('florWin', settings);
 
+  // Check if this is Flor Reservada (called after some rounds have been played)
+  const isFlorReservada = gameState.currentRound > 1;
+
   return {
     ...gameState,
-    activeCalls: [...gameState.activeCalls, 'Flor'],
-    playerScore: gameState.playerScore + 3
+    activeCalls: [...gameState.activeCalls, isFlorReservada ? 'Flor Reservada' : 'Flor'],
+    playerScore: gameState.playerScore + (isFlorReservada ? 6 : 3) // Flor Reservada gives 6 points
   };
 }
 

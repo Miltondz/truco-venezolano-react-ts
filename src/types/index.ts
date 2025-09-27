@@ -10,6 +10,15 @@ export interface Card {
   imageFile: string;
 }
 
+export interface AIPersonality {
+  agresividad: number; // 1-10: Controls calling frequency and betting aggression
+  intimidacion: number; // 1-10: Manages bluffing and psychological tactics
+  calculo: number; // 1-10: Mathematical analysis and probability calculations
+  adaptabilidad: number; // 1-10: Strategy adjustment based on opponent behavior
+  archetype: string; // Name of the personality archetype
+  description: string; // Description of the personality style
+}
+
 export interface GameState {
   playerScore: number;
   computerScore: number;
@@ -21,7 +30,7 @@ export interface GameState {
   computerPlayedCard: Card | null;
   isPlayerTurn: boolean;
   difficulty: 'easy' | 'medium' | 'hard' | 'master';
-  aiPersonality: 'balanced' | 'aggressive' | 'conservative' | 'unpredictable';
+  aiPersonality: AIPersonality;
   activeCalls: string[];
   roundsWon: { player: number; computer: number };
   gameInProgress: boolean;
@@ -38,6 +47,14 @@ export interface GameState {
   currentStreak: number;
   bestStreak: number;
   selectedAvatar: string;
+  viraCard: Card | null;
+  pericoCard: Card | null;
+  // Avatar mood system
+  computerAvatarMood: 'default' | 'happy' | 'sad' | 'smug';
+  playerAvatarMood: 'default' | 'happy' | 'sad' | 'smug';
+  avatarMoodTimer: number | null;
+  // Action protection
+  isProcessingAction: boolean;
 }
 
 export interface GameSettings {
@@ -153,6 +170,11 @@ export interface GameBoardProps extends BaseScreenProps {
   onRejectCall: () => void;
   onCallFlor: () => void;
   onFoldHand: () => void;
+  onCallValeNueve: () => void;
+  onCallValeJuego: () => void;
+  onCallRealEnvido: () => void;
+  onCallFaltaEnvido: () => void;
+  onCallEstarCantando: () => void;
 }
 
 // Audio types

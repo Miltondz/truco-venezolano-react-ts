@@ -5,11 +5,11 @@ interface MainScreenProps extends BaseScreenProps {}
 
 const MainScreen: React.FC<MainScreenProps> = ({ onNavigate }) => {
   return (
-    <div id="main-screen" className="screen active">
+    <div id="main-screen" className="screen main-screen active">
       <div className="screen-content">
         <h1 className="game-title">TRUCO</h1>
         <p className="game-subtitle">Venezolano</p>
-        <div className="menu-buttons">
+        <div className="main-menu-buttons">
           <button id="play-btn" className="menu-button" onClick={() => onNavigate('setup-screen')}>
             🎮 Jugar
           </button>
@@ -27,6 +27,9 @@ const MainScreen: React.FC<MainScreenProps> = ({ onNavigate }) => {
           </button>
           <button id="settings-btn" className="menu-button" onClick={() => onNavigate('settings-screen')}>
             ⚙️ Configuración
+          </button>
+          <button id="test-btn" className="menu-button" onClick={() => onNavigate('test-screen')}>
+            🧪 Tests
           </button>
         </div>
       </div>

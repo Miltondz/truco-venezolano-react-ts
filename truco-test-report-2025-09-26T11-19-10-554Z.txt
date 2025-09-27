@@ -1,0 +1,64 @@
+🚀 Starting Comprehensive Truco Game Testing Suite
+============================================================
+=== Starting Basic Game Flow Test ===
+Player hand: As de Espadas, 2 de Espadas, 3 de Espadas
+Computer hand: As de Bastos, 2 de Bastos, 3 de Bastos
+Vira card: As de Oros
+Player envido points: 25
+Computer envido points: 25
+Player has Flor: true
+Computer has Flor: true
+Perico card: As de Oros
+✅ Basic Game Flow Test completed successfully
+✅ testBasicGameFlow
+=== Starting Envite Scenarios Test ===
+Player envido: 25
+Computer envido: 25
+✅ Envido points are tied
+✅ Envite Scenarios Test completed successfully
+✅ testEnviteScenarios
+=== Starting Flor Situations Test ===
+Flor hand has Flor: true
+No-Flor hand has Flor: false
+✅ Flor detection working correctly
+✅ Flor Situations Test completed successfully
+✅ testFlorSituations
+=== Starting La Vira System Test ===
+Vira card: As de Espadas
+Perico card: 2 de Espadas
+✅ Perico card has same suit as Vira
+✅ La Vira System Test completed successfully
+✅ testLaViraSystem
+=== Starting Scoring Accuracy Test ===
+Hand 1 envido points: 25
+Hand 2 envido points: 0
+Hand 3 envido points: 23
+Hand strength calculation: 33
+✅ Scoring Accuracy Test completed successfully
+✅ testScoringAccuracy
+=== Starting Rule Compliance Test ===
+Flor detection: true
+✅ Flor rule compliance verified
+✅ Rule Compliance Test completed successfully
+✅ testRuleCompliance
+
+============================================================
+📊 TEST RESULTS SUMMARY
+============================================================
+Total Tests: 6
+Passed: 6
+Failed: 0
+Pass Rate: 100.0%
+
+📋 DETAILED RESULTS
+----------------------------------------
+1. testBasicGameFlow: ✅ PASS
+2. testEnviteScenarios: ✅ PASS
+3. testFlorSituations: ✅ PASS
+4. testLaViraSystem: ✅ PASS
+5. testScoringAccuracy: ✅ PASS
+6. testRuleCompliance: ✅ PASS
+============================================================
+🏁 TESTING COMPLETE
+============================================================
+🎉 ALL TESTS PASSED! The Truco game logic is functioning correctly.

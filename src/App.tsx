@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import './App.css';
+import './styles/App.css';
 import { GameState, GameSettings, PlayerStats, Achievement, DECKS, BOARDS, AVATARS } from './types';
-import { initializeGameState, startNewHand, playCard, computerPlayCard, evaluateRound, endHand, checkGameEnd, callTruco, callRetruco, callVale4, callEnvido, acceptCall, rejectCall, resolveEnvido, callFlor, foldHand, getAiDelay } from './utils/gameLogic';
+import { initializeGameState, startNewHand, playCard, computerPlayCard, evaluateRound, endHand, checkGameEnd, callTruco, callRetruco, callVale4, callEnvido, acceptCall, rejectCall, resolveEnvido, callFlor, foldHand, getAiDelay, callValeNueve, callValeJuego, callRealEnvido, callFaltaEnvido, callEstarCantando } from './utils/gameLogic';
 import { initializeAudio, playSound } from './utils/sound';
 import { loadSettings, saveSettings, loadStats, saveStats, loadAchievements, saveAchievements } from './utils/storage';
 import { calculateHandStrength } from './utils/cards';
+import { evaluatePlayResult, updateAvatarMood } from './utils/avatarMoods';
 import MainScreen from './components/MainScreen';
 import SetupScreen from './components/SetupScreen';
 import DifficultyScreen from './components/DifficultyScreen';
@@ -18,6 +19,7 @@ import LoadingScreen from './components/LoadingScreen';
 import Notification from './components/Notification';
 import Modal from './components/Modal';
 import AchievementPopup from './components/AchievementPopup';
+import { TestScreen } from './components/TestScreen';
 
 const App: React.FC = () => {
   // State management
@@ -165,7 +167,11 @@ const App: React.FC = () => {
   };
 
   const executePlayCard = (cardIndex: number) => {
-    const newGameState = playCard(gameState, cardIndex, gameSettings);
+    // Prevent multiple actions
+    if (gameState.isProcessingAction) return;
+    
+    // Set processing state
+    const newGameState = { ...playCard(gameState, cardIndex, gameSettings), isProcessingAction: true };
     setGameState(newGameState);
 
     // Computer's turn
@@ -178,9 +184,30 @@ const App: React.FC = () => {
         const { winner, gameState: evaluatedState } = evaluateRound(computerState, gameSettings);
         setGameState(evaluatedState);
 
-        // Handle round result
+        // Update avatar moods based on round result
+        if (winner === 'player') {
+          const playerResult = evaluatePlayResult(evaluatedState, true, 'card');
+          const computerResult = evaluatePlayResult(evaluatedState, false, 'card');
+          
+          updateAvatarMood(evaluatedState, setGameState, true, playerResult);
+          setTimeout(() => {
+            updateAvatarMood(evaluatedState, setGameState, false, computerResult);
+          }, 500);
+        } else if (winner === 'computer') {
+          const playerResult = evaluatePlayResult(evaluatedState, true, 'card');
+          const computerResult = evaluatePlayResult(evaluatedState, false, 'card');
+          
+          updateAvatarMood(evaluatedState, setGameState, false, computerResult);
+          setTimeout(() => {
+            updateAvatarMood(evaluatedState, setGameState, true, playerResult);
+          }, 500);
+        }
+
+        // Handle round result and reset processing state
         setTimeout(() => {
-          handleRoundResult(evaluatedState, winner);
+          const finalState = { ...evaluatedState, isProcessingAction: false };
+          setGameState(finalState);
+          handleRoundResult(finalState, winner);
         }, 3000);
       }, 1500);
     }, getAiDelay(gameSettings));
@@ -241,10 +268,19 @@ const App: React.FC = () => {
       newStats.currentStreak++;
       newStats.bestStreak = Math.max(newStats.bestStreak, newStats.currentStreak);
 
+      // Player wins game - excellent result
+      updateAvatarMood(finalState, setGameState, true, 'excellent');
+      updateAvatarMood(finalState, setGameState, false, 'terrible');
+
       showNotification('¡Felicidades! ¡Has ganado el juego!', 'success');
       playSound('gameWin', gameSettings);
     } else {
       newStats.currentStreak = 0;
+      
+      // Computer wins game - excellent result for AI
+      updateAvatarMood(finalState, setGameState, false, 'excellent');
+      updateAvatarMood(finalState, setGameState, true, 'terrible');
+      
       showNotification('La computadora ha ganado. ¡Mejor suerte la próxima vez!', 'error');
       playSound('gameLose', gameSettings);
     }
@@ -260,15 +296,45 @@ const App: React.FC = () => {
     }, 3000);
   };
 
-  // Call actions
-  const handleCallTruco = () => callTruco(gameState, gameSettings);
-  const handleCallRetruco = () => callRetruco(gameState, gameSettings);
-  const handleCallVale4 = () => callVale4(gameState, gameSettings);
-  const handleCallEnvido = () => callEnvido(gameState, gameSettings);
-  const handleAcceptCall = () => acceptCall(gameState, gameSettings);
-  const handleRejectCall = () => rejectCall(gameState, gameSettings);
-  const handleCallFlor = () => callFlor(gameState, gameSettings);
-  const handleFoldHand = () => foldHand(gameState, gameSettings);
+  // Helper function for protected call actions
+  const executeProtectedAction = (actionFn: () => GameState, resultType: 'call' | 'response' = 'call', actionSuccess?: boolean) => {
+    if (gameState.isProcessingAction || gameState.waitingForResponse) return;
+    
+    const newState = actionFn();
+    setGameState(newState);
+    if (newState !== gameState) {
+      const result = actionSuccess !== undefined 
+        ? evaluatePlayResult(newState, true, 'response', actionSuccess)
+        : evaluatePlayResult(newState, true, resultType);
+      updateAvatarMood(newState, setGameState, true, result);
+    }
+  };
+  
+  // Call actions with avatar mood integration
+  const handleCallTruco = () => executeProtectedAction(() => callTruco(gameState, gameSettings), 'call');
+  
+  const handleCallRetruco = () => executeProtectedAction(() => callRetruco(gameState, gameSettings), 'call');
+  const handleCallVale4 = () => executeProtectedAction(() => callVale4(gameState, gameSettings), 'call');
+  const handleCallEnvido = () => executeProtectedAction(() => callEnvido(gameState, gameSettings), 'call');
+  const handleAcceptCall = () => executeProtectedAction(() => acceptCall(gameState, gameSettings), 'response', true);
+  const handleRejectCall = () => executeProtectedAction(() => rejectCall(gameState, gameSettings), 'response', false);
+  
+  const handleCallFlor = () => executeProtectedAction(() => callFlor(gameState, gameSettings), 'call');
+  const handleFoldHand = () => executeProtectedAction(() => foldHand(gameState, gameSettings), 'response', false);
+  const handleCallValeNueve = () => executeProtectedAction(() => callValeNueve(gameState, gameSettings), 'call');
+  const handleCallValeJuego = () => executeProtectedAction(() => callValeJuego(gameState, gameSettings), 'call');
+  const handleCallRealEnvido = () => executeProtectedAction(() => callRealEnvido(gameState, gameSettings), 'call');
+  const handleCallFaltaEnvido = () => executeProtectedAction(() => callFaltaEnvido(gameState, gameSettings), 'call');
+  
+  const handleCallEstarCantando = () => {
+    if (gameState.isProcessingAction || gameState.waitingForResponse) return;
+    
+    const newState = callEstarCantando(gameState, gameSettings);
+    setGameState(newState);
+    if (newState !== gameState) {
+      updateAvatarMood(newState, setGameState, true, 'excellent');
+    }
+  };
 
   // UI helpers
   const showNotification = (message: string, type: 'info' | 'success' | 'error' = 'info') => {
@@ -290,7 +356,7 @@ const App: React.FC = () => {
       case 'main-screen':
         return <MainScreen onNavigate={navigateTo} />;
       case 'setup-screen':
-        return <SetupScreen onNavigate={navigateTo} gameSettings={gameSettings} setGameSettings={setGameSettings} />;
+        return <SetupScreen onNavigate={navigateTo} gameSettings={gameSettings} setGameSettings={setGameSettings} gameState={gameState} />;
       case 'difficulty-screen':
         return <DifficultyScreen onNavigate={navigateTo} gameState={gameState} setGameState={setGameState} onStartGame={startGame} />;
       case 'game-board':
@@ -308,6 +374,11 @@ const App: React.FC = () => {
           onRejectCall={handleRejectCall}
           onCallFlor={handleCallFlor}
           onFoldHand={handleFoldHand}
+          onCallValeNueve={handleCallValeNueve}
+          onCallValeJuego={handleCallValeJuego}
+          onCallRealEnvido={handleCallRealEnvido}
+          onCallFaltaEnvido={handleCallFaltaEnvido}
+          onCallEstarCantando={handleCallEstarCantando}
         />;
       case 'instructions-screen':
         return <InstructionsScreen onNavigate={navigateTo} />;
@@ -319,6 +390,8 @@ const App: React.FC = () => {
         return <SettingsScreen onNavigate={navigateTo} gameSettings={gameSettings} setGameSettings={setGameSettings} />;
       case 'tutorial-screen':
         return <TutorialScreen onNavigate={navigateTo} />;
+      case 'test-screen':
+        return <TestScreen onNavigate={navigateTo} />;
       default:
         return <MainScreen onNavigate={navigateTo} />;
     }

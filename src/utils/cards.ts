@@ -94,3 +94,23 @@ export function calculateHandStrength(hand: Card[]): number {
 
   return Math.min(100, (totalPower / maxPossiblePower) * 100);
 }
+
+export function getPericoCard(viraCard: Card): Card {
+  // Find the card with the same suit as vira but next lower value
+  const sameSuitCards = cards.filter(card => card.suit === viraCard.suit && card.value !== viraCard.value);
+
+  // Sort by value descending to get the next lower card
+  const sortedCards = sameSuitCards.sort((a, b) => b.value - a.value);
+
+  // Find the card with the highest value that's lower than vira
+  const pericoCard = sortedCards.find(card => card.value < viraCard.value);
+
+  // If no lower card found (vira is the lowest), wrap around to the highest card of the same suit
+  if (!pericoCard) {
+    return sameSuitCards.reduce((highest, current) =>
+      current.value > highest.value ? current : highest
+    );
+  }
+
+  return pericoCard;
+}
