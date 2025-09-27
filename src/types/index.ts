@@ -109,12 +109,7 @@ export interface Achievement {
   icon: string;
 }
 
-export interface TutorialStep {
-  target: string;
-  title: string;
-  text: string;
-  position: 'top' | 'bottom' | 'left' | 'right';
-}
+// Removed old TutorialStep interface - using new one below
 
 export interface NotificationData {
   message: string;
@@ -144,6 +139,54 @@ export interface CardProps {
 
 export interface BaseScreenProps {
   onNavigate: (screen: string) => void;
+}
+
+// ========================================
+// TIPOS PARA SISTEMA DE TUTORIAL
+// ========================================
+
+export interface TutorialStep {
+  id: string;
+  title: string;
+  content: string;
+  image?: string;
+  interactiveElement?: React.ReactNode;
+  tips?: string[];
+  isCompleted?: boolean;
+}
+
+export interface TutorialLesson {
+  id: string;
+  title: string;
+  description: string;
+  icon: string;
+  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  estimatedTime: number; // minutos
+  steps: TutorialStep[];
+  isUnlocked?: boolean;
+  isCompleted?: boolean;
+  completionReward?: string;
+}
+
+export interface TutorialProgress {
+  currentLessonId?: string;
+  currentStepIndex: number;
+  completedLessons: string[];
+  completedSteps: { [lessonId: string]: string[] };
+  totalProgress: number; // porcentaje 0-100
+}
+
+export interface TutorialScreenProps extends BaseScreenProps {
+  progress?: TutorialProgress;
+  onProgressUpdate?: (progress: TutorialProgress) => void;
+}
+
+export interface LessonScreenProps {
+  lesson: TutorialLesson;
+  progress: TutorialProgress;
+  onBack: () => void;
+  onProgressUpdate: (progress: TutorialProgress) => void;
+  onComplete: () => void;
 }
 
 export interface ScreenProps extends BaseScreenProps {
