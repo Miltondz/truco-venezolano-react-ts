@@ -488,12 +488,16 @@ export const tutorialLessons: TutorialLesson[] = [
               <strong>Si cantó Re Truco:</strong> Ahora A puede "querer", "no querer" o "VALE CUATRO"
             </div>
           </div>
+          
+          <div style="margin-top: 20px; padding: 15px; background: linear-gradient(135deg, rgba(0, 191, 255, 0.15), rgba(0, 255, 255, 0.15)); border: 1px solid #00BFFF; border-radius: 8px;">
+            <h4 style="color: #00FFFF; margin-bottom: 10px;">💡 Consejos Importantes:</h4>
+            <ul style="margin: 0; padding-left: 20px; line-height: 1.6;">
+              <li>Cada canto debe ser aceptado o rechazado</li>
+              <li>Si no quieres, el que cantó gana automáticamente</li>
+              <li>Vale Cuatro es el máximo, no hay cantos superiores</li>
+            </ul>
+          </div>
         `,
-        tips: [
-          'Cada canto debe ser aceptado o rechazado',
-          'Si no quieres, el que cantó gana automáticamente',
-          'Vale Cuatro es el máximo, no hay cantos superiores'
-        ]
       },
       {
         id: 'cuando-cantar-truco',
@@ -1130,6 +1134,40 @@ export const tutorialLessons: TutorialLesson[] = [
           'Cada partida es una lección, ganes o pierdas',
           'Los mejores jugadores se adaptan constantemente',
           '¡La práctica hace al maestro, pero la observación hace al genio!'
+        ]
+      }
+    ]
+  },
+
+  // ========================================
+  // LECCIÓN 6: GLOSARIO Y TÉRMINOS
+  // ========================================
+  {
+    id: 'glosario',
+    title: 'Glosario de Truco',
+    description: 'Conviértete en un experto del léxico del Truco y sus jergas',
+    icon: '📖',
+    difficulty: 'advanced',
+    estimatedTime: 5,
+    completionReward: 'Hablas el idioma del Truco con fluidez',
+    steps: [
+      {
+        id: 'terminos-comunes',
+        title: 'Términos Comunes',
+        content: `
+          <h4>Glosario Esencial del Truco:</h4>
+          <p>Conocer la jerga del Truco no solo te ayuda a entender el juego, sino también a intimidar a tus oponentes.</p>
+          <ul>
+            <li><strong>Mano:</strong> Cada una de las tres rondas en que se juega una partida.</li>
+            <li><strong>Parda:</strong> Empate en una mano.</li>
+            <li><strong>Irse al mazo:</strong> Rendirse y no jugar las cartas.</li>
+            <li><strong>Cantar:</strong> Anunciar una jugada como \"Envido\" o \"Truco\".</li>
+            <li><strong>Tengo:</strong> Expresión para indicar que se tienen puntos de Envido.</li>
+          </ul>
+        `,
+        tips: [
+          'Usa estos términos con confianza para mostrar seguridad.',
+          'Escucha atentamente lo que cantan tus oponentes.'
         ]
       }
     ]

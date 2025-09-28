@@ -55,6 +55,8 @@ export interface GameState {
   avatarMoodTimer: number | null;
   // Action protection
   isProcessingAction: boolean;
+  // Game phases
+  currentPhase: 'flor' | 'envido' | 'truco' | 'playing';
 }
 
 export interface GameSettings {

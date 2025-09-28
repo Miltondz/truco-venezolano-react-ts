@@ -1,0 +1,111 @@
+// Predefined AI characters for Venezuelan Truco
+export const PERSONALITY_CHARACTERS: Record<string, AIPersonality> = {
+  'El Chamo': {
+    agresividad: 5,
+    riesgo: 5,
+    blufeo: 4,
+    consistencia: 8,
+    personaje: 'El Chamo',
+    description: 'Joven relajado que juega con calma. Ideal para principiantes. No se apura, pero tampoco se queda atrás.',
+    avatar: 'avatar-el-chamo-default.jpg'
+  },
+  'La Tía Lulú': {
+    agresividad: 2,
+    riesgo: 3,
+    blufeo: 1,
+    consistencia: 9,
+    personaje: 'La Tía Lulú',
+    description: 'Señora cautelosa que solo juega si está segura. Perfecta para aprender a no arriesgar innecesariamente.',
+    avatar: 'avatar-la-tia-lulu-default.jpg'
+  },
+  'El Borracho de la Esquina': {
+    agresividad: 6,
+    riesgo: 7,
+    blufeo: 8,
+    consistencia: 3,
+    personaje: 'El Borracho de la Esquina',
+    description: 'Impredecible y divertido. A veces gana con suerte, otras tira todo. ¡Nunca sabrás qué hará!',
+    avatar: 'avatar-el-borracho-de-la-esquina-default.jpg'
+  },
+  'El Profesor': {
+    agresividad: 6,
+    riesgo: 6,
+    blufeo: 5,
+    consistencia: 7,
+    personaje: 'El Profesor',
+    description: 'Analiza cada jugada. No es agresivo, pero sabe cuándo subir la apuesta. Ideal para jugadores intermedios.',
+    avatar: 'avatar-el-profesor-default.jpg'
+  },
+  'El Gato': {
+    agresividad: 9,
+    riesgo: 8,
+    blufeo: 7,
+    consistencia: 6,
+    personaje: 'El Gato',
+    description: 'Agresivo y desafiante. Siempre quiere subir la apuesta. ¡Te retará a cada truco y retruco!',
+    avatar: 'avatar-el-gato-default.jpg'
+  },
+  'La Abuela': {
+    agresividad: 3,
+    riesgo: 2,
+    blufeo: 1,
+    consistencia: 10,
+    personaje: 'La Abuela',
+    description: 'Muy conservadora. Solo juega si tiene cartas fuertes. Te enseñará a jugar seguro y estratégico.',
+    avatar: 'avatar-la-abuela-default.jpg'
+  },
+  'El Maestro': {
+    agresividad: 7,
+    riesgo: 7,
+    blufeo: 6,
+    consistencia: 9,
+    personaje: 'El Maestro',
+    description: 'Jugador perfecto. Sabe leer a sus rivales y juega sin errores. Para expertos que quieren ser desafiados.',
+    avatar: 'avatar-el-maestro-default.jpg'
+  },
+  'El Gambetero': {
+    agresividad: 10,
+    riesgo: 9,
+    blufeo: 8,
+    consistencia: 5,
+    personaje: 'El Gambetero',
+    description: 'Profesional del juego. Busca el “vale cuatro” siempre. Si no ganas, te lleva hasta la casa.',
+    avatar: 'avatar-el-gambetero-default.jpg'
+  },
+  'La Bruja': {
+    agresividad: 1,
+    riesgo: 1,
+    blufeo: 2,
+    consistencia: 10,
+    personaje: 'La Bruja',
+    description: 'Misteriosa y calculadora. Solo juega cuando “la brujería lo permite”. Nunca comete errores.',
+    avatar: 'avatar-la-bruja-default.jpg'
+  },
+  'El Locochón': {
+    agresividad: 8,
+    riesgo: 9,
+    blufeo: 10,
+    consistencia: 2,
+    personaje: 'El Locochón',
+    description: 'Caótico y divertido. Juega como si estuviera loco. ¡Nunca sabrás si está blufeando o no!',
+    avatar: 'avatar-el-locochon-default.jpg'
+  },
+  'El Estratega': {
+    agresividad: 8,
+    riesgo: 8,
+    blufeo: 7,
+    consistencia: 10,
+    personaje: 'El Estratega',
+    description: 'Planificador militar. No comete errores. Cada jugada está calculada. ¡Desafío extremo!',
+    avatar: 'avatar-el-estratega-default.jpg'
+  },
+  'El Fantasma': {
+    agresividad: 7,
+    riesgo: 6,
+    blufeo: 9,
+    consistencia: 1,
+    personaje: 'El Fantasma',
+    description: 'Figura etérea que aparece y desaparece. Juega como si fuera un espectro. Impredecible al máximo.',
+    avatar: 'avatar-el-fantasma-default.jpg'
+  }
+};

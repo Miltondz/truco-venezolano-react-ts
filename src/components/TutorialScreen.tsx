@@ -12,8 +12,9 @@ const TutorialScreen: React.FC<BaseScreenProps> = ({ onNavigate }) => {
     totalProgress: 0
   });
 
-  // Cargar progreso desde localStorage
+  // CARGAR PROGRESO Y CONFIGURAR SCROLL INICIAL
   useEffect(() => {
+    // Cargar progreso guardado del localStorage
     const savedProgress = localStorage.getItem('truco-tutorial-progress');
     if (savedProgress) {
       try {
@@ -22,6 +23,19 @@ const TutorialScreen: React.FC<BaseScreenProps> = ({ onNavigate }) => {
         console.error('Error loading tutorial progress:', error);
       }
     }
+    
+    // SCROLL INICIAL: Posicionar en la parte superior para mostrar el header
+    // IMPORTANTE: No usar scroll automático que oculte el header
+    // El CSS tiene padding-top: 80px para garantizar que el header sea visible
+    setTimeout(() => {
+      const tutorialScreen = document.getElementById('tutorial-screen');
+      if (tutorialScreen) {
+        tutorialScreen.scrollTo({
+          top: 0, // SIEMPRE comenzar desde arriba
+          behavior: 'smooth'
+        });
+      }
+    }, 100);
   }, []);
 
   // Guardar progreso en localStorage
@@ -62,12 +76,12 @@ const TutorialScreen: React.FC<BaseScreenProps> = ({ onNavigate }) => {
     return Math.round((completedSteps / totalSteps) * 100);
   };
 
-  const getDifficultyColor = (difficulty: string) => {
+  const getDifficultyClass = (difficulty: string) => {
     switch (difficulty) {
-      case 'beginner': return 'var(--success-color)';
-      case 'intermediate': return 'var(--warning-color)';
-      case 'advanced': return 'var(--danger-color)';
-      default: return 'var(--text-secondary)';
+      case 'beginner': return 'difficulty-beginner';
+      case 'intermediate': return 'difficulty-intermediate';
+      case 'advanced': return 'difficulty-advanced';
+      default: return '';
     }
   };
 
@@ -97,37 +111,17 @@ const TutorialScreen: React.FC<BaseScreenProps> = ({ onNavigate }) => {
     <div id="tutorial-screen" className="screen active">
       <button className="back-button" onClick={() => onNavigate('main-screen')}>← Volver</button>
       <div className="screen-content">
-        <h2 className="game-title">Tutorial Interactivo</h2>
-        
-        {/* Progreso general */}
-        <div className="tutorial-progress-section">
-          <h3 className="instruction-title">📊 Tu Progreso General</h3>
-          <div className="overall-progress-bar">
-            <div 
-              className="overall-progress-fill"
-              style={{ width: `${getTotalProgress()}%` }}
-            />
-            <span className="overall-progress-text">
-              {getTotalProgress()}% Completado
-            </span>
-          </div>
-          <p className="progress-description">
-            Has completado {progress.completedLessons.length} de {tutorialLessons.length} lecciones
+        {/* Título Principal */}
+        <div className="tutorial-header">
+          <h2 className="game-title">Bienvenido al Tutorial</h2>
+          <p className="tutorial-subtitle">
+            Aprende a jugar Truco Venezolano paso a paso con nuestro tutorial interactivo.
           </p>
         </div>
 
-        {/* Introducción */}
-        <div className="instruction-section">
-          <h3 className="instruction-title">🎯 Bienvenido al Tutorial</h3>
-          <p className="instruction-text">
-            Aprende a jugar Truco Venezolano paso a paso con nuestro tutorial interactivo. 
-            Cada lección incluye explicaciones detalladas, ejemplos prácticos y consejos de expertos.
-          </p>
-        </div>
-
-        {/* Lista de lecciones */}
+        {/* Sección de Lecciones */}
         <div className="lessons-section">
-          <h3 className="instruction-title">📚 Lecciones Disponibles</h3>
+          <h3 className="section-title">📚 Lecciones Disponibles</h3>
           <div className="lessons-grid">
             {tutorialLessons.map((lesson) => {
               const isCompleted = isLessonCompleted(lesson.id);
@@ -152,10 +146,7 @@ const TutorialScreen: React.FC<BaseScreenProps> = ({ onNavigate }) => {
                   <p className="lesson-card-description">{lesson.description}</p>
                   
                   <div className="lesson-card-meta">
-                    <span 
-                      className="lesson-card-difficulty"
-                      style={{ color: getDifficultyColor(lesson.difficulty) }}
-                    >
+                    <span className={`lesson-card-difficulty ${getDifficultyClass(lesson.difficulty)}`}>
                       {getDifficultyLabel(lesson.difficulty)}
                     </span>
                     <span className="lesson-card-time">⏱️ {lesson.estimatedTime} min</span>
@@ -201,18 +192,24 @@ const TutorialScreen: React.FC<BaseScreenProps> = ({ onNavigate }) => {
           <div className="tips-grid">
             <div className="tip-card">
               <span className="tip-icon">📖</span>
-              <h4>Lee con Atención</h4>
-              <p>Cada lección contiene información valiosa que te ayudará a mejorar tu juego.</p>
+              <div className="tip-card-content">
+                <h4>Lee con Atención</h4>
+                <p>Cada lección contiene información valiosa que te ayudará a mejorar tu juego.</p>
+              </div>
             </div>
             <div className="tip-card">
               <span className="tip-icon">🎯</span>
-              <h4>Practica lo Aprendido</h4>
-              <p>Después de cada lección, juega algunas partidas para aplicar lo que aprendiste.</p>
+              <div className="tip-card-content">
+                <h4>Practica lo Aprendido</h4>
+                <p>Después de cada lección, juega algunas partidas para aplicar lo que aprendiste.</p>
+              </div>
             </div>
             <div className="tip-card">
               <span className="tip-icon">🔄</span>
-              <h4>Repite las Lecciones</h4>
-              <p>No hay problema en revisar las lecciones las veces que necesites.</p>
+              <div className="tip-card-content">
+                <h4>Repite las Lecciones</h4>
+                <p>No hay problema en revisar las lecciones las veces que necesites.</p>
+              </div>
             </div>
           </div>
         </div>

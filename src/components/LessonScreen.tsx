@@ -84,10 +84,10 @@ const LessonScreen: React.FC<LessonScreenProps> = ({
   };
 
   return (
-    <div className="screen active">
+    <div className="lesson-screen screen active">
       <button className="back-button" onClick={onBack}>← Volver</button>
       
-      <div className="screen-content">
+      <div className="lesson-screen-content">
         {/* Header de la lección */}
         <div className="lesson-header">
           <div className="lesson-title-container">
@@ -123,28 +123,18 @@ const LessonScreen: React.FC<LessonScreenProps> = ({
           <div className="lesson-step">
             <h3 className="step-title">{currentStep.title}</h3>
             
-            <div className="step-content text-content">
-              <div dangerouslySetInnerHTML={{ __html: currentStep.content }} />
+            <div className="step-content-scrollable">
+              <div className="step-content text-content">
+                <div dangerouslySetInnerHTML={{ __html: currentStep.content }} />
+              </div>
+
+              {/* Elemento interactivo si existe */}
+              {currentStep.interactiveElement && (
+                <div className="step-interactive">
+                  {currentStep.interactiveElement}
+                </div>
+              )}
             </div>
-
-            {/* Elemento interactivo si existe */}
-            {currentStep.interactiveElement && (
-              <div className="step-interactive">
-                {currentStep.interactiveElement}
-              </div>
-            )}
-
-            {/* Tips adicionales */}
-            {currentStep.tips && currentStep.tips.length > 0 && (
-              <div className="step-tips">
-                <h4 className="tips-title">💡 Consejos:</h4>
-                <ul className="tips-list">
-                  {currentStep.tips.map((tip, index) => (
-                    <li key={index} className="tip-item">{tip}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
           </div>
         </div>
 

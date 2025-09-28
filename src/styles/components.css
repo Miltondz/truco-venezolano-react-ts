@@ -1,4 +1,229 @@
 /* ========================================
+   VIDEO BACKGROUND STYLES - Para WelcomeScreen y MainScreen
+   ======================================== */
+
+/* Video background container */
+.video-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: -1;
+}
+
+/* Video element styling */
+.background-video,
+.cover-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -1;
+}
+
+/* Fallback image styling */
+.background-image,
+.cover-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -1;
+}
+
+/* Video overlay eliminado - sin difuminado */
+.video-overlay {
+  display: none;
+}
+
+/* Welcome Screen specific styles */
+.welcome-screen {
+  position: relative;
+  overflow: hidden;
+  z-index: 1000;
+}
+
+.welcome-content {
+  position: relative;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  height: 100%;
+  padding: 0;
+  text-align: center;
+  pointer-events: none;
+}
+
+/* Botón posicionado en la parte inferior */
+.welcome-actions-bottom {
+  position: absolute;
+  bottom: 10px;
+  left: calc(50% - 25px);
+  transform: translateX(-50%);
+  z-index: 10001;
+  pointer-events: auto;
+}
+
+.welcome-enter-btn {
+  font-size: clamp(1rem, 3vw, 1.5rem);
+  padding: var(--spacing-lg) var(--spacing-xl);
+  min-width: 200px;
+  background: linear-gradient(135deg, var(--btn1-bg) 0%, var(--btn1-bg-hover) 100%);
+  box-shadow: 
+    var(--glow-button1),
+    0 0 30px var(--btn1-icon),
+    var(--shadow-pixel);
+  animation: welcome-button-pulse 3s ease-in-out infinite;
+}
+
+.welcome-enter-btn:hover {
+  box-shadow: 
+    0 0 40px var(--btn1-icon),
+    0 0 80px var(--btn1-icon),
+    var(--shadow-pixel);
+  transform: translateY(-3px) scale(1.05);
+}
+
+@keyframes welcome-button-pulse {
+  0%, 100% {
+    box-shadow: 
+      var(--glow-button1),
+      0 0 20px var(--btn1-icon),
+      var(--shadow-pixel);
+  }
+  50% {
+    box-shadow: 
+      var(--glow-button1),
+      0 0 40px var(--btn1-icon),
+      var(--shadow-pixel);
+  }
+}
+
+.loading-indicator {
+  position: absolute;
+  bottom: var(--spacing-xl);
+  left: 50%;
+  transform: translateX(-50%);
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+  opacity: 0.8;
+}
+
+/* Main Screen with video background - sin difuminado */
+.main-screen .video-background {
+  z-index: -2;
+}
+
+.main-screen .screen-content {
+  position: relative;
+  z-index: 1;
+  background: transparent;
+  backdrop-filter: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  height: 100%;
+  padding: 0;
+}
+
+/* Botones del menú principal en dos filas en la parte inferior */
+.main-menu-buttons-bottom {
+  position: absolute;
+  bottom: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: grid;
+  grid-template-columns: repeat(3, 200px);
+  grid-template-rows: repeat(2, 24px);
+  gap: var(--spacing-sm);
+  justify-content: center;
+  z-index: 2;
+}
+
+/* BOTONES MENÚ PRINCIPAL - FORZAR TAMAÑO EXACTO */
+.main-menu-buttons-bottom button {
+  width: 200px !important;
+  min-width: 200px !important;
+  max-width: 200px !important;
+  height: 24px !important;
+  min-height: 24px !important;
+  max-height: 24px !important;
+  padding: 4px 8px !important;
+  font-size: var(--font-size-sm) !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  box-sizing: border-box !important;
+  flex: 0 0 200px !important;
+}
+
+/* Responsive video styles */
+@media (max-width: 768px) {
+  .welcome-enter-btn {
+    font-size: clamp(0.9rem, 4vw, 1.2rem);
+    padding: var(--spacing-md) var(--spacing-lg);
+    min-width: 150px;
+  }
+  
+  .welcome-actions-bottom {
+    bottom: 10px;
+  }
+  
+  .main-menu-buttons-bottom {
+    grid-template-columns: repeat(2, 180px);
+    grid-template-rows: repeat(3, 20px);
+    bottom: 20px;
+  }
+  
+  .main-menu-buttons-bottom button {
+    width: 180px !important;
+    min-width: 180px !important;
+    max-width: 180px !important;
+    height: 20px !important;
+    min-height: 20px !important;
+    flex: 0 0 180px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .welcome-enter-btn {
+    min-width: 120px;
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+  
+  .welcome-actions-bottom {
+    bottom: 10px;
+  }
+  
+  .main-menu-buttons-bottom {
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(6, 18px);
+    bottom: 15px;
+    gap: var(--spacing-xs);
+    max-width: 160px;
+    justify-self: center;
+  }
+  
+  .main-menu-buttons-bottom button {
+    width: 160px !important;
+    min-width: 160px !important;
+    max-width: 160px !important;
+    height: 18px !important;
+    min-height: 18px !important;
+    flex: 0 0 160px !important;
+  }
+}
+
+/* ========================================
    SCREEN STYLES - Main screen overlays
    ======================================== */
 .screen:not(.game-board) {
@@ -40,6 +265,23 @@
   opacity: 1;
   transform: scale(1);
   pointer-events: auto;
+}
+
+/* Excepción específica para WelcomeScreen con máxima especificidad */
+.welcome-screen.screen.active {
+  background: transparent !important;
+  border: none !important;
+  backdrop-filter: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  overflow: visible !important;
+}
+
+/* Permitir overflow visible para elementos dentro del welcome-screen */
+.welcome-screen.screen *, 
+.welcome-screen.screen .welcome-content,
+.welcome-screen.screen .welcome-actions-bottom {
+  overflow: visible !important;
 }
 
 .screen-content {
@@ -243,11 +485,11 @@
   transition: all var(--transition-fast);
 }
 
-/* Botón de regreso */
+/* Botón de regreso - posicionado dentro del canvas */
 .back-button {
   position: absolute;
-  top: var(--spacing-lg);
-  left: var(--spacing-lg);
+  top: 10px;
+  left: 10px;
   z-index: 1001;
   background: linear-gradient(135deg, var(--btn2-bg) 0%, var(--btn2-bg-hover) 100%);
   color: var(--btn2-text);
@@ -256,7 +498,8 @@
   font-weight: 500;
   padding: var(--button-padding-sm);
   box-shadow: var(--glow-button2), var(--shadow-pixel);
-  min-width: 100px;
+  min-width: 80px;
+  backdrop-filter: blur(10px);
 }
 
 .back-button:hover {
@@ -375,10 +618,10 @@
 .avatar-container.selected .avatar::after {
   content: '';
   position: absolute;
-  top: -3px;
-  left: -3px;
-  right: -3px;
-  bottom: -3px;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   border: 2px solid var(--btn1-icon);
   border-radius: var(--border-radius-sm);
   box-shadow: 
@@ -431,7 +674,7 @@
 .avatar-tooltip::before {
   content: '';
   position: absolute;
-  top: -6px;
+  top: 0;
   left: 50%;
   transform: translateX(-50%);
   width: 0;
@@ -623,6 +866,23 @@
   max-width: 65ch; /* Longitud de línea óptima para lectura */
 }
 
+/* Correcciones específicas para text-content en lecciones */
+.lesson-screen .lesson-step .step-content-scrollable .text-content {
+  overflow: visible !important;
+  height: auto !important;
+  max-height: none !important;
+  width: 100% !important;
+  box-sizing: border-box;
+}
+
+.lesson-screen .lesson-step .step-content-scrollable .text-content > div {
+  overflow: visible !important;
+  height: auto !important;
+  max-height: none !important;
+  width: 100% !important;
+  box-sizing: border-box;
+}
+
 /* Grid layouts responsivos */
 .grid-container {
   display: grid;
@@ -691,38 +951,65 @@
    ESTILOS DEL TUTORIAL INTERACTIVO
    ======================================== */
 
-/* Header de lección */
+/* Header de lección - COMPACTO PARA CANVAS 720px */
 .lesson-header {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--spacing-md);
-  margin-bottom: var(--spacing-xl);
-  padding: var(--spacing-lg);
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-sm);
+  padding: var(--spacing-sm);
   background: linear-gradient(135deg, 
     rgba(26, 17, 67, 0.3) 0%, 
     rgba(42, 30, 92, 0.3) 100%);
   border-radius: var(--border-radius);
   border: 1px solid var(--border-teal);
+  /* ALTURA FIJA COMPACTA */
+  height: 140px;
+  min-height: 140px;
+  max-height: 140px;
+  flex-shrink: 0;
+  overflow: hidden;
 }
 
 .lesson-title-container {
   display: flex;
   align-items: center;
-  gap: var(--spacing-md);
+  gap: var(--spacing-sm);
+  height: 40px;
+  max-height: 40px;
+  overflow: hidden;
 }
 
 .lesson-icon {
-  font-size: 2rem;
-  filter: drop-shadow(0 0 10px currentColor);
+  font-size: 1.5rem;
+  filter: drop-shadow(0 0 5px currentColor);
+  flex-shrink: 0;
+}
+
+/* Título compacto dentro del header de lección */
+.lesson-header .game-title {
+  font-size: var(--font-size-md) !important;
+  margin-bottom: 0 !important;
+  height: 30px;
+  max-height: 30px;
+  line-height: 1.2 !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  letter-spacing: 0.05em !important;
+  flex-shrink: 0;
 }
 
 .lesson-meta {
   display: flex;
-  gap: var(--spacing-lg);
+  gap: var(--spacing-sm);
   align-items: center;
   font-family: var(--font-modern);
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-xs);
+  height: 20px;
+  max-height: 20px;
+  overflow: hidden;
 }
 
 .lesson-difficulty {
@@ -734,16 +1021,17 @@
   color: var(--text-secondary);
 }
 
-/* Barra de progreso de lección */
+/* Barra de progreso de lección - COMPACTA */
 .lesson-progress-bar {
   width: 100%;
-  max-width: 400px;
-  height: 24px;
+  max-width: 300px;
+  height: 20px;
   background: var(--primary-bg);
-  border: 2px solid var(--border-electric);
-  border-radius: var(--border-radius);
+  border: 1px solid var(--border-electric);
+  border-radius: var(--border-radius-sm);
   position: relative;
   overflow: hidden;
+  flex-shrink: 0;
 }
 
 .lesson-progress-fill {
@@ -769,36 +1057,278 @@
   z-index: 2;
 }
 
-/* Contenedor de pasos */
-.lesson-step-container {
-  flex: 1;
+/* LESSON SCREEN - RESPETANDO LÍMITES DEL CANVAS CON SCROLL FUNCIONAL */
+.lesson-screen {
+  width: 100%;
+  /* ALTURA LIMITADA AL CANVAS PARA MANTENER BOTONES VISIBLES */
+  height: 100% !important;
+  max-height: 100% !important;
+  min-height: 100%;
+  /* OVERFLOW CONTROLADO: Scroll dentro del canvas */
+  overflow-y: hidden !important;
+  overflow-x: hidden !important;
+  background: var(--primary-bg);
+  /* POSICIONAMIENTO ABSOLUTO DENTRO DEL CANVAS */
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0; /* RESTAURAR: Mantener dentro del canvas */
+  /* LAYOUT FLEX PARA ORGANIZACIÓN INTERNA */
   display: flex;
   flex-direction: column;
-  margin-bottom: var(--spacing-xl);
+  justify-content: flex-start;
+  align-items: stretch;
+  padding: 0;
+  box-sizing: border-box;
 }
 
+.lesson-screen-content {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: var(--spacing-sm);
+  /* ALTURA CONTROLADA PARA DISTRIBUCIÓN CORRECTA */
+  height: 100% !important;
+  max-height: 100% !important;
+  min-height: 100%;
+  /* FLEX PARA DISTRIBUCIÓN VERTICAL */
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  box-sizing: border-box;
+  /* OVERFLOW OCULTO - El scroll estará en el contenido interno */
+  overflow-y: hidden !important;
+  overflow-x: hidden !important;
+}
+
+/* CONTENEDOR DE PASOS - OCUPAR ESPACIO RESTANTE DESPUÉS DE HEADER Y CONTROLES */
+.lesson-step-container {
+  flex: 1 1 auto; /* CRECER PARA OCUPAR ESPACIO DISPONIBLE */
+  display: flex;
+  flex-direction: column;
+  margin-bottom: var(--spacing-sm);
+  /* OVERFLOW CONTROLADO - SIN scroll en este nivel */
+  overflow-y: hidden;
+  overflow-x: hidden;
+  /* ALTURA MÍNIMA PARA FORZAR DISTRIBUCIÓN */
+  min-height: 300px; /* Mínimo para garantizar espacio */
+  max-height: 100%;
+}
+
+/* SCROLLBAR PERSONALIZADO PARA CONTENEDOR DE PASOS */
+.lesson-step-container::-webkit-scrollbar {
+  width: 10px;
+}
+
+.lesson-step-container::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: var(--border-radius-sm);
+}
+
+.lesson-step-container::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, var(--border-teal), var(--border-electric));
+  border-radius: var(--border-radius-sm);
+  box-shadow: 0 0 5px rgba(0, 255, 255, 0.3);
+}
+
+.lesson-step-container::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, var(--border-electric), var(--btn1-bg));
+  box-shadow: 0 0 8px rgba(0, 255, 255, 0.5);
+}
+
+/* Scrollbar para Firefox */
+.lesson-step-container {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-teal) rgba(0, 0, 0, 0.2);
+}
+
+/* LESSON-STEP - CONTENEDOR PRINCIPAL CON DISTRIBUCIÓN INTERNA */
 .lesson-step {
   background: linear-gradient(135deg, 
     rgba(15, 10, 48, 0.6) 0%, 
     rgba(26, 17, 67, 0.6) 100%);
   border: 2px solid var(--border-teal);
   border-radius: var(--border-radius);
-  padding: var(--spacing-xl);
+  padding: var(--spacing-sm);
   box-shadow: var(--glow-secondary), var(--shadow-soft);
+  /* FLEX CONTAINER PARA DISTRIBUCIÓN INTERNA */
+  display: flex;
+  flex-direction: column;
+  /* OCUPAR TODO EL ESPACIO DISPONIBLE */
+  flex: 1 1 auto;
+  min-height: 280px; /* Mínimo para contenido */
+  /* OVERFLOW CONTROLADO - SIN scroll en este nivel */
+  overflow-y: hidden;
+  overflow-x: hidden;
 }
 
 .step-title {
   font-family: var(--font-pixel);
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-md); /* Reducir tamaño para que quepa */
   color: var(--text-accent);
-  margin-bottom: var(--spacing-lg);
+  margin-bottom: var(--spacing-sm);
   text-align: center;
   text-shadow: var(--glow-text);
   text-transform: uppercase;
+  /* ALTURA FIJA COMPACTA */
+  height: 40px;
+  min-height: 40px;
+  max-height: 40px;
+  line-height: 1.2;
+  /* MANEJO DE TEXTO LARGO MEJORADO */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  /* FLEXBOX PARA CENTRADO */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 0 var(--spacing-sm);
+}
+
+/* CONTENEDOR SCROLLABLE - USAR ESPACIO RESTANTE CON SCROLL FUNCIONAL */
+.lesson-screen .lesson-step .step-content-scrollable {
+  /* SCROLL FUNCIONAL - SOBRESCRIBIR REGLAS GLOBALES CON ULTRA ESPECIFICIDAD */
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  margin-bottom: var(--spacing-sm);
+  padding: var(--spacing-sm);
+  padding-right: var(--spacing-md); /* Espacio para scrollbar */
+  scroll-behavior: smooth;
+  /* OCUPAR ESPACIO RESTANTE DESPUÉS DEL TÍTULO */
+  flex: 1 1 auto; /* CRECER PARA USAR ESPACIO DISPONIBLE */
+  min-height: 220px; /* Mínimo para contenido visible */
+  /* VISUAL MEJORADO */
+  border: 1px solid rgba(0, 255, 255, 0.2);
+  border-radius: var(--border-radius-sm);
+  background: rgba(0, 0, 0, 0.2);
+  /* ASEGURAR FUNCIONALIDAD SCROLL */
+  position: relative;
+}
+
+/* REGLAS ULTRA ESPECÍFICAS PARA ELIMINAR TODAS LAS LIMITACIONES DE ALTURA */
+.lesson-screen.screen.active .lesson-step-container .lesson-step .step-content-scrollable,
+.main-container .lesson-screen .lesson-step-container .lesson-step .step-content-scrollable,
+.lesson-screen .lesson-step-container,
+.lesson-screen .lesson-step-container .lesson-step,
+.lesson-screen .lesson-step-container .lesson-step .step-content-scrollable {
+  /* ELIMINAR TODAS LAS LIMITACIONES DE ALTURA */
+  height: auto !important;
+  max-height: none !important;
+  min-height: auto !important;
+  /* PERMITIR SCROLL VERTICAL */
+  overflow: visible !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  /* FLEXBOX PARA PERMITIR CRECIMIENTO */
+  flex: 1 1 auto !important;
+}
+
+/* FORZAR SCROLLBAR VISIBLE SIEMPRE - ESPECIALMENTE PARA CONTENIDO EXTENSO */
+.step-content-scrollable {
+  scrollbar-width: auto !important;
+  scrollbar-color: var(--border-teal) rgba(0, 0, 0, 0.3) !important;
+}
+
+.step-content-scrollable::-webkit-scrollbar {
+  width: 12px !important;
+  display: block !important;
+  visibility: visible !important;
+}
+
+.step-content-scrollable::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.3) !important;
+  border-radius: 6px !important;
+  display: block !important;
+}
+
+.step-content-scrollable::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #00BFFF, #00FFFF) !important;
+  border-radius: 6px !important;
+  border: 1px solid rgba(0, 255, 255, 0.5) !important;
+  min-height: 30px !important;
+}
+
+.step-content-scrollable::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #00FFFF, #FFD700) !important;
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.8) !important;
+}
+
+/* FALLBACK CON MENOR ESPECIFICIDAD PERO AÚN FUNCIONAL */
+.step-content-scrollable {
+  flex: 1;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  margin-bottom: var(--spacing-sm);
+  padding: var(--spacing-sm);
+  padding-right: var(--spacing-md);
+  scroll-behavior: smooth;
+  min-height: 200px;
+  /* max-height: 400px; - ELIMINADO PARA PERMITIR TODO EL CONTENIDO */
+  border: 1px solid rgba(0, 255, 255, 0.2);
+  border-radius: var(--border-radius-sm);
+  background: rgba(0, 0, 0, 0.2);
+  position: relative;
+}
+
+/* ESTILOS DE SCROLLBAR CON MÁXIMA ESPECIFICIDAD */
+.lesson-screen .lesson-step .step-content-scrollable::-webkit-scrollbar {
+  width: 8px !important;
+  display: block !important;
+}
+
+.lesson-screen .lesson-step .step-content-scrollable::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2) !important;
+  border-radius: var(--border-radius-sm) !important;
+}
+
+.lesson-screen .lesson-step .step-content-scrollable::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, var(--border-teal), var(--border-electric)) !important;
+  border-radius: var(--border-radius-sm) !important;
+  box-shadow: 0 0 5px rgba(0, 255, 255, 0.3) !important;
+}
+
+.lesson-screen .lesson-step .step-content-scrollable::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, var(--border-electric), var(--btn1-bg)) !important;
+  box-shadow: 0 0 8px rgba(0, 255, 255, 0.5) !important;
+}
+
+/* SCROLLBAR FIREFOX CON ALTA ESPECIFICIDAD */
+.lesson-screen .lesson-step .step-content-scrollable {
+  scrollbar-width: thin !important;
+  scrollbar-color: var(--border-teal) rgba(0, 0, 0, 0.2) !important;
+}
+
+/* ESTILOS DE SCROLLBAR FALLBACK */
+.step-content-scrollable::-webkit-scrollbar {
+  width: 8px !important;
+}
+
+.step-content-scrollable::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2) !important;
+  border-radius: var(--border-radius-sm) !important;
+}
+
+.step-content-scrollable::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, var(--border-teal), var(--border-electric)) !important;
+  border-radius: var(--border-radius-sm) !important;
+  box-shadow: 0 0 5px rgba(0, 255, 255, 0.3) !important;
+}
+
+.step-content-scrollable::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, var(--border-electric), var(--btn1-bg)) !important;
+  box-shadow: 0 0 8px rgba(0, 255, 255, 0.5) !important;
+}
+
+/* Scrollbar para Firefox - Fallback */
+.step-content-scrollable {
+  scrollbar-width: thin !important;
+  scrollbar-color: var(--border-teal) rgba(0, 0, 0, 0.2) !important;
 }
 
 .step-content {
-  margin-bottom: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
 }
 
 .step-content h4 {
@@ -826,9 +1356,40 @@
   margin-right: var(--spacing-sm);
 }
 
+/* Correcciones de contenedor de contenido para evitar cortes */
+.lesson-screen .lesson-step .step-content-scrollable .step-content {
+  overflow: visible !important;
+  height: auto !important;
+  max-height: none !important;
+  width: 100% !important;
+  box-sizing: border-box;
+  margin-bottom: var(--spacing-md);
+}
+
+.lesson-screen .lesson-step .step-content-scrollable .step-content > div {
+  overflow: visible !important;
+  height: auto !important;
+  max-height: none !important;
+  width: 100% !important;
+  box-sizing: border-box;
+}
+
+/* Regla ultra específica para TODOS los elementos dentro del contenido scrollable */
+.lesson-screen .lesson-step .step-content-scrollable * {
+  max-height: none !important;
+  overflow: visible !important;
+  box-sizing: border-box;
+}
+
+/* Excepto el contenedor scrollable mismo que debe mantener su overflow */
+.lesson-screen .lesson-step .step-content-scrollable {
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+}
+
 /* Elementos interactivos */
 .step-interactive {
-  margin: var(--spacing-lg) 0;
+  margin: var(--spacing-md) 0;
   padding: var(--spacing-lg);
   background: rgba(0, 255, 255, 0.05);
   border: 1px solid var(--border-electric);
@@ -846,21 +1407,67 @@
 }
 
 .tutorial-card {
+  /* ASPECTO DE CARTA REAL CON DIMENSIONES CORRECTAS */
   background: var(--card-bg);
-  color: var(--black-suit);
+  color: #000000; /* Negro sólido para máxima legibilidad */
   border: 2px solid var(--card-border);
   border-radius: var(--border-radius-sm);
-  padding: var(--spacing-sm) var(--spacing-md);
+  padding: var(--spacing-xs) var(--spacing-sm);
   font-family: var(--font-modern);
-  font-weight: 600;
+  font-weight: 700; /* Más grueso para mejor legibilidad */
   font-size: var(--font-size-sm);
+  /* DIMENSIONES DE CARTA REAL */
+  width: var(--card-width);
+  height: var(--card-height);
+  min-width: var(--card-width);
+  min-height: var(--card-height);
+  max-width: var(--card-width);
+  max-height: var(--card-height);
+  /* LAYOUT CENTRADO */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  /* EFECTOS VISUALES */
   box-shadow: var(--shadow-pixel), var(--glow-secondary);
   transition: all var(--transition-fast);
+  /* ASEGURAR CONTRASTE */
+  text-shadow: none; /* Eliminar sombra de texto para mejor legibilidad */
+  box-sizing: border-box;
+  flex-shrink: 0;
 }
 
 .tutorial-card:hover {
-  transform: translateY(-2px) scale(1.05);
+  transform: translateY(-3px) scale(1.08);
   box-shadow: var(--shadow-strong), var(--glow-primary);
+  /* MANTENER TEXTO NEGRO EN HOVER */
+  color: #000000;
+  border-color: var(--border-electric);
+}
+
+/* TUTORIAL CARDS RESPONSIVE */
+@media (max-width: 768px) {
+  .tutorial-card {
+    width: var(--card-width-mobile);
+    height: var(--card-height-mobile);
+    min-width: var(--card-width-mobile);
+    min-height: var(--card-height-mobile);
+    max-width: var(--card-width-mobile);
+    max-height: var(--card-height-mobile);
+    font-size: var(--font-size-xs);
+    font-weight: 800; /* Aún más grueso en móviles */
+  }
+}
+
+@media (max-width: 480px) {
+  .tutorial-cards-display {
+    gap: var(--spacing-xs); /* Menor separación en móviles */
+  }
+  
+  .tutorial-card {
+    font-size: 10px; /* Tamaño mínimo legible */
+    padding: 2px 4px;
+  }
 }
 
 /* Ejemplos de puntos */
@@ -904,7 +1511,7 @@
   border: 1px solid var(--border-teal);
   border-radius: var(--border-radius);
   padding: var(--spacing-lg);
-  margin-top: var(--spacing-lg);
+  margin-top: var(--spacing-md);
 }
 
 .tips-title {
@@ -931,18 +1538,24 @@
   margin-right: var(--spacing-sm);
 }
 
-/* Controles de lección */
+/* CONTROLES DE LECCIÓN - COMPACTOS PARA CANVAS */
 .lesson-controls {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--spacing-lg);
+  padding: var(--spacing-sm);
   background: linear-gradient(135deg, 
     rgba(15, 10, 48, 0.8) 0%, 
     rgba(26, 17, 67, 0.8) 100%);
   border-radius: var(--border-radius);
   border: 1px solid var(--border-electric);
-  gap: var(--spacing-md);
+  gap: var(--spacing-sm);
+  /* ALTURA FIJA COMPACTA */
+  height: 60px;
+  min-height: 60px;
+  max-height: 60px;
+  flex-shrink: 0;
+  margin-bottom: 0;
 }
 
 .step-action {
@@ -1071,187 +1684,405 @@
 
 /* ESTILOS PARA LA PANTALLA PRINCIPAL DEL TUTORIAL */
 
-/* Sección de progreso general */
-.tutorial-progress-section {
-  background: linear-gradient(135deg, 
-    rgba(26, 17, 67, 0.4) 0%, 
-    rgba(42, 30, 92, 0.4) 100%);
-  border: 2px solid var(--border-electric);
-  border-radius: var(--border-radius);
-  padding: var(--spacing-xl);
-  margin-bottom: var(--spacing-xl);
-  text-align: center;
-  box-shadow: var(--glow-secondary);
-}
-
-.overall-progress-bar {
+/* CONTENEDOR TUTORIAL - POSICIONAMIENTO CORREGIDO PARA MARGEN SUPERIOR */
+#tutorial-screen {
   width: 100%;
-  height: 30px;
+  height: calc(100vh - 10px); /* Reducir altura para compensar margen superior */
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
   background: var(--primary-bg);
-  border: 3px solid var(--border-electric);
-  border-radius: var(--border-radius);
+  /* SOBRESCRIBIR: position absolute heredado de .screen con margen superior */
+  position: absolute !important;
+  top: 10px !important; /* MARGEN SUPERIOR: 10px relativo a la ventana */
+  left: 0 !important;
+  /* SOBRESCRIBIR: flex centering que interfiere con el espaciado superior */
+  justify-content: flex-start !important; /* No centrar verticalmente */
+  align-items: stretch !important; /* Permitir que el contenido use todo el ancho */
+  scroll-behavior: smooth;
+  box-sizing: border-box;
+}
+
+#tutorial-screen::-webkit-scrollbar {
+  width: 12px !important;
+  display: block !important;
+}
+
+#tutorial-screen::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.3) !important;
+  border-radius: 6px !important;
+}
+
+#tutorial-screen::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, var(--border-teal), var(--border-electric)) !important;
+  border-radius: 6px !important;
+  box-shadow: 0 0 8px rgba(0, 255, 255, 0.4) !important;
+}
+
+/* Scrollbar personalizado para tutorial principal */
+#tutorial-screen::-webkit-scrollbar {
+  width: 10px;
+}
+
+#tutorial-screen::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: var(--border-radius-sm);
+}
+
+#tutorial-screen::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, var(--border-teal), var(--border-electric));
+  border-radius: var(--border-radius-sm);
+  box-shadow: 0 0 8px rgba(0, 255, 255, 0.4);
+}
+
+#tutorial-screen::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, var(--border-electric), var(--btn1-bg));
+  box-shadow: 0 0 12px rgba(0, 255, 255, 0.6);
+}
+
+/* Scrollbar para Firefox */
+#tutorial-screen {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-teal) rgba(0, 0, 0, 0.3);
+}
+
+/* LAYOUT TUTORIAL - SIN LIMITACIONES DE ALTURA PARA PERMITIR CONTENIDO COMPLETO */
+#tutorial-screen .screen-content {
   position: relative;
-  overflow: hidden;
-  margin: var(--spacing-md) 0;
+  width: 100%;
+  /* ELIMINAR LIMITACIONES: Permitir que el contenido determine la altura */
+  min-height: auto !important;
+  /* SOBRESCRIBIR: max-height heredado de .screen-content base (calc(100% - 2rem)) */
+  max-height: none !important;
+  max-width: 100vw;
+  overflow: visible !important;
+  /* PADDING MÍNIMO: Solo espacio para back-button + margen del header */
+  padding: 20px var(--spacing-lg) var(--spacing-xl) var(--spacing-lg);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  margin: 0;
+  /* ASEGURAR: Que no haya restricciones de altura heredadas */
+  height: auto !important;
 }
 
-.overall-progress-fill {
-  height: 100%;
-  background: linear-gradient(90deg, 
-    var(--success-color) 0%, 
-    var(--warning-color) 50%, 
-    var(--btn1-bg) 100%);
-  border-radius: calc(var(--border-radius) - 3px);
-  transition: width var(--transition-slow);
-  box-shadow: var(--glow-primary);
+/* HEADER TUTORIAL - POSICIONAMIENTO SIMPLE CON ESPACIADO GARANTIZADO */
+.tutorial-header {
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+  /* MARGEN SIMPLE: El contenedor principal ya tiene 10px + padding interno 60px */
+  /* = 70px total de espacio superior garantizado */
+  margin: 0 auto;
+  background: linear-gradient(135deg, 
+    rgba(40, 40, 40, 0.85) 0%, 
+    rgba(60, 60, 60, 0.85) 100%);
+  border: 2px solid var(--border-electric);
+  border-radius: 12px;
+  padding: var(--spacing-md);
+  text-align: center;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(12px);
+  visibility: visible;
+  opacity: 1;
+  z-index: 1;
 }
 
-.overall-progress-text {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-family: var(--font-pixel);
+.tutorial-subtitle {
   font-size: var(--font-size-md);
-  font-weight: normal;
-  color: var(--text-primary);
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
-  z-index: 2;
-}
-
-.progress-description {
   color: var(--text-secondary);
-  font-size: var(--font-size-sm);
-  margin-top: var(--spacing-sm);
+  max-width: 100%;
+  margin: var(--spacing-xs) auto 0;
+  line-height: 1.5;
+  display: block;
+  opacity: 1;
 }
 
-/* Grid de lecciones */
+/* SECCIÓN DE LECCIONES - CONTENEDOR PRINCIPAL */
 .lessons-section {
-  margin: var(--spacing-xl) 0;
+  position: relative;
+  width: 100%;
+  padding: 0;
+  overflow: visible;
+  /* MIN-HEIGHT AUTO: Permite que el contenedor crezca según el contenido */
+  min-height: auto;
 }
 
+/* TÍTULO DE SECCIÓN - ESTILO CYBERPUNK */
+.section-title {
+  font-family: var(--font-pixel);
+  font-size: var(--font-size-lg);
+  color: var(--text-accent);
+  text-shadow: var(--glow-text);
+  text-align: center;
+  margin: var(--spacing-lg) 0;
+  text-transform: uppercase;
+}
+
+/* GRID LECCIONES - 2 FILAS × 3 COLUMNAS CON ALTURA CALCULADA */
 .lessons-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: var(--spacing-lg);
-  margin-top: var(--spacing-lg);
+  /* COLUMNAS: Máximo 3 columnas con mínimo 280px para caber 3 en pantalla */
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  /* FILAS: Máximo 2 filas para el layout deseado - Altura reducida 20% */
+  grid-auto-rows: minmax(256px, auto);
+  
+  /* VARIABLES PARA CÁLCULO AUTOMÁTICO DE ALTURA DEL CONTENEDOR */
+  /* PARA AJUSTAR EN EL FUTURO: */
+  /* 1. Cambiar --lesson-card-height para ajustar altura de tarjetas */
+  /* 2. El contenedor se recalculará automáticamente */
+  
+  --lesson-card-height: 256px;           /* Altura reducida 20%: 320px → 256px */
+  --gap-between-cards: var(--spacing-md); /* Espacio entre tarjetas (reducido para caber 3) */
+  --margin-top: var(--spacing-sm);        /* Margen superior del grid */
+  --margin-bottom: var(--spacing-lg);     /* Margen inferior del grid */
+  
+  /* ESPACIADO: Usar variables definidas */
+  gap: var(--gap-between-cards);
+  width: 100%;
+  max-width: 100%;
+  margin-top: var(--margin-top);
+  padding-bottom: var(--margin-bottom);
+  
+  box-sizing: border-box;
+  justify-items: stretch; /* Estirar para llenar el espacio disponible */
+  align-items: start;
+  
+  /* ALTURA CALCULADA: (2 filas × altura tarjeta) + gap entre filas + márgenes */
+  min-height: calc(
+    (2 * var(--lesson-card-height)) +      /* Dos filas de tarjetas */
+    var(--gap-between-cards) +             /* Gap entre las dos filas */
+    var(--margin-top) +                    /* Margen superior */
+    var(--margin-bottom)                   /* Margen inferior */
+  ) !important;
+  
+  /* FORZAR ALTURA: Asegurar que el contenedor respete la altura calculada */
+  height: calc(
+    (2 * var(--lesson-card-height)) +      
+    var(--gap-between-cards) + 
+    var(--margin-top) + 
+    var(--margin-bottom)
+  ) !important;
 }
 
 .lesson-card {
-  background: linear-gradient(135deg, 
-    rgba(15, 10, 48, 0.8) 0%, 
-    rgba(26, 17, 67, 0.8) 100%);
-  border: 2px solid var(--border-teal);
-  border-radius: var(--border-radius);
-  padding: var(--spacing-lg);
-  transition: all var(--transition-normal);
-  box-shadow: var(--shadow-soft);
-  display: flex;
-  flex-direction: column;
+  height: 180px;
+}
+
+.lesson-card-title {
+  font-size: 16px;
+}
+
+.lesson-card-description {
+  font-size: 13px;
+}
+
+.lesson-start-btn {
+  height: 32px;
+  font-size: 12px;
+}
+
+.tutorial-tips {
+  position: relative;
+  width: 100%;
+  max-width: 1440px;
+  margin: var(--spacing-lg) auto 0;
+}
+
+.tips-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
   gap: var(--spacing-md);
+  margin-top: var(--spacing-md);
+}
+
+/* Eliminar definición genérica que conflictuá - usar solo la específica del tutorial */
+
+/* LESSON CARDS - OPTIMIZADAS PARA GRID 3×2 SIN LÍMITES DE CONTENEDOR INTERNO */
+#tutorial-screen .lesson-card {
+  background: linear-gradient(135deg, 
+    rgba(15, 10, 48, 0.95) 0%, 
+    rgba(26, 17, 67, 0.95) 100%) !important;
+  border: 1px solid var(--border-teal) !important;
+  border-radius: var(--border-radius-sm) !important;
+  /* PADDING OPTIMIZADO: Balance entre contenido y espacio */
+  padding: var(--spacing-sm) !important;
+  transition: all var(--transition-normal);
+  box-shadow: 
+    0 2px 4px rgba(0, 0, 0, 0.4),
+    0 0 6px rgba(0, 255, 255, 0.15);
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+  /* ANCHO: Sin límite máximo para permitir 3 columnas */
+  width: 100% !important;
+  /* ELIMINAR: max-width que limita las 3 columnas */
+  /* max-width: 380px !important; */
+  /* ALTURA FIJA: Exactamente 256px (reducida 20%) para cálculos precisos */
+  height: 256px !important;
+  min-height: 256px !important;
+  max-height: 256px !important;
+  backdrop-filter: blur(4px);
+  box-sizing: border-box !important;
+  position: relative !important;
+  /* ELIMINAR LIMITACIONES DE OVERFLOW */
+  overflow: visible !important;
 }
 
 .lesson-card:hover {
-  transform: translateY(-4px) scale(1.02);
   border-color: var(--border-electric);
   box-shadow: 
-    var(--glow-secondary),
-    var(--shadow-strong);
+    0 6px 12px rgba(0, 0, 0, 0.4),
+    0 0 20px rgba(0, 255, 255, 0.3),
+    var(--glow-secondary);
 }
 
 .lesson-card-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+  min-height: 30px;
+  margin-bottom: var(--spacing-sm);
 }
 
 .lesson-card-icon {
-  font-size: 2.5rem;
-  filter: drop-shadow(0 0 10px currentColor);
+  font-size: 18px;
+  filter: drop-shadow(0 0 2px currentColor);
+  margin: 0;
+  width: 20px;
+  height: 20px;
 }
 
 .lesson-card-status {
   display: flex;
   align-items: center;
+  height: 20px;
 }
 
 .lesson-completed-badge {
   background: var(--success-color);
   color: var(--primary-bg);
-  font-size: var(--font-size-xs);
+  font-size: 8px;
   font-weight: 600;
-  padding: var(--spacing-xs) var(--spacing-sm);
-  border-radius: var(--border-radius-sm);
+  padding: 2px 6px;
+  border-radius: 4px;
   box-shadow: var(--glow-text);
+  height: 16px;
+  display: flex;
+  align-items: center;
 }
 
 .lesson-progress-badge {
   background: var(--warning-color);
   color: var(--primary-bg);
-  font-size: var(--font-size-xs);
+  font-size: 8px;
   font-weight: 600;
-  padding: var(--spacing-xs) var(--spacing-sm);
-  border-radius: var(--border-radius-sm);
+  padding: 2px 6px;
+  border-radius: 4px;
   box-shadow: var(--glow-text);
+  height: 16px;
+  display: flex;
+  align-items: center;
 }
 
 .lesson-new-badge {
   background: var(--btn2-bg);
   color: var(--text-primary);
-  font-size: var(--font-size-xs);
+  font-size: 8px;
   font-weight: 600;
-  padding: var(--spacing-xs) var(--spacing-sm);
-  border-radius: var(--border-radius-sm);
+  padding: 2px 6px;
+  border-radius: 4px;
   box-shadow: var(--glow-text);
+  height: 16px;
+  display: flex;
+  align-items: center;
 }
 
+/* TÍTULO DE LESSON CARD - FUENTE AUMENTADA PARA MEJOR LEGIBILIDAD */
 .lesson-card-title {
   font-family: var(--font-pixel);
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-md); /* Aumentado de sm a md */
   color: var(--text-accent);
-  text-shadow: var(--glow-text);
-  margin: 0;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+  /* MARGEN REDUCIDO: Eliminar espacios innecesarios */
+  margin: var(--spacing-xs) 0;
   line-height: 1.3;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
 }
 
+/* DESCRIPCIÓN DE LESSON CARD - FUENTE AUMENTADA PARA MEJOR LEGIBILIDAD */
 .lesson-card-description {
   color: var(--text-secondary);
-  font-size: var(--font-size-sm);
-  line-height: 1.5;
-  margin: 0;
-  flex-grow: 1;
+  font-size: var(--font-size-sm); /* Aumentado de xs a sm */
+  line-height: 1.4;
+  /* MARGEN REDUCIDO: Eliminar espacios innecesarios */
+  margin: var(--spacing-xs) 0;
+  text-align: center;
+  padding: 0;
+  overflow: visible;
 }
 
+/* METADATOS - ALTURA AUMENTADA PARA EVITAR CORTE DE TEXTO */
 .lesson-card-meta {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 120px 80px;
   align-items: center;
-  gap: var(--spacing-sm);
-  font-size: var(--font-size-xs);
+  gap: 8px;
+  font-size: 9px; /* Aumentado de 7px a 9px para mejor legibilidad */
+  height: 24px;   /* Aumentado de 14px a 24px para evitar corte */
+  margin: 0;
+  padding: 6px 8px; /* Aumentado padding para mejor espaciado */
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
 }
 
 .lesson-card-difficulty {
   font-weight: 600;
   text-shadow: var(--glow-text);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.lesson-card-difficulty.difficulty-beginner {
+  color: var(--success-color);
+}
+
+.lesson-card-difficulty.difficulty-intermediate {
+  color: var(--warning-color);
+}
+
+.lesson-card-difficulty.difficulty-advanced {
+  color: var(--danger-color);
 }
 
 .lesson-card-time {
   color: var(--text-muted);
+  text-align: right;
+  white-space: nowrap;
 }
 
 .lesson-card-progress {
   display: flex;
-  flex-direction: column;
-  gap: var(--spacing-xs);
+  align-items: center;
+  justify-content: space-between;
+  height: 12px;
+  margin: 4px 0;
+  gap: 6px;
 }
 
 .lesson-mini-progress-bar {
-  width: 100%;
-  height: 8px;
+  width: 140px;
+  height: 4px;
   background: var(--accent-bg);
-  border-radius: var(--border-radius-sm);
+  border-radius: 2px;
   overflow: hidden;
   border: 1px solid var(--border-teal);
+  flex-shrink: 0;
 }
 
 .lesson-mini-progress-fill {
@@ -1261,31 +2092,327 @@
 }
 
 .lesson-mini-progress-text {
-  font-size: var(--font-size-xs);
+  font-size: 6px;
   color: var(--text-secondary);
-  text-align: center;
+  text-align: right;
+  line-height: 1;
+  width: 50px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* VERSIÓN MÓVIL - COMPLETAMENTE FIJA */
+@media screen and (max-width: 768px) {
+  /* Sección de progreso - Móvil */
+  .tutorial-progress-section {
+    /* ELIMINAR: top: 10px que usa posicionamiento absoluto problemático */
+    width: calc(100vw - 20px);
+    height: 60px;
+    padding: 10px;
+  }
+  
+  .overall-progress-bar {
+    width: 250px;
+    height: 16px;
+    margin: 6px 0;
+  }
+  
+  .overall-progress-text {
+    font-size: 9px;
+  }
+  
+  .progress-description {
+    font-size: 8px;
+  }
+  
+  /* Grid de lecciones - Móvil - SIN POSICIONAMIENTO ABSOLUTO */
+  .lessons-section {
+    /* ELIMINAR: top: 80px que interfiere con el layout natural */
+    padding: 15px;
+  }
+  
+  .lessons-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(auto, 140px);
+    gap: 12px;
+    padding-bottom: 30px;
+  }
+  
+  /* Tarjetas de lecciones - Móvil */
+  .lesson-card {
+    width: 100%;
+    height: 140px;
+    padding: 10px;
+  }
+  
+  .lesson-card-header {
+    height: 20px;
+    margin-bottom: 3px;
+  }
+  
+  .lesson-card-icon {
+    font-size: 16px;
+    width: 18px;
+    height: 18px;
+  }
+  
+  .lesson-completed-badge,
+  .lesson-progress-badge,
+  .lesson-new-badge {
+    font-size: 7px;
+    padding: 1px 4px;
+    height: 14px;
+  }
+  
+  .lesson-card-title {
+    font-size: 11px;
+    height: 26px;
+  }
+  
+  .lesson-card-description {
+    font-size: 8px;
+    height: 30px;
+  }
+  
+  .lesson-card-progress {
+    height: 10px;
+    margin: 3px 0;
+    gap: 4px;
+  }
+  
+  .lesson-mini-progress-bar {
+    width: calc(100% - 40px);
+    height: 3px;
+  }
+  
+  .lesson-mini-progress-text {
+    font-size: 5px;
+    width: 35px;
+  }
+  
+  .lesson-card-meta {
+    grid-template-columns: 1fr auto;
+    gap: 6px;
+    font-size: 6px;
+    height: 12px;
+    padding: 3px 4px;
+  }
 }
 
 .lesson-start-btn {
   width: 100%;
-  margin-top: var(--spacing-sm);
+  height: 28px;
+  margin-top: auto;
+  padding: 4px 8px;
   font-family: var(--font-modern);
   font-weight: 600;
+  font-size: 9px;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.03em;
+  border-radius: var(--border-radius-sm);
+  border: none;
+  background: linear-gradient(135deg, var(--btn1-bg), var(--btn2-bg));
+  color: var(--text-primary);
+  transition: all var(--transition-normal);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
+.lesson-start-btn:hover {
+  box-shadow: 
+    0 2px 4px rgba(0, 0, 0, 0.4),
+    0 0 8px rgba(0, 255, 255, 0.3);
+}
+
+.lesson-start-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* lesson-reward definido más abajo con estilos mejorados */
+
+/* reward-icon y reward-text definidos más abajo con estilos mejorados */
+
+/* SECCIÓN DE CONSEJOS - OPTIMIZADA PARA MENOS ESPACIO VERTICAL */
+.tutorial-tips {
+  margin: var(--spacing-lg) 0 0 0;
+  width: 100%;
+  /* MAX-WIDTH: Aumentado 20% de 1200px a 1440px para consejos más anchos */
+  max-width: 1440px;
+  margin: var(--spacing-lg) auto 0;
+  /* PADDING REDUCIDO: Menos espacio vertical para compactar la sección */
+  padding-bottom: var(--spacing-lg);
+}
+
+/* GRID DE CONSEJOS - LAYOUT HORIZONTAL COMPACTO */
+.tips-grid {
+  display: grid;
+  /* COLUMNAS: Mínimo 360px (20% más que los 300px originales) */
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  /* GAP REDUCIDO: Menor separación para compactar verticalmente */
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-md);
+  width: 100%;
+  box-sizing: border-box;
+  justify-items: center;
+}
+
+/* TIP CARDS - ALTURA TRIPLICADA PARA MEJOR VISUALIZACIÓN */
+#tutorial-screen .tip-card {
+  background: linear-gradient(135deg, 
+    rgba(0, 191, 255, 0.15) 0%, 
+    rgba(0, 255, 255, 0.15) 100%) !important;
+  border: 1px solid var(--border-teal) !important;
+  border-radius: var(--border-radius-sm) !important;
+  padding: var(--spacing-md) !important; /* Aumentado padding para mejor espaciado */
+  text-align: left !important;
+  transition: all var(--transition-normal);
+  backdrop-filter: blur(2px);
+  /* ALTURA TRIPLICADA: 90px (3 veces los 30px anteriores) */
+  height: 90px !important;
+  width: 100% !important;
+  /* ANCHO MÁXIMO: 360px (mantenido según especificaciones) */
+  max-width: 360px !important;
+  /* LAYOUT: Mantener horizontal pero con más espacio vertical */
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: flex-start !important;
+  align-items: center !important;
+  gap: var(--spacing-md) !important; /* Aumentado gap para mejor espaciado */
+  box-sizing: border-box !important;
+  box-shadow: 
+    0 2px 4px rgba(0, 0, 0, 0.3), /* Sombra más pronunciada para mayor altura */
+    0 0 6px rgba(0, 255, 255, 0.15);
+  margin-bottom: var(--spacing-md) !important; /* Aumentado margen inferior */
+}
+
+.tip-card:hover {
+  border-color: var(--border-electric);
+  box-shadow: var(--glow-secondary);
+}
+
+/* TIP-CARD ELEMENTOS INTERNOS - TAMAÑOS AUMENTADOS PARA MEJOR APROVECHAMIENTO */
+#tutorial-screen .tip-icon {
+  font-size: 1.5rem !important; /* Aumentado de 1rem para mayor altura */
+  display: block !important;
+  margin: 0 !important;
+  filter: drop-shadow(0 0 3px currentColor);
+  flex-shrink: 0 !important;
+  width: 32px !important; /* Aumentado de 24px */
+  text-align: center !important;
+}
+
+#tutorial-screen .tip-card-content {
+  flex: 1 !important;
+  text-align: left !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  gap: var(--spacing-xs) !important; /* Separación entre título y texto */
+}
+
+#tutorial-screen .tip-card h4 {
+  font-family: var(--font-modern) !important;
+  font-size: var(--font-size-sm) !important; /* Aumentado de 10px */
+  color: var(--text-primary) !important;
+  margin: 0 !important;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+  font-weight: 600 !important;
+  line-height: 1.2 !important;
+  /* ELIMINAR RESTRICCIONES: Permitir texto completo */
+  white-space: normal !important;
+  overflow: visible !important;
+  text-overflow: initial !important;
+}
+
+#tutorial-screen .tip-card p {
+  color: var(--text-secondary) !important;
+  font-size: var(--font-size-xs) !important; /* Aumentado de 8px */
+  line-height: 1.3 !important; /* Aumentado para mejor legibilidad */
+  margin: 0 !important;
+  font-weight: 400 !important;
+  /* ELIMINAR RESTRICCIONES: Permitir texto completo */
+  overflow: visible !important;
+  text-overflow: initial !important;
+  white-space: normal !important;
+}
+
+/* Estilos específicos para instruction-section */
+.instruction-section {
+  background: linear-gradient(135deg, 
+    rgba(26, 17, 67, 0.7) 0%, 
+    rgba(42, 30, 92, 0.7) 100%);
+  border: 1px solid var(--border-teal);
+  border-radius: var(--border-radius-sm);
+  padding: var(--spacing-sm);
+  margin: 0;
+  text-align: center;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(3px);
+}
+
+.instruction-title {
+  font-family: var(--font-pixel);
+  font-size: var(--font-size-md);
+  color: var(--text-accent);
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+  margin-bottom: var(--spacing-xs);
+  text-align: center;
+}
+
+.instruction-text {
+  color: var(--text-secondary);
+  font-size: var(--font-size-xs);
+  line-height: 1.3;
+  margin: 0;
+  text-align: center;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Mejorar visibilidad de badges */
+.lesson-completed-badge,
+.lesson-progress-badge,
+.lesson-new-badge {
+  font-size: 8px;
+  font-weight: 700;
+  padding: 1px 4px;
+  border-radius: 2px;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+.lesson-completed-badge {
+  background: linear-gradient(135deg, var(--success-color), #4CAF50);
+}
+
+.lesson-progress-badge {
+  background: linear-gradient(135deg, var(--warning-color), #FF9800);
+}
+
+.lesson-new-badge {
+  background: linear-gradient(135deg, var(--btn2-bg), var(--btn1-bg));
+}
+
+/* Estilos mejorados de lesson reward */
 .lesson-reward {
   display: flex;
   align-items: center;
   gap: var(--spacing-sm);
   background: linear-gradient(135deg, 
-    rgba(255, 215, 0, 0.1) 0%, 
-    rgba(255, 105, 180, 0.1) 100%);
+    rgba(255, 215, 0, 0.15) 0%, 
+    rgba(255, 105, 180, 0.15) 100%);
   border: 1px solid var(--warning-color);
   border-radius: var(--border-radius-sm);
   padding: var(--spacing-sm);
   margin-top: var(--spacing-sm);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .reward-icon {
@@ -1298,61 +2425,26 @@
   color: var(--warning-color);
   font-style: italic;
   flex-grow: 1;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-/* Sección de consejos */
-.tutorial-tips {
-  margin-top: var(--spacing-xxl);
-}
-
-.tips-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: var(--spacing-lg);
-  margin-top: var(--spacing-lg);
-}
-
-.tip-card {
-  background: linear-gradient(135deg, 
-    rgba(0, 191, 255, 0.1) 0%, 
-    rgba(0, 255, 255, 0.1) 100%);
-  border: 1px solid var(--border-teal);
-  border-radius: var(--border-radius);
-  padding: var(--spacing-lg);
-  text-align: center;
-  transition: all var(--transition-normal);
-}
-
-.tip-card:hover {
-  transform: translateY(-2px);
-  border-color: var(--border-electric);
-  box-shadow: var(--glow-secondary);
-}
-
-.tip-icon {
-  font-size: 2rem;
-  display: block;
-  margin-bottom: var(--spacing-md);
-  filter: drop-shadow(0 0 8px currentColor);
-}
-
-.tip-card h4 {
-  font-family: var(--font-modern);
-  font-size: var(--font-size-md);
-  color: var(--text-primary);
-  margin-bottom: var(--spacing-sm);
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-}
-
-.tip-card p {
-  color: var(--text-secondary);
-  font-size: var(--font-size-sm);
-  line-height: 1.5;
-  margin: 0;
-}
+/* Back button ya está definido arriba - eliminar duplicación */
 
 /* Responsive tutorial main screen */
 @media (max-width: 768px) {
+  #tutorial-screen {
+    padding: 0;
+  }
+  
+  #tutorial-screen .screen-content {
+    padding: var(--spacing-sm) var(--spacing-md) var(--spacing-xl) var(--spacing-md);
+    gap: var(--spacing-md);
+    max-width: 100%;
+  }
+  
   .lessons-grid {
     grid-template-columns: 1fr;
     gap: var(--spacing-md);
@@ -1360,6 +2452,10 @@
   
   .lesson-card {
     padding: var(--spacing-md);
+    min-height: 280px;
+    max-height: 350px;
+    max-width: none;
+    gap: var(--spacing-sm);
   }
   
   .lesson-card-icon {
@@ -1368,6 +2464,24 @@
   
   .lesson-card-title {
     font-size: var(--font-size-md);
+    margin-bottom: var(--spacing-xs);
+  }
+  
+  .lesson-card-description {
+    font-size: var(--font-size-xs);
+    -webkit-line-clamp: 2;
+  }
+  
+  .lesson-card-meta {
+    font-size: 10px;
+    margin: var(--spacing-xs) 0;
+    padding: var(--spacing-xs);
+  }
+  
+  .lesson-start-btn {
+    min-height: 40px;
+    font-size: 11px;
+    padding: var(--spacing-sm) var(--spacing-md);
   }
   
   .tips-grid {
@@ -1375,16 +2489,104 @@
     gap: var(--spacing-md);
   }
   
+  /* Mantener especificidad para tutorial tips */
+  #tutorial-screen .tip-card {
+    max-width: 100% !important;
+    min-height: 30px !important;
+    padding: var(--spacing-sm) !important;
+  }
+  
+  #tutorial-screen .tip-icon {
+    font-size: 1rem !important;
+  }
+  
+  #tutorial-screen .tip-card h4 {
+    font-size: 10px !important;
+  }
+  
+  #tutorial-screen .tip-card p {
+    font-size: 8px !important;
+  }
+  
   .tutorial-progress-section {
-    padding: var(--spacing-lg);
+    padding: var(--spacing-md);
   }
   
   .overall-progress-bar {
-    height: 24px;
+    height: 30px;
+    max-width: none;
   }
   
   .overall-progress-text {
     font-size: var(--font-size-sm);
+  }
+  
+  .progress-description {
+    font-size: var(--font-size-xs);
+  }
+  
+  .instruction-section {
+    padding: var(--spacing-md);
+  }
+  
+  .instruction-title {
+    font-size: var(--font-size-md);
+  }
+  
+  .instruction-text {
+    font-size: var(--font-size-xs);
+  }
+  
+  .back-button {
+    top: var(--spacing-sm);
+    left: var(--spacing-sm);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: 11px;
+  }
+}
+
+/* Responsive para pantallas muy pequeñas */
+@media (max-width: 480px) {
+  #tutorial-screen .screen-content {
+    padding: var(--spacing-xs) var(--spacing-sm) var(--spacing-lg) var(--spacing-sm);
+  }
+  
+  .lesson-card {
+    min-height: 260px;
+    max-height: 320px;
+    padding: var(--spacing-sm);
+  }
+  
+  .lesson-card-icon {
+    font-size: 1.8rem;
+  }
+  
+  .lesson-card-title {
+    font-size: var(--font-size-sm);
+  }
+  
+  .lesson-card-description {
+    font-size: 10px;
+    -webkit-line-clamp: 2;
+  }
+  
+  .lesson-start-btn {
+    min-height: 36px;
+    font-size: 10px;
+  }
+  
+  /* Mantener especificidad para tutorial tips en móviles pequeños */
+  #tutorial-screen .tip-card {
+    min-height: 30px !important;
+    padding: var(--spacing-sm) !important;
+  }
+  
+  .overall-progress-bar {
+    height: 25px;
+  }
+  
+  .overall-progress-text {
+    font-size: var(--font-size-xs);
   }
 }
 
@@ -1706,12 +2908,12 @@
 }
 
 /* Override any overflow visible settings for screens that are not the game board */
-.screen:not(.game-board),
-.screen:not(.game-board) *,
-.screen:not(.game-board) .screen-content,
-.screen:not(.game-board) .setup-grid,
-.screen:not(.game-board) .setup-section,
-.screen:not(.game-board) .selection-grid {
+.screen:not(.game-board):not(.welcome-screen),
+.screen:not(.game-board):not(.welcome-screen) *,
+.screen:not(.game-board):not(.welcome-screen) .screen-content,
+.screen:not(.game-board):not(.welcome-screen) .setup-grid,
+.screen:not(.game-board):not(.welcome-screen) .setup-section,
+.screen:not(.game-board):not(.welcome-screen) .selection-grid {
   overflow: hidden !important;
 }
 
@@ -1796,15 +2998,15 @@
   content: '';
   position: absolute;
   top: 0;
-  left: -100%;
-  width: 100%;
+  left: 0;
+  width: 0;
   height: 100%;
   background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.2), transparent);
-  transition: left 0.5s;
+  transition: width 0.5s;
 }
 
 .menu-button:hover::before, .action-button:hover::before, .nav-button:hover::before {
-  left: 100%;
+  width: 100%;
 }
 
 .menu-button:hover, .action-button:hover:not(:disabled), .nav-button:hover {
@@ -1850,10 +3052,10 @@
 .card::before {
   content: '';
   position: absolute;
-  top: -2px;
-  left: -2px;
-  right: -2px;
-  bottom: -2px;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background: linear-gradient(45deg, var(--text-accent) 0%, var(--orange-accent) 25%, var(--purple-accent) 50%, var(--blue-accent) 75%, var(--text-accent) 100%);
   border-radius: 12px;
   z-index: -1;
@@ -2141,10 +3343,10 @@
    ======================================== */
 .computer-section {
    position: absolute !important;
-   top: 0px !important;
+   top: 10px !important;
    left: 0 !important;
    right: 0 !important;
-   height: 500px !important;
+   height: 480px !important;
    display: flex;
    align-items: flex-start;
    justify-content: flex-start;
@@ -2156,7 +3358,7 @@
 .computer-info {
   position: absolute !important;
   left: 1rem !important;
-  top: 0 !important;
+  top: 10px !important;
   z-index: 25;
 }
 
@@ -2175,7 +3377,7 @@
 .computer-hand {
   position: absolute !important;
   left: 50% !important;
-  top: 10px !important;
+  top: 20px !important;
   transform: translateX(-50%) !important;
   display: flex;
   gap: 0.5rem;
@@ -2254,10 +3456,10 @@
    ======================================== */
 .player-section {
    position: absolute !important;
-   bottom: 0px !important;
+   bottom: 10px !important;
    left: 0 !important;
    right: 0 !important;
-   height: 540px !important;
+   height: 520px !important;
    z-index: 20;
    overflow: visible !important;
 }
@@ -2298,7 +3500,7 @@
 
 .action-buttons {
   position: absolute !important;
-  bottom: 20px !important;
+  bottom: 30px !important;
   left: 50% !important;
   transform: translateX(-50%) !important;
   display: flex;
@@ -3365,7 +4567,7 @@
 }
 
 .tutorial-step.bottom::before {
-  top: -15px;
+  top: 0;
   left: 50%;
   transform: translateX(-50%);
   border-left: 15px solid transparent;
@@ -3374,7 +4576,7 @@
 }
 
 .tutorial-step.top::before {
-  bottom: -15px;
+  bottom: 0;
   left: 50%;
   transform: translateY(-50%);
   border-left: 15px solid transparent;
@@ -3383,7 +4585,7 @@
 }
 
 .tutorial-step.left::before {
-  right: -15px;
+  right: 0;
   top: 50%;
   transform: translateY(-50%);
   border-top: 15px solid transparent;
@@ -3392,7 +4594,7 @@
 }
 
 .tutorial-step.right::before {
-  left: -15px;
+  left: 0;
   top: 50%;
   transform: translateY(-50%);
   border-top: 15px solid transparent;
@@ -4273,18 +5475,32 @@ html, body {
   box-sizing: border-box;
 }
 
-/* Screen containers must not overflow */
-.screen, .main-screen, .test-screen, .game-board {
-  max-height: 100vh !important;
-  height: 100vh !important;
+/* Screen containers must not overflow - RESPETANDO GAME-CANVAS */
+.screen:not(.lesson-screen), .main-screen, .test-screen, .game-board {
+  max-height: 100% !important;
+  height: 100% !important;
   overflow: hidden !important;
 }
 
-/* Screen content containers */
-.screen-content, .test-container, .game-layout {
-  max-height: 100vh !important;
+/* LESSON SCREEN - Permitir scroll interno controlado */
+.lesson-screen {
+  max-height: 100% !important;
+  height: 100% !important;
+  overflow: hidden !important; /* Solo en el contenedor raíz */
+}
+
+/* Screen content containers - CON EXCEPCIÓN PARA LESSON CONTENT */
+.screen-content:not(.lesson-screen-content), .test-container, .game-layout {
+  max-height: 100% !important;
   overflow: hidden !important;
   height: 100% !important;
+}
+
+/* LESSON SCREEN CONTENT - Permitir organización flex sin bloquear scroll interno */
+.lesson-screen-content {
+  max-height: 100% !important;
+  height: 100% !important;
+  overflow: hidden !important; /* Solo bloquear en este nivel */
 }
 
 /* Modal containers must fit within viewport */
@@ -4328,22 +5544,37 @@ html, body {
     height: 100vh !important;
   }
 
-  /* All screens must fit */
-  .screen, .main-screen, .test-screen, .game-board {
-    max-height: 100vh !important;
-    height: 100vh !important;
+  /* All screens must fit - RESPETANDO GAME-CANVAS MÓVIL */
+  .screen:not(.lesson-screen), .main-screen, .test-screen, .game-board {
+    max-height: 100% !important;
+    height: 100% !important;
     overflow: hidden !important;
-    position: fixed !important;
+    position: absolute !important; /* CORREGIDO: Dentro del canvas */
     top: 0 !important;
     left: 0 !important;
     right: 0 !important;
     bottom: 0 !important;
   }
+  
+  /* LESSON SCREEN MÓVIL - Mantener dentro del canvas */
+  .lesson-screen {
+    max-height: 100% !important;
+    height: 100% !important;
+    overflow: hidden !important;
+    position: absolute !important; /* Dentro del canvas, no fixed */
+  }
 
-  /* Content containers */
-  .screen-content, .test-container, .game-layout {
-    max-height: 100vh !important;
-    height: 100vh !important;
+  /* Content containers - RESPETANDO GAME-CANVAS MÓVIL */
+  .screen-content:not(.lesson-screen-content), .test-container, .game-layout {
+    max-height: 100% !important;
+    height: 100% !important;
+    overflow: hidden !important;
+  }
+  
+  /* LESSON SCREEN CONTENT MÓVIL */
+  .lesson-screen-content {
+    max-height: 100% !important;
+    height: 100% !important;
     overflow: hidden !important;
   }
 

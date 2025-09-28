@@ -1,40 +1,75 @@
 import { Card, GameState, AIPersonality } from '../types';
 
-export function getAIResponse(callType: string, gameState: GameState): boolean {
-  const difficulty = gameState.difficulty;
+export function getAICallDecision(gameState: GameState): 'accept' | 'reject' | 'raise' | null {
+  const { lastCall } = gameState;
   const personality = gameState.aiPersonality;
-
+  
+  if (!lastCall) return null;
+  
+  // Base acceptance probability
   let acceptChance = 0.5;
-
-  // Base difficulty modifiers
-  if (difficulty === 'easy') acceptChance = 0.7;
-  else if (difficulty === 'medium') acceptChance = 0.5;
-  else if (difficulty === 'hard') acceptChance = 0.3;
-  else if (difficulty === 'master') acceptChance = 0.2;
-
-  // Personality trait modifiers
-  acceptChance += (personality.agresividad - 5) * 0.04; // -0.2 to +0.2
-  acceptChance -= (personality.intimidacion - 5) * 0.02; // -0.1 to +0.1 (more intimidation = less likely to accept)
-  acceptChance += (personality.calculo - 5) * 0.03; // -0.15 to +0.15
-
-  // Score-based adjustments
-  if (gameState.computerScore > gameState.playerScore) acceptChance -= 0.1;
-  else if (gameState.computerScore < gameState.playerScore) acceptChance += 0.1;
-
-  // Hand strength analysis
-  const handStrength = calculateHandStrength(gameState.computerHand);
-  acceptChance += (handStrength - 50) / 100;
-
-  // Adaptability affects decision making based on game state
-  const adaptabilityBonus = (personality.adaptabilidad - 5) * 0.02;
-  if (gameState.currentRound > 1) {
-    acceptChance += adaptabilityBonus; // More adaptable = better mid-game decisions
+  let raiseChance = 0.2;
+  
+  // Adjust based on call type
+  if (lastCall === 'envido') {
+    const aiEnvidoPoints = gameState.computerEnvidoPoints;
+    if (aiEnvidoPoints >= 30) {
+      acceptChance = 0.9;
+      raiseChance = 0.6; // Very likely to raise with high envido
+    } else if (aiEnvidoPoints >= 27) {
+      acceptChance = 0.7;
+      raiseChance = 0.3;
+    } else if (aiEnvidoPoints >= 24) {
+      acceptChance = 0.5;
+      raiseChance = 0.1;
+    } else {
+      acceptChance = 0.3;
+      raiseChance = 0.05;
+    }
+  } else if (lastCall === 'truco' || lastCall === 'retruco' || lastCall === 'vale4') {
+    const handStrength = calculateHandStrength(gameState.computerHand);
+    acceptChance = handStrength / 100;
+    raiseChance = Math.max(0, (handStrength - 70) / 100);
+  } else if (lastCall === 'flor') {
+    if (gameState.computerHasFlor) {
+      const aiEnvidoPoints = gameState.computerEnvidoPoints; // Use envido points for flor comparison
+      raiseChance = aiEnvidoPoints >= 30 ? 0.8 : 0.3; // Contra Flor chance
+      acceptChance = 0.9; // Almost always accept if we have flor
+    } else {
+      acceptChance = 0.1; // Very unlikely to accept if we don't have flor
+      raiseChance = 0;
+    }
   }
-
+  
+  // Personality adjustments
+  acceptChance += (personality.agresividad - 5) * 0.04;
+  acceptChance += (personality.calculo - 5) * 0.03;
+  raiseChance += (personality.agresividad - 5) * 0.03;
+  raiseChance += (personality.intimidacion - 5) * 0.02;
+  
+  // Score situation adjustments
+  if (gameState.computerScore < gameState.playerScore) {
+    acceptChance += 0.15;
+    raiseChance += 0.1;
+  } else if (gameState.computerScore > gameState.playerScore) {
+    acceptChance -= 0.1;
+    raiseChance -= 0.05;
+  }
+  
   // Ensure bounds
-  acceptChance = Math.max(0.1, Math.min(0.9, acceptChance));
+  acceptChance = Math.max(0.05, Math.min(0.95, acceptChance));
+  raiseChance = Math.max(0, Math.min(0.8, raiseChance));
+  
+  const decision = Math.random();
+  
+  if (decision < raiseChance) return 'raise';
+  if (decision < acceptChance) return 'accept';
+  return 'reject';
+}
 
-  return Math.random() < acceptChance;
+export function getAIResponse(callType: string, gameState: GameState): boolean {
+  const decision = getAICallDecision(gameState);
+  return decision === 'accept' || decision === 'raise';
 }
 
 export function selectBestCardForAI(gameState: GameState): number {

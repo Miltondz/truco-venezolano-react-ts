@@ -1,0 +1,67 @@
+// Tournament configuration for Venezuelan Truco AI
+export const TOURNAMENT_CONFIG = {
+  name: 'Torneo Venezolano de Truco AI',
+  description: 'Competí contra una serie de IA con personalidades únicas. Subí de nivel y desafía al campeón final.',
+  rounds: [
+    {
+      round: 1,
+      name: 'Ronda de Iniciación',
+      difficulty: 'Fácil',
+      opponents: [
+        'El Chamo',
+        'La Tía Lulú',
+        'El Borracho de la Esquina'
+      ],
+      unlockNext: true,
+      reward: 'Medalla de Bronce'
+    },
+    {
+      round: 2,
+      name: 'Ronda de Entrenamiento',
+      difficulty: 'Medio',
+      opponents: [
+        'El Profesor',
+        'El Gato',
+        'La Abuela'
+      ],
+      unlockNext: true,
+      reward: 'Medalla de Plata'
+    },
+    {
+      round: 3,
+      name: 'Ronda de Maestría',
+      difficulty: 'Difícil',
+      opponents: [
+        'El Maestro',
+        'El Gambetero',
+        'La Bruja'
+      ],
+      unlockNext: true,
+      reward: 'Medalla de Oro'
+    },
+    {
+      round: 4,
+      name: 'Final: Desafío Extremo',
+      difficulty: 'Extrema',
+      opponents: [
+        'El Locochón',
+        'El Estratega',
+        'El Fantasma'
+      ],
+      unlockNext: false,
+      reward: 'Campeón del Torneo - Trofeo de Truco'
+    }
+  ],
+  rules: {
+    matchesPerRound: 3,
+    winCondition: 'Ganar 2 de 3 partidas',
+    timeLimit: '5 minutos por partida',
+    specialRule: 'En la final, se activa modo "Vale Cuatro Obligatorio" si hay empate.'
+  },
+  unlockConditions: {
+    bronze: 'Completar Ronda 1',
+    silver: 'Completar Ronda 2',
+    gold: 'Completar Ronda 3',
+    champion: 'Ganar la Final'
+  }
+};

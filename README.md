@@ -287,6 +287,23 @@ La aplicación utiliza React hooks para manejar el estado:
 - **Feedback del Usuario**: Sistema de reportes integrado
 - **Actualizaciones Dinámicas**: Contenido descargable
 
+## 📚 Documentación Técnica
+
+### Problemas Conocidos y Soluciones
+
+#### ✅ **Sistema de Tutorial - Scroll Vertical (Resuelto - Sept 28, 2025)**
+- **Problema**: Contenido cortado en lecciones, scroll no funcional
+- **Estado**: ✅ **RESUELTO**
+- **Documentación**: [`docs/LESSON_SCROLL_ISSUES.md`](./docs/LESSON_SCROLL_ISSUES.md)
+- **Archivos**: `LessonScreen.tsx`, `components.css`, `tutorialLessons.tsx`
+
+### Documentación Adicional
+
+- **[📋 Notas Técnicas Generales](./docs/TECHNICAL_NOTES.md)** - Arquitectura y convenciones
+- **[🐛 Problemas de Scroll en Tutorial](./docs/LESSON_SCROLL_ISSUES.md)** - Solución detallada del sistema de scroll
+
+---
+
 ## 🚀 Instalación y Uso
 
 ### Prerrequisitos

@@ -16,6 +16,7 @@ import AchievementsScreen from './components/AchievementsScreen';
 import SettingsScreen from './components/SettingsScreen';
 import TutorialScreen from './components/TutorialScreen';
 import LoadingScreen from './components/LoadingScreen';
+import WelcomeScreen from './components/WelcomeScreen';
 import Notification from './components/Notification';
 import Modal from './components/Modal';
 import AchievementPopup from './components/AchievementPopup';
@@ -114,13 +115,7 @@ const App: React.FC = () => {
       // Simulate loading
       setTimeout(() => {
         setLoading(false);
-        setCurrentScreen('main-screen');
-
-        if (playerStats.gamesPlayed === 0) {
-          setTimeout(() => {
-            showNotification('¡Bienvenido al Truco Venezolano! Prueba el tutorial para aprender.', 'info');
-          }, 1000);
-        }
+        setCurrentScreen('welcome-screen');
       }, 2000);
     };
 
@@ -298,7 +293,10 @@ const App: React.FC = () => {
 
   // Helper function for protected call actions
   const executeProtectedAction = (actionFn: () => GameState, resultType: 'call' | 'response' = 'call', actionSuccess?: boolean) => {
-    if (gameState.isProcessingAction || gameState.waitingForResponse) return;
+    // Bloquear solo si está procesando una acción
+    // Para respuestas (Quiero/No Quiero), permitir cuando waitingForResponse es true
+    // Para cantos, bloquear cuando waitingForResponse es true
+    if (gameState.isProcessingAction || (resultType === 'call' && gameState.waitingForResponse)) return;
     
     const newState = actionFn();
     setGameState(newState);
@@ -316,8 +314,13 @@ const App: React.FC = () => {
   const handleCallRetruco = () => executeProtectedAction(() => callRetruco(gameState, gameSettings), 'call');
   const handleCallVale4 = () => executeProtectedAction(() => callVale4(gameState, gameSettings), 'call');
   const handleCallEnvido = () => executeProtectedAction(() => callEnvido(gameState, gameSettings), 'call');
-  const handleAcceptCall = () => executeProtectedAction(() => acceptCall(gameState, gameSettings), 'response', true);
-  const handleRejectCall = () => executeProtectedAction(() => rejectCall(gameState, gameSettings), 'response', false);
+  const handleAcceptCall = () => {
+    executeProtectedAction(() => acceptCall(gameState, gameSettings), 'response', true);
+  };
+  
+  const handleRejectCall = () => {
+    executeProtectedAction(() => rejectCall(gameState, gameSettings), 'response', false);
+  };
   
   const handleCallFlor = () => executeProtectedAction(() => callFlor(gameState, gameSettings), 'call');
   const handleFoldHand = () => executeProtectedAction(() => foldHand(gameState, gameSettings), 'response', false);
@@ -353,6 +356,8 @@ const App: React.FC = () => {
   // Render current screen
   const renderScreen = () => {
     switch (currentScreen) {
+      case 'welcome-screen':
+        return <WelcomeScreen onNavigate={navigateTo} />;
       case 'main-screen':
         return <MainScreen onNavigate={navigateTo} />;
       case 'setup-screen':

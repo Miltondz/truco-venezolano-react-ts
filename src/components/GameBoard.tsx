@@ -216,8 +216,8 @@ const GameBoard: React.FC<GameBoardProps> = ({
                 className="action-button"
                 id="envido-btn"
                 onClick={onCallEnvido}
-                disabled={gameState.currentEnvidoLevel !== 0 || isActionDisabled}
-                style={{ display: gameState.currentEnvidoLevel === 0 && !isActionDisabled ? 'block' : 'none' }}
+                disabled={gameState.currentEnvidoLevel > 0 || isActionDisabled || gameState.currentPhase !== 'envido'}
+                style={{ display: gameState.currentEnvidoLevel === 0 && !isActionDisabled && gameState.currentPhase === 'envido' ? 'block' : 'none' }}
               >
                 🎵 Envido
               </button>
@@ -225,8 +225,8 @@ const GameBoard: React.FC<GameBoardProps> = ({
                 className="action-button"
                 id="real-envido-btn"
                 onClick={onCallRealEnvido}
-                disabled={gameState.currentEnvidoLevel !== 1 || gameState.waitingForResponse}
-                style={{ display: gameState.currentEnvidoLevel === 1 && !gameState.waitingForResponse ? 'block' : 'none' }}
+                disabled={gameState.currentEnvidoLevel !== 1 || isActionDisabled}
+                style={{ display: gameState.currentEnvidoLevel === 1 && !isActionDisabled ? 'block' : 'none' }}
               >
                 🎶 Real Envido
               </button>
@@ -234,8 +234,8 @@ const GameBoard: React.FC<GameBoardProps> = ({
                 className="action-button"
                 id="falta-envido-btn"
                 onClick={onCallFaltaEnvido}
-                disabled={gameState.currentEnvidoLevel <= 2 || gameState.waitingForResponse}
-                style={{ display: gameState.currentEnvidoLevel <= 2 && !gameState.waitingForResponse ? 'block' : 'none' }}
+                disabled={(gameState.currentEnvidoLevel === 0 || gameState.currentEnvidoLevel > 3) || isActionDisabled}
+                style={{ display: gameState.currentEnvidoLevel >= 1 && gameState.currentEnvidoLevel <= 3 && !isActionDisabled ? 'block' : 'none' }}
               >
                 🎼 Falta Envido
               </button>
@@ -243,8 +243,8 @@ const GameBoard: React.FC<GameBoardProps> = ({
                 className="action-button"
                 id="truco-btn"
                 onClick={onCallTruco}
-                disabled={gameState.currentTrucoLevel !== 0 || gameState.waitingForResponse}
-                style={{ display: gameState.currentTrucoLevel === 0 && !gameState.waitingForResponse ? 'block' : 'none' }}
+                disabled={gameState.currentTrucoLevel > 0 || isActionDisabled || (gameState.currentPhase !== 'truco' && gameState.currentPhase !== 'playing')}
+                style={{ display: gameState.currentTrucoLevel === 0 && !isActionDisabled && (gameState.currentPhase === 'truco' || gameState.currentPhase === 'playing') ? 'block' : 'none' }}
               >
                 ⚡ Truco
               </button>
@@ -252,8 +252,8 @@ const GameBoard: React.FC<GameBoardProps> = ({
                 className="action-button"
                 id="retruco-btn"
                 onClick={onCallRetruco}
-                disabled={gameState.currentTrucoLevel !== 1 || gameState.waitingForResponse}
-                style={{ display: gameState.currentTrucoLevel === 1 && !gameState.waitingForResponse ? 'block' : 'none' }}
+                disabled={gameState.currentTrucoLevel !== 1 || isActionDisabled}
+                style={{ display: gameState.currentTrucoLevel === 1 && !isActionDisabled ? 'block' : 'none' }}
               >
                 ⚡⚡ Retruco
               </button>
@@ -261,8 +261,8 @@ const GameBoard: React.FC<GameBoardProps> = ({
                 className="action-button"
                 id="vale4-btn"
                 onClick={onCallVale4}
-                disabled={gameState.currentTrucoLevel !== 2 || gameState.waitingForResponse}
-                style={{ display: gameState.currentTrucoLevel === 2 && !gameState.waitingForResponse ? 'block' : 'none' }}
+                disabled={gameState.currentTrucoLevel !== 2 || isActionDisabled}
+                style={{ display: gameState.currentTrucoLevel === 2 && !isActionDisabled ? 'block' : 'none' }}
               >
                 ⚡⚡⚡ Vale 4
               </button>
@@ -288,8 +288,8 @@ const GameBoard: React.FC<GameBoardProps> = ({
                 className="action-button"
                 id="flor-btn"
                 onClick={onCallFlor}
-                disabled={!gameState.playerHasFlor || gameState.waitingForResponse}
-                style={{ display: gameState.playerHasFlor && !gameState.waitingForResponse ? 'block' : 'none' }}
+                disabled={!gameState.playerHasFlor || isActionDisabled || gameState.currentPhase !== 'flor'}
+                style={{ display: gameState.playerHasFlor && !isActionDisabled && gameState.currentPhase === 'flor' ? 'block' : 'none' }}
               >
                 🌸 Flor
               </button>

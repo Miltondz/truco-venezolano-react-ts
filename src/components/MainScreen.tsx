@@ -1,15 +1,41 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BaseScreenProps } from '../types';
 
 interface MainScreenProps extends BaseScreenProps {}
 
 const MainScreen: React.FC<MainScreenProps> = ({ onNavigate }) => {
+  const [videoError, setVideoError] = useState(false);
+
   return (
     <div id="main-screen" className="screen main-screen active">
+      {/* Video Background */}
+      <div className="video-background">
+        {!videoError ? (
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="background-video"
+            poster="/images/cover.jpg"
+            onError={() => setVideoError(true)}
+          >
+            <source src="/images/cover.mp4" type="video/mp4" />
+          </video>
+        ) : (
+          <img
+            src="/images/cover.jpg"
+            alt="Truco Venezolano Background"
+            className="background-image"
+          />
+        )}
+        
+        {/* Video Overlay */}
+        <div className="video-overlay"></div>
+      </div>
+
       <div className="screen-content">
-        <h1 className="game-title">TRUCO</h1>
-        <p className="game-subtitle">Venezolano</p>
-        <div className="main-menu-buttons">
+        <div className="main-menu-buttons-bottom">
           <button id="play-btn" className="menu-button" onClick={() => onNavigate('setup-screen')}>
             🎮 Jugar
           </button>
@@ -27,9 +53,6 @@ const MainScreen: React.FC<MainScreenProps> = ({ onNavigate }) => {
           </button>
           <button id="settings-btn" className="menu-button" onClick={() => onNavigate('settings-screen')}>
             ⚙️ Configuración
-          </button>
-          <button id="test-btn" className="menu-button" onClick={() => onNavigate('test-screen')}>
-            🧪 Tests
           </button>
         </div>
       </div>

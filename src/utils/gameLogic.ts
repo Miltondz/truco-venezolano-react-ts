@@ -54,7 +54,9 @@ export function initializeGameState(difficulty: string, selectedAvatar: string):
     playerAvatarMood: 'default' as const,
     avatarMoodTimer: null,
     // Action protection
-    isProcessingAction: false
+    isProcessingAction: false,
+    // Game phases
+    currentPhase: 'flor' as const
   };
 }
 
@@ -81,7 +83,8 @@ export function startNewHand(gameState: GameState): GameState {
     playerPlayedCard: null,
     computerPlayedCard: null,
     viraCard,
-    pericoCard
+    pericoCard,
+    currentPhase: (hasFlor(playerHand) || hasFlor(computerHand)) ? 'flor' as const : 'envido' as const
   };
 }
 
@@ -156,10 +159,16 @@ export function evaluateRound(gameState: GameState, settings: GameSettings): { w
 }
 
 export function endHand(gameState: GameState, winner: 'player' | 'computer' | 'tie', settings: GameSettings): { gameState: GameState, pointsAdded: number } {
-  let pointsToAdd = 1;
+  let pointsToAdd = 1; // Mano simple vale 1 punto
 
-  if (gameState.currentTrucoLevel > 0) {
-    pointsToAdd = gameState.currentTrucoLevel + 1;
+  // Puntos según nivel de Truco:
+  // Truco = 2 puntos, Retruco = 3 puntos, Vale 4 = 4 puntos
+  if (gameState.currentTrucoLevel === 1) {
+    pointsToAdd = 2; // Truco
+  } else if (gameState.currentTrucoLevel === 2) {
+    pointsToAdd = 3; // Retruco
+  } else if (gameState.currentTrucoLevel === 3) {
+    pointsToAdd = 4; // Vale 4
   }
 
   let newGameState = { ...gameState };
@@ -289,7 +298,8 @@ export function callRealEnvido(gameState: GameState, settings: GameSettings): Ga
 }
 
 export function callFaltaEnvido(gameState: GameState, settings: GameSettings): GameState {
-  if (!gameState.isPlayerTurn || gameState.currentEnvidoLevel <= 2 || gameState.waitingForResponse) return gameState;
+  // Falta Envido puede ser cantado como respuesta a cualquier canto de Envido (niveles 1-3)
+  if (!gameState.isPlayerTurn || (gameState.currentEnvidoLevel === 0 || gameState.currentEnvidoLevel > 3) || gameState.waitingForResponse) return gameState;
 
   playSound('call', settings);
 
@@ -307,9 +317,16 @@ export function acceptCall(gameState: GameState, settings: GameSettings): GameSt
 
   playSound('accept', settings);
 
+  // Si se acepta un canto de Envido, resolver inmediatamente
+  if (gameState.lastCall === 'envido' || gameState.lastCall === 'realEnvido' || gameState.lastCall === 'faltaEnvido') {
+    return resolveEnvido(gameState, settings);
+  }
+
+  // Para otros cantos (Truco, Flor, etc.)
   return {
     ...gameState,
-    waitingForResponse: false
+    waitingForResponse: false,
+    currentPhase: gameState.lastCall === 'flor' ? 'envido' : gameState.currentPhase
   };
 }
 
@@ -318,15 +335,42 @@ export function rejectCall(gameState: GameState, settings: GameSettings): GameSt
 
   playSound('reject', settings);
 
-  let pointsToAdd = 1;
-  if (gameState.currentTrucoLevel > 0) {
-    pointsToAdd = gameState.currentTrucoLevel;
+  let pointsToAdd = 1; // Por defecto 1 punto al que canta
+  let nextPhase = gameState.currentPhase;
+  
+  // Puntos por rechazar cantos de Truco
+  if (gameState.lastCall === 'truco') {
+    pointsToAdd = 1; // Rechazar Truco = 1 punto al cantante
+  } else if (gameState.lastCall === 'retruco') {
+    pointsToAdd = 2; // Rechazar Retruco = 2 puntos al cantante
+  } else if (gameState.lastCall === 'vale4') {
+    pointsToAdd = 3; // Rechazar Vale 4 = 3 puntos al cantante
+  }
+  // Puntos por rechazar cantos de Envido
+  else if (gameState.lastCall === 'envido') {
+    pointsToAdd = 1; // Rechazar Envido = 1 punto al cantante
+    nextPhase = 'truco'; // Avanzar a fase de truco después de rechazar Envido
+  } else if (gameState.lastCall === 'realEnvido') {
+    pointsToAdd = 1; // Rechazar Real Envido = 1 punto al cantante
+    nextPhase = 'truco';
+  } else if (gameState.lastCall === 'faltaEnvido') {
+    pointsToAdd = 1; // Rechazar Falta Envido = 1 punto al cantante
+    nextPhase = 'truco';
+  }
+  // Puntos por rechazar Flor
+  else if (gameState.lastCall === 'flor') {
+    pointsToAdd = 3; // Rechazar Flor = 3 puntos al cantante
+    nextPhase = 'envido'; // Avanzar a fase de Envido después de rechazar Flor
   }
 
   return {
     ...gameState,
     playerScore: gameState.playerScore + pointsToAdd,
-    waitingForResponse: false
+    waitingForResponse: false,
+    currentTrucoLevel: 0,
+    currentEnvidoLevel: 0,
+    currentPhase: nextPhase,
+    lastCall: null // Limpiar el último canto
   };
 }
 
@@ -334,9 +378,14 @@ export function resolveEnvido(gameState: GameState, settings: GameSettings): Gam
   const playerPoints = gameState.playerEnvidoPoints;
   const computerPoints = gameState.computerEnvidoPoints;
 
-  let pointsToAdd = 2;
-  if (gameState.currentEnvidoLevel === 2) pointsToAdd = 3;
-  if (gameState.currentEnvidoLevel === 3) pointsToAdd = Math.max(1, 30 - Math.max(gameState.playerScore, gameState.computerScore));
+  // Puntos según cantos de Envido:
+  let pointsToAdd = 2; // Envido simple = 2 puntos
+  if (gameState.currentEnvidoLevel === 2) pointsToAdd = 3; // Real Envido = 3 puntos
+  if (gameState.currentEnvidoLevel === 3) {
+    // Falta Envido = puntos que faltan para llegar a 30
+    const maxScore = Math.max(gameState.playerScore, gameState.computerScore);
+    pointsToAdd = Math.max(1, 30 - maxScore);
+  }
 
   let newGameState = { ...gameState };
 
@@ -354,22 +403,36 @@ export function resolveEnvido(gameState: GameState, settings: GameSettings): Gam
   return {
     ...newGameState,
     currentEnvidoLevel: 0,
-    waitingForResponse: false
+    waitingForResponse: false,
+    currentPhase: 'truco' as const // Advance to Truco phase after Envido resolution
   };
 }
 
 export function callFlor(gameState: GameState, settings: GameSettings): GameState {
-  if (!gameState.isPlayerTurn || !gameState.playerHasFlor) return gameState;
+  if (!gameState.playerHasFlor || gameState.currentPhase !== 'flor') return gameState;
 
   playSound('florWin', settings);
 
   // Check if this is Flor Reservada (called after some rounds have been played)
   const isFlorReservada = gameState.currentRound > 1;
+  const pointsToAdd = isFlorReservada ? 6 : 3; // Flor Reservada gives 6 points
 
+  // If computer also has flor, need to handle Contra Flor
+  if (gameState.computerHasFlor) {
+    return {
+      ...gameState,
+      activeCalls: [...gameState.activeCalls, 'Flor'],
+      lastCall: 'flor',
+      waitingForResponse: true // Wait for computer's response (Contra Flor or accept)
+    };
+  }
+
+  // Simple Flor, advance to next phase
   return {
     ...gameState,
     activeCalls: [...gameState.activeCalls, isFlorReservada ? 'Flor Reservada' : 'Flor'],
-    playerScore: gameState.playerScore + (isFlorReservada ? 6 : 3) // Flor Reservada gives 6 points
+    playerScore: gameState.playerScore + pointsToAdd,
+    currentPhase: 'envido' as const
   };
 }
 
@@ -381,6 +444,29 @@ export function foldHand(gameState: GameState, settings: GameSettings): GameStat
   return {
     ...gameState,
     computerScore: gameState.computerScore + 1
+  };
+}
+
+export function advancePhase(gameState: GameState): GameState {
+  let nextPhase: 'flor' | 'envido' | 'truco' | 'playing';
+  
+  switch (gameState.currentPhase) {
+    case 'flor':
+      nextPhase = 'envido';
+      break;
+    case 'envido':
+      nextPhase = 'truco';
+      break;
+    case 'truco':
+      nextPhase = 'playing';
+      break;
+    default:
+      nextPhase = 'playing';
+  }
+  
+  return {
+    ...gameState,
+    currentPhase: nextPhase
   };
 }
 
