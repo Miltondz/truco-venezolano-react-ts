@@ -1,18 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import './styles/App.css';
-import { GameState, GameSettings, PlayerStats, Achievement, DECKS, BOARDS, AVATARS } from './types';
+import { GameState, GameSettings, PlayerStats, Achievement, DECKS, BOARDS, AVATARS, AICharacter, Tournament, TournamentProgress } from './types';
 import { initializeGameState, startNewHand, playCard, computerPlayCard, evaluateRound, endHand, checkGameEnd, callTruco, callRetruco, callVale4, callEnvido, acceptCall, rejectCall, resolveEnvido, callFlor, foldHand, getAiDelay, callValeNueve, callValeJuego, callRealEnvido, callFaltaEnvido, callEstarCantando } from './utils/gameLogic';
 import { initializeAudio, playSound } from './utils/sound';
 import { loadSettings, saveSettings, loadStats, saveStats, loadAchievements, saveAchievements } from './utils/storage';
+import { startTournament, getTournamentProgress, defeatOpponent, completeRound, setCurrentActiveTournament } from './utils/tournamentStorage';
 import { calculateHandStrength } from './utils/cards';
 import { evaluatePlayResult, updateAvatarMood } from './utils/avatarMoods';
 import MainScreen from './components/MainScreen';
 import SetupScreen from './components/SetupScreen';
-import DifficultyScreen from './components/DifficultyScreen';
 import GameBoard from './components/GameBoard';
 import InstructionsScreen from './components/InstructionsScreen';
 import StatsScreen from './components/StatsScreen';
 import AchievementsScreen from './components/AchievementsScreen';
+import TournamentsScreen from './components/TournamentsScreen';
 import SettingsScreen from './components/SettingsScreen';
 import TutorialScreen from './components/TutorialScreen';
 import LoadingScreen from './components/LoadingScreen';
@@ -21,6 +22,9 @@ import Notification from './components/Notification';
 import Modal from './components/Modal';
 import AchievementPopup from './components/AchievementPopup';
 import { TestScreen } from './components/TestScreen';
+import TournamentBracketScreen from './components/TournamentBracketScreen';
+import DynamicTournamentBracket from './components/DynamicTournamentBracket';
+import VictorySplash from './components/VictorySplash';
 
 const App: React.FC = () => {
   // State management
@@ -70,6 +74,16 @@ const App: React.FC = () => {
     playerLevel: 1,
     experience: 0
   });
+  
+  // Tournament-specific stats (separate from main stats for now)
+  const [tournamentStats, setTournamentStats] = useState({
+    tournamentsCompleted: 0,
+    roundsCompleted: 0,
+    perfectTournaments: 0,
+    fastestTournament: 0,
+    tournamentGamesWon: 0,
+    tournamentGamesPlayed: 0
+  });
 
   const [achievements, setAchievements] = useState<Record<string, Achievement>>({
     firstWin: { unlocked: false, name: "Primera Victoria", description: "Gana tu primera partida", icon: "🏆" },
@@ -78,11 +92,33 @@ const App: React.FC = () => {
     florCollector: { unlocked: false, name: "Coleccionista de Flores", description: "Consigue 5 flores", icon: "🌸" },
     winStreak5: { unlocked: false, name: "Racha de 5", description: "Gana 5 partidas seguidas", icon: "🔥" },
     winStreak10: { unlocked: false, name: "Racha de 10", description: "Gana 10 partidas seguidas", icon: "🔥🔥" },
-    perfectGame: { unlocked: false, name: "Juego Perfecto", description: "Gana 30-0", icon: "💎" },
+    perfectGame: { unlocked: false, name: "Juego Perfecto", description: "Gana 30-0", icon: "📎" },
     speedster: { unlocked: false, name: "Velocista", description: "Gana en menos de 5 minutos", icon: "⚡" },
     veteran: { unlocked: false, name: "Veterano", description: "Juega 100 partidas", icon: "🎖️" },
-    levelUp: { unlocked: false, name: "Subida de Nivel", description: "Alcanza el nivel 10", icon: "⭐" }
+    levelUp: { unlocked: false, name: "Subida de Nivel", description: "Alcanza el nivel 10", icon: "⭐" },
+    // Tournament achievements
+    firstTournament: { unlocked: false, name: "Primer Torneo", description: "Completa tu primer torneo", icon: "🏅" },
+    roundMaster: { unlocked: false, name: "Maestro de Rondas", description: "Completa 5 rondas de torneo", icon: "🎯" },
+    tournamentChamp: { unlocked: false, name: "Campeón de Torneos", description: "Gana 3 torneos diferentes", icon: "👑" },
+    perfectTournament: { unlocked: false, name: "Torneo Perfecto", description: "Completa un torneo sin perder ningún juego", icon: "🏆" },
+    tournamentSpeedrun: { unlocked: false, name: "Torneo Rápido", description: "Completa un torneo en menos de 20 minutos", icon: "⏱️" }
   });
+
+  // Tournament state
+  const [availableTournaments, setAvailableTournaments] = useState<Tournament[]>([]);
+  const [activeTournament, setActiveTournament] = useState<Tournament | null>(null);
+  
+  // Victory splash state
+  const [victoryState, setVictoryState] = useState<{
+    show: boolean;
+    type: 'match' | 'round' | 'tournament';
+    opponentName?: string;
+    roundName?: string;
+    tournamentName?: string;
+    reward?: string;
+    levelUp?: { from: number; to: number };
+    experienceGained?: number;
+  }>({ show: false, type: 'match' });
 
   // UI state
   const [loading, setLoading] = useState(true);
@@ -138,9 +174,19 @@ const App: React.FC = () => {
   };
 
   // Game actions
-  const startGame = () => {
-    const newGameState = initializeGameState(gameState.difficulty, gameState.selectedAvatar);
+  const startTournamentWithOpponent = (opponent: AICharacter) => {
+    const newGameState = initializeGameState(opponent.difficulty, gameState.selectedAvatar, opponent);
     const gameWithHand = startNewHand(newGameState);
+    setGameState(gameWithHand);
+    navigateTo('game-board');
+    playSound('gameStart', gameSettings);
+  };
+  const startGame = () => {
+    console.log('App - Starting game with selectedOpponent:', gameState.selectedOpponent);
+    const newGameState = initializeGameState(gameState.difficulty, gameState.selectedAvatar, gameState.selectedOpponent);
+    console.log('App - newGameState selectedOpponent:', newGameState.selectedOpponent);
+    const gameWithHand = startNewHand(newGameState);
+    console.log('App - gameWithHand selectedOpponent:', gameWithHand.selectedOpponent);
     setGameState(gameWithHand);
     navigateTo('game-board');
     playSound('gameStart', gameSettings);
@@ -269,6 +315,12 @@ const App: React.FC = () => {
 
       showNotification('¡Felicidades! ¡Has ganado el juego!', 'success');
       playSound('gameWin', gameSettings);
+      
+      // Handle tournament progress if in tournament
+      if (finalState.tournamentContext?.isInTournament) {
+        handleTournamentGameEnd(true);
+        return; // Don't navigate to main screen, let tournament flow handle it
+      }
     } else {
       newStats.currentStreak = 0;
       
@@ -278,6 +330,20 @@ const App: React.FC = () => {
       
       showNotification('La computadora ha ganado. ¡Mejor suerte la próxima vez!', 'error');
       playSound('gameLose', gameSettings);
+      
+      // Handle tournament progress if in tournament (player lost)
+      if (finalState.tournamentContext?.isInTournament) {
+        handleTournamentGameEnd(false);
+        // Navigate back to tournament bracket after delay
+        setTimeout(() => {
+          if (activeTournament) {
+            navigateTo(`tournament-bracket-${activeTournament.id}`);
+          } else {
+            navigateTo('tournaments-screen');
+          }
+        }, 3000);
+        return;
+      }
     }
 
     // Update level
@@ -286,6 +352,7 @@ const App: React.FC = () => {
 
     setPlayerStats(newStats);
 
+    // Only navigate to main screen if not in tournament
     setTimeout(() => {
       navigateTo('main-screen');
     }, 3000);
@@ -339,6 +406,206 @@ const App: React.FC = () => {
     }
   };
 
+  // Tournament functions
+  const startTournamentMatch = (opponent: AICharacter) => {
+    // Set tournament context in game state
+    const tournamentContext = {
+      isInTournament: true,
+      tournamentId: activeTournament?.id,
+      currentRound: getTournamentProgress(activeTournament?.id || '')?.currentRound || 1,
+      currentOpponentInRound: 1, // Will be calculated based on progress
+      totalOpponentsInRound: activeTournament?.rounds.find(r => r.round === getTournamentProgress(activeTournament?.id || '')?.currentRound)?.opponents.length || 1
+    };
+    
+    const newGameState = {
+      ...initializeGameState(opponent.difficulty, gameState.selectedAvatar, opponent),
+      tournamentContext
+    };
+    
+    const gameWithHand = startNewHand(newGameState);
+    setGameState(gameWithHand);
+    navigateTo('game-board');
+    playSound('gameStart', gameSettings);
+  };
+  
+  const handleTournamentGameEnd = (playerWon: boolean) => {
+    if (!gameState.tournamentContext?.isInTournament) return;
+    
+    const tournamentId = gameState.tournamentContext.tournamentId;
+    const currentRound = gameState.tournamentContext.currentRound;
+    const opponentName = gameState.selectedOpponent?.name;
+    
+    if (!tournamentId || !currentRound || !opponentName) return;
+    
+    // Update tournament stats
+    const newTournamentStats = { ...tournamentStats };
+    newTournamentStats.tournamentGamesPlayed++;
+    
+    if (playerWon) {
+      newTournamentStats.tournamentGamesWon++;
+      
+      // Mark opponent as defeated
+      defeatOpponent(tournamentId, currentRound, opponentName);
+      
+      // Check if round is completed (all opponents defeated)
+      const progress = getTournamentProgress(tournamentId);
+      const tournament = availableTournaments.find(t => t.id === tournamentId);
+      const currentRoundData = tournament?.rounds.find(r => r.round === currentRound);
+      
+      if (progress && currentRoundData) {
+        const defeatedInRound = progress.opponentsDefeated[currentRound] || [];
+        const allOpponentsDefeated = defeatedInRound.length === currentRoundData.opponents.length;
+        
+        if (allOpponentsDefeated) {
+          // Complete the round
+          completeRound(tournamentId, currentRound, currentRoundData.reward);
+          newTournamentStats.roundsCompleted++;
+          
+          // Check for achievements
+          checkTournamentAchievements(tournamentId, newTournamentStats, progress);
+          
+          // Show appropriate victory splash
+          const updatedProgress = getTournamentProgress(tournamentId);
+          if (updatedProgress?.completed) {
+            // Tournament completed
+            newTournamentStats.tournamentsCompleted++;
+            
+            // Check for perfect tournament
+            const isPerfect = newTournamentStats.tournamentGamesWon === newTournamentStats.tournamentGamesPlayed;
+            if (isPerfect) {
+              newTournamentStats.perfectTournaments++;
+            }
+            
+            // Calculate tournament completion time
+            const tournamentTime = Date.now() - new Date(progress.startedAt).getTime();
+            const tournamentMinutes = tournamentTime / (1000 * 60);
+            if (newTournamentStats.fastestTournament === 0 || tournamentMinutes < newTournamentStats.fastestTournament) {
+              newTournamentStats.fastestTournament = tournamentMinutes;
+            }
+            
+            setVictoryState({
+              show: true,
+              type: 'tournament',
+              tournamentName: tournament?.name || 'Torneo',
+              reward: 'Campeón del Torneo',
+              experienceGained: 150,
+              levelUp: shouldLevelUp(150) ? { from: playerStats.playerLevel, to: playerStats.playerLevel + 1 } : undefined
+            });
+          } else {
+            // Round completed
+            setVictoryState({
+              show: true,
+              type: 'round',
+              roundName: currentRoundData.name,
+              reward: currentRoundData.reward,
+              experienceGained: 75
+            });
+          }
+        } else {
+          // Match won, but round not completed
+          setVictoryState({
+            show: true,
+            type: 'match',
+            opponentName: opponentName,
+            experienceGained: 50
+          });
+        }
+      }
+    }
+    
+    setTournamentStats(newTournamentStats);
+  };
+  
+  const shouldLevelUp = (experienceGain: number): boolean => {
+    const currentExp = playerStats.experience;
+    const newExp = currentExp + experienceGain;
+    const currentLevel = Math.floor(currentExp / 100) + 1;
+    const newLevel = Math.floor(newExp / 100) + 1;
+    return newLevel > currentLevel;
+  };
+  
+  const checkTournamentAchievements = (tournamentId: string, stats: typeof tournamentStats, progress: any) => {
+    const newAchievements = { ...achievements };
+    let hasNewAchievements = false;
+    
+    // First tournament achievement
+    if (stats.tournamentsCompleted >= 1 && !newAchievements.firstTournament.unlocked) {
+      newAchievements.firstTournament.unlocked = true;
+      hasNewAchievements = true;
+      setAchievementPopup({
+        icon: newAchievements.firstTournament.icon,
+        title: newAchievements.firstTournament.name,
+        description: newAchievements.firstTournament.description
+      });
+    }
+    
+    // Round master achievement
+    if (stats.roundsCompleted >= 5 && !newAchievements.roundMaster.unlocked) {
+      newAchievements.roundMaster.unlocked = true;
+      hasNewAchievements = true;
+      setAchievementPopup({
+        icon: newAchievements.roundMaster.icon,
+        title: newAchievements.roundMaster.name,
+        description: newAchievements.roundMaster.description
+      });
+    }
+    
+    // Tournament champion achievement
+    if (stats.tournamentsCompleted >= 3 && !newAchievements.tournamentChamp.unlocked) {
+      newAchievements.tournamentChamp.unlocked = true;
+      hasNewAchievements = true;
+      setAchievementPopup({
+        icon: newAchievements.tournamentChamp.icon,
+        title: newAchievements.tournamentChamp.name,
+        description: newAchievements.tournamentChamp.description
+      });
+    }
+    
+    // Perfect tournament achievement
+    if (stats.perfectTournaments >= 1 && !newAchievements.perfectTournament.unlocked) {
+      newAchievements.perfectTournament.unlocked = true;
+      hasNewAchievements = true;
+      setAchievementPopup({
+        icon: newAchievements.perfectTournament.icon,
+        title: newAchievements.perfectTournament.name,
+        description: newAchievements.perfectTournament.description
+      });
+    }
+    
+    // Fast tournament achievement
+    if (stats.fastestTournament > 0 && stats.fastestTournament <= 20 && !newAchievements.tournamentSpeedrun.unlocked) {
+      newAchievements.tournamentSpeedrun.unlocked = true;
+      hasNewAchievements = true;
+      setAchievementPopup({
+        icon: newAchievements.tournamentSpeedrun.icon,
+        title: newAchievements.tournamentSpeedrun.name,
+        description: newAchievements.tournamentSpeedrun.description
+      });
+    }
+    
+    if (hasNewAchievements) {
+      setAchievements(newAchievements);
+    }
+  };
+  
+  const loadTournamentById = async (tournamentId: string): Promise<Tournament | null> => {
+    try {
+      const response = await fetch('/config/tournament_configuration.json');
+      if (!response.ok) return null;
+      const tournaments: Tournament[] = await response.json();
+      
+      // Add id based on name if not present
+      const processedTournaments = tournaments.map(t => ({
+        ...t,
+        id: t.id || t.name.toLowerCase().replace(/\s+/g, '-')
+      }));
+      
+      return processedTournaments.find(t => t.id === tournamentId) || null;
+    } catch {
+      return null;
+    }
+  };
+
   // UI helpers
   const showNotification = (message: string, type: 'info' | 'success' | 'error' = 'info') => {
     setNotification({ message, type });
@@ -355,15 +622,27 @@ const App: React.FC = () => {
 
   // Render current screen
   const renderScreen = () => {
+    // Handle dynamic tournament bracket screens
+    if (currentScreen.startsWith('tournament-bracket-')) {
+      const tournamentId = currentScreen.replace('tournament-bracket-', '');
+      
+      return (
+        <DynamicTournamentBracket
+          tournamentId={tournamentId}
+          onNavigate={navigateTo}
+          onStartMatch={startTournamentMatch}
+          onSetActiveTournament={setActiveTournament}
+        />
+      );
+    }
+    
     switch (currentScreen) {
       case 'welcome-screen':
         return <WelcomeScreen onNavigate={navigateTo} />;
       case 'main-screen':
         return <MainScreen onNavigate={navigateTo} />;
       case 'setup-screen':
-        return <SetupScreen onNavigate={navigateTo} gameSettings={gameSettings} setGameSettings={setGameSettings} gameState={gameState} />;
-      case 'difficulty-screen':
-        return <DifficultyScreen onNavigate={navigateTo} gameState={gameState} setGameState={setGameState} onStartGame={startGame} />;
+        return <SetupScreen onNavigate={navigateTo} gameSettings={gameSettings} setGameSettings={setGameSettings} gameState={gameState} setGameState={setGameState} onStartGame={startGame} />;
       case 'game-board':
         return <GameBoard
           onNavigate={navigateTo}
@@ -390,9 +669,11 @@ const App: React.FC = () => {
       case 'stats-screen':
         return <StatsScreen onNavigate={navigateTo} playerStats={playerStats} />;
       case 'achievements-screen':
-        return <AchievementsScreen onNavigate={navigateTo} achievements={achievements} />;
+        return <AchievementsScreen onNavigate={navigateTo} achievements={achievements} playerStats={playerStats} />;
       case 'settings-screen':
         return <SettingsScreen onNavigate={navigateTo} gameSettings={gameSettings} setGameSettings={setGameSettings} />;
+      case 'tournaments-screen':
+        return <TournamentsScreen onNavigate={navigateTo} onStartTournament={startTournamentWithOpponent} />;
       case 'tutorial-screen':
         return <TutorialScreen onNavigate={navigateTo} />;
       case 'test-screen':
@@ -441,6 +722,30 @@ const App: React.FC = () => {
           title={achievementPopup.title}
           description={achievementPopup.description}
           onClose={() => setAchievementPopup(null)}
+        />
+      )}
+      
+      {victoryState.show && (
+        <VictorySplash
+          isVisible={victoryState.show}
+          type={victoryState.type}
+          opponentName={victoryState.opponentName}
+          roundName={victoryState.roundName}
+          tournamentName={victoryState.tournamentName}
+          reward={victoryState.reward}
+          levelUp={victoryState.levelUp}
+          experienceGained={victoryState.experienceGained}
+          onDismiss={() => {
+            setVictoryState({ ...victoryState, show: false });
+            // Navigate back to tournament bracket or appropriate screen
+            if (victoryState.type === 'tournament') {
+              navigateTo('tournaments-screen');
+            } else if (activeTournament) {
+              navigateTo(`tournament-bracket-${activeTournament.id}`);
+            }
+          }}
+          autoHide={victoryState.type !== 'tournament'}
+          hideDelay={victoryState.type === 'round' ? 4000 : 3000}
         />
       )}
     </div>

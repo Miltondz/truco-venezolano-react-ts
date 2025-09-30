@@ -45,8 +45,8 @@ const MainScreen: React.FC<MainScreenProps> = ({ onNavigate }) => {
           <button id="instructions-btn" className="menu-button" onClick={() => onNavigate('instructions-screen')}>
             📖 Instrucciones
           </button>
-          <button id="stats-btn" className="menu-button" onClick={() => onNavigate('stats-screen')}>
-            📊 Estadísticas
+          <button id="tournament-btn" className="menu-button" onClick={() => onNavigate('tournaments-screen')}>
+            🏁 Jugar Torneo
           </button>
           <button id="achievements-btn" className="menu-button" onClick={() => onNavigate('achievements-screen')}>
             🏆 Logros

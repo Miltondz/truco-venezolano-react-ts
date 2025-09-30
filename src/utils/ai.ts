@@ -78,7 +78,7 @@ export function selectBestCardForAI(gameState: GameState): number {
 
   if (difficulty === 'easy') {
     return Math.floor(Math.random() * gameState.computerHand.length);
-  } else if (difficulty === 'medium') {
+  } else if (difficulty === 'medium' || difficulty === 'intermediate') {
     return selectMediumAICard(gameState, personality);
   } else if (difficulty === 'hard') {
     return selectAdvancedAICard(gameState, personality);

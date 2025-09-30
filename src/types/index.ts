@@ -19,6 +19,21 @@ export interface AIPersonality {
   description: string; // Description of the personality style
 }
 
+// New AI Character interface for opponent selection
+export interface AICharacter {
+  id: string; // Unique identifier for the character
+  name: string; // Display name
+  agresividad: number; // 1-10: Aggressiveness level
+  riesgo: number; // 1-10: Risk taking tendency
+  blufeo: number; // 1-10: Bluffing frequency
+  consistencia: number; // 1-10: Consistency in play style
+  description: string; // Character description
+  avatar: string; // Avatar image filename
+  activo: boolean; // Whether character is available for selection
+  difficulty: 'easy' | 'medium' | 'intermediate' | 'hard' | 'master'; // Difficulty level
+  personality: 'balanced' | 'aggressive' | 'conservative' | 'unpredictable'; // Play style
+}
+
 export interface GameState {
   playerScore: number;
   computerScore: number;
@@ -29,7 +44,7 @@ export interface GameState {
   playerPlayedCard: Card | null;
   computerPlayedCard: Card | null;
   isPlayerTurn: boolean;
-  difficulty: 'easy' | 'medium' | 'hard' | 'master';
+  difficulty: 'easy' | 'medium' | 'intermediate' | 'hard' | 'master';
   aiPersonality: AIPersonality;
   activeCalls: string[];
   roundsWon: { player: number; computer: number };
@@ -47,6 +62,7 @@ export interface GameState {
   currentStreak: number;
   bestStreak: number;
   selectedAvatar: string;
+  selectedOpponent: AICharacter | null; // Currently selected AI opponent
   viraCard: Card | null;
   pericoCard: Card | null;
   // Avatar mood system
@@ -57,6 +73,8 @@ export interface GameState {
   isProcessingAction: boolean;
   // Game phases
   currentPhase: 'flor' | 'envido' | 'truco' | 'playing';
+  // Tournament context
+  tournamentContext?: TournamentGameContext;
 }
 
 export interface GameSettings {
@@ -189,6 +207,60 @@ export interface LessonScreenProps {
   onBack: () => void;
   onProgressUpdate: (progress: TutorialProgress) => void;
   onComplete: () => void;
+}
+
+// Tournament system types - Support for multiple active tournaments
+export interface TournamentRound {
+  round: number;
+  name: string;
+  difficulty: string;
+  opponents: string[];
+  unlockNext: boolean;
+  reward: string;
+  completed?: boolean;
+  currentOpponentIndex?: number;
+}
+
+export interface Tournament {
+  id: string;
+  name: string;
+  description: string;
+  activo: boolean;
+  rounds: TournamentRound[];
+  rules?: Record<string, string | number>;
+  unlockConditions?: Record<string, string>;
+  completed?: boolean;
+  currentRound?: number;
+}
+
+export interface TournamentProgress {
+  tournamentId: string;
+  tournamentName: string;
+  currentRound: number;
+  roundsCompleted: boolean[];
+  opponentsDefeated: Record<number, string[]>; // round -> defeated opponents
+  completed: boolean;
+  startedAt: string;
+  completedAt?: string;
+  rewards: string[];
+  lastPlayedAt: string;
+}
+
+// Global tournament state - manages multiple active tournaments
+export interface TournamentState {
+  availableTournaments: Tournament[];
+  activeProgress: Record<string, TournamentProgress>; // tournamentId -> progress
+  completedTournaments: string[];
+  currentActiveTournament?: string; // currently selected tournament
+}
+
+// Extended game state to include tournament context
+export interface TournamentGameContext {
+  isInTournament: boolean;
+  tournamentId?: string;
+  currentRound?: number;
+  currentOpponentInRound?: number;
+  totalOpponentsInRound?: number;
 }
 
 export interface ScreenProps extends BaseScreenProps {

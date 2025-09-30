@@ -24,6 +24,8 @@ const GameBoard: React.FC<GameBoardProps> = ({
   onCallFaltaEnvido,
   onCallEstarCantando
 }) => {
+  // Debug logging
+  console.log('GameBoard - selectedOpponent:', gameState.selectedOpponent);
   const [showPersonalityModal, setShowPersonalityModal] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [avatarErrors, setAvatarErrors] = useState<{computer: boolean, player: boolean}>({computer: false, player: false});
@@ -46,8 +48,18 @@ const GameBoard: React.FC<GameBoardProps> = ({
     
     // Prevent infinite loop by checking if we already had an error
     if (!avatarErrors[errorKey]) {
-      const mood = isPlayer ? gameState.playerAvatarMood : gameState.computerAvatarMood;
-      const fallbackSrc = getSmartFallbackPath(gameState.selectedAvatar, mood, isPlayer);
+      let fallbackSrc;
+      
+      if (isPlayer) {
+        const mood = gameState.playerAvatarMood;
+        fallbackSrc = getSmartFallbackPath(gameState.selectedAvatar, mood, isPlayer);
+      } else {
+        // For computer, try to use the default fallback avatar if selectedOpponent fails
+        fallbackSrc = gameState.selectedOpponent ? 
+          '/images/avatars/avatar1-default.jpg' : 
+          getSmartFallbackPath(gameState.selectedAvatar, gameState.computerAvatarMood, isPlayer);
+      }
+      
       img.src = fallbackSrc;
       setAvatarErrors(prev => ({ ...prev, [errorKey]: true }));
     }
@@ -114,8 +126,11 @@ const GameBoard: React.FC<GameBoardProps> = ({
             <div className="computer-info">
               <img 
                 id="computer-avatar" 
-                src={getAvatarImagePath(gameState.selectedAvatar, gameState.computerAvatarMood, false)} 
-                alt="Avatar del Oponente" 
+                src={gameState.selectedOpponent ? 
+                  `/images/avatars/${gameState.selectedOpponent.avatar}` : 
+                  getAvatarImagePath(gameState.selectedAvatar, gameState.computerAvatarMood, false)
+                } 
+                alt={gameState.selectedOpponent ? `Avatar de ${gameState.selectedOpponent.name}` : "Avatar del Oponente"} 
                 className="avatar-image computer-avatar"
                 onError={(e) => handleAvatarError(e, false)}
               />
@@ -142,8 +157,8 @@ const GameBoard: React.FC<GameBoardProps> = ({
           {/* Personality Indicators */}
           <div className="personality-indicators">
             <div className="personality-indicator" onClick={handleShowPersonality} title="Ver personalidad completa">
-              <div className="indicator-label">🤖 {archetype}</div>
-              <div className="indicator-value">IA Personalizada</div>
+              <div className="indicator-label">🤖 {gameState.selectedOpponent ? gameState.selectedOpponent.name : archetype}</div>
+              <div className="indicator-value">{gameState.selectedOpponent ? `${gameState.selectedOpponent.difficulty.toUpperCase()} - ${gameState.selectedOpponent.personality.toUpperCase()}` : 'IA Personalizada'}</div>
               <div className="indicator-bar">
                 <div
                   className="indicator-fill"
@@ -164,7 +179,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
           <div className="play-area">
             <div className="played-cards" id="played-cards">
               <div className="played-card-slot">
-                <div className="card-label">Computadora</div>
+                <div className="card-label">{gameState.selectedOpponent ? gameState.selectedOpponent.name : 'Computadora'}</div>
                 <div id="computer-played-card">
                   {gameState.computerPlayedCard && (
                     <Card card={gameState.computerPlayedCard} faceUp={true} settings={gameSettings} />

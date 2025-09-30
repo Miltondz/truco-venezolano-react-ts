@@ -2912,8 +2912,12 @@
 .screen:not(.game-board):not(.welcome-screen) *,
 .screen:not(.game-board):not(.welcome-screen) .screen-content,
 .screen:not(.game-board):not(.welcome-screen) .setup-grid,
-.screen:not(.game-board):not(.welcome-screen) .setup-section,
 .screen:not(.game-board):not(.welcome-screen) .selection-grid {
+  overflow: hidden !important;
+}
+
+/* Allow setup sections to have their own overflow rules */
+.screen:not(.game-board):not(.welcome-screen) .setup-section.opponent-section {
   overflow: hidden !important;
 }
 
@@ -3226,7 +3230,7 @@
    width: 100%;
    height: 100%;
    display: grid;
-   grid-template-rows: 60px 1fr;
+   grid-template-rows: 80px 1fr;
    gap: 0.3rem;
    overflow: hidden !important;
    box-sizing: border-box;
@@ -3238,7 +3242,7 @@
    display: flex;
    justify-content: space-between;
    align-items: center;
-   padding: 0.4rem;
+   padding: 0.5rem;
    flex-wrap: nowrap;
    gap: 0.5rem;
    background: rgba(61, 40, 23, 0.8);
@@ -3246,9 +3250,9 @@
    border: 2px solid var(--card-border);
    backdrop-filter: blur(10px);
    position: relative;
-   min-height: 50px;
-   max-height: 60px;
-   overflow: hidden !important;
+   min-height: 70px;
+   max-height: 80px;
+   overflow: visible !important;
    box-sizing: border-box;
    width: 100%;
    margin: 0;
@@ -3287,16 +3291,18 @@
 
 .scoreboard {
    display: flex;
-   gap: 0.3rem;
+   gap: 0.5rem;
    background: rgba(42, 24, 16, 0.9);
-   padding: 0.3rem 0.5rem;
+   padding: 0.5rem 0.75rem;
    border-radius: 6px;
    border: 2px solid var(--text-accent);
    box-shadow: var(--glow-gold);
    animation: score-glow 3s ease-in-out infinite;
    backdrop-filter: blur(10px);
    flex-shrink: 0;
-   overflow: hidden;
+   overflow: visible;
+   align-items: center;
+   min-height: 60px;
  }
 
 @keyframes score-glow {
@@ -3308,18 +3314,25 @@
   text-align: center;
   transition: all 0.3s;
   min-width: 80px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.2rem;
 }
 
 .score-label {
   font-size: clamp(0.5rem, 1.5vw, 0.7rem);
   color: var(--text-secondary);
-  margin-bottom: 0.5rem;
+  margin: 0;
+  line-height: 1.2;
 }
 
 .score-value {
-  font-size: clamp(0.8rem, 2.5vw, 1.2rem);
+  font-size: clamp(0.9rem, 2.5vw, 1.3rem);
   color: var(--text-accent);
   font-weight: bold;
+  line-height: 1.2;
+  margin: 0;
 }
 
 /* ========================================
@@ -3404,7 +3417,7 @@
    border: 3px solid var(--green-felt);
    padding: 1rem;
    position: absolute !important;
-   top: 50% !important;
+   top: calc(50% - 30px) !important;
    left: 50% !important;
    transform: translate(-50%, -50%) !important;
    backdrop-filter: blur(5px);
@@ -3527,7 +3540,7 @@
    ======================================== */
 .personality-indicators {
    position: absolute !important;
-   top: 234px !important;
+   top: 249px !important;
    left: 1rem !important;
    display: flex;
    gap: 0.5rem;
@@ -3537,7 +3550,7 @@
 
 .ai-thinking {
    position: absolute !important;
-   top: 258px !important;
+   top: 310px !important;
    left: 1rem !important;
    background: rgba(42, 24, 16, 0.9);
    border: 2px solid var(--blue-accent);
@@ -3701,7 +3714,7 @@
 .setup-grid {
   display: grid;
   grid-template-columns: 1fr; /* Mobile-first */
-  gap: 1rem;
+  gap: 0.5rem;
   width: 100%;
   align-items: start;
   overflow: visible !important;
@@ -3786,17 +3799,362 @@
 
 @media (min-width: 769px) {
   .setup-grid {
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
   }
+  
+  #setup-screen .setup-section:not(.opponent-section) {
+    max-width: 290px !important;
+    min-height: 320px !important;
+    max-height: 400px !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+  }
+  
+  #setup-screen .setup-section.opponent-section {
+    max-width: 700px !important;
+    max-height: 520px !important;
+    overflow: hidden !important;
+    padding: 0.8rem !important;
+  }
+}
+
+/* Opponent Selector styles */
+.opponent-selector {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
+  width: 100%;
+  height: 100%;
+  max-height: 460px;
+  overflow: hidden;
+}
+
+.opponent-nav-btn {
+  background: linear-gradient(145deg, var(--accent-bg), var(--secondary-bg));
+  border: 2px solid var(--card-border);
+  border-radius: 12px;
+  color: var(--text-primary);
+  cursor: pointer;
+  padding: 0.75rem 1.25rem;
+  min-width: 120px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-soft);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  font-size: clamp(0.8rem, 1.8vw, 0.95rem);
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.opponent-nav-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-strong), var(--glow-gold);
+  border-color: var(--text-accent);
+}
+
+.opponent-card {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  grid-template-rows: auto auto auto;
+  gap: 0.6rem;
+  background: rgba(61, 40, 23, 0.85);
+  border: 2px solid var(--card-border);
+  border-radius: 15px;
+  padding: 0.8rem;
+  width: 100%;
+  height: 100%;
+  max-height: 480px;
+  backdrop-filter: blur(5px);
+  align-items: start;
+  overflow: hidden;
+}
+
+.opponent-avatar-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  text-align: center;
+  grid-column: 1 / 2;
+  grid-row: 1 / 2;
+}
+
+.opponent-avatar {
+  width: 220px;
+  height: 220px;
+  border-radius: 12px;
+  border: 3px solid var(--text-accent);
+  object-fit: cover;
+  background: rgba(0,0,0,0.2);
+  box-shadow: var(--shadow-strong);
+}
+
+.opponent-name h4 {
+  margin: 0;
+  font-size: clamp(1rem, 2.5vw, 1.3rem);
+  color: var(--text-accent);
+  text-align: center;
+  font-weight: bold;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+}
+
+.opponent-info {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto 1fr auto;
+  gap: 0.5rem;
+  width: 100%;
+  height: 100%;
+  grid-row: 1 / 2;
+}
+
+.opponent-description {
+  margin: 0;
+  font-size: clamp(0.7rem, 1.6vw, 0.8rem);
+  color: var(--text-secondary);
+  line-height: 1.3;
+  font-style: italic;
+  text-align: left;
+  padding: 0.8rem;
+  background: rgba(0,0,0,0.2);
+  border-radius: 6px;
+  border: 1px solid var(--card-border);
+  grid-column: 2 / 3;
+  grid-row: 1 / 2;
+  align-self: start;
+  max-width: none;
+  height: 220px;
+  display: flex;
+  align-items: center;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+/* Container for stats and tags together */
+.opponent-stats-container {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  grid-column: 1 / -1; /* Span full width of the card on row 2 */
+  grid-row: 2 / 3;
+  width: 100%;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.opponent-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.4rem 0.6rem;
+  margin: 0;
+  flex: 1;
+  min-width: 0;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.stat-label {
+  font-size: clamp(0.65rem, 1.4vw, 0.75rem);
+  color: var(--text-primary);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stat-bar {
+  position: relative;
+  height: 12px;
+  background: rgba(0,0,0,0.4);
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
+}
+
+.stat-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--text-accent), var(--orange-accent));
+  border-radius: 6px;
+  transition: width 0.3s ease;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+
+.stat-value {
+  display: none;
+}
+
+.opponent-tags {
+  display: flex;
+  gap: 0.3rem;
+  flex-wrap: wrap;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  flex: 0 0 auto;
+  margin-top: 0;
+}
+
+.opponent-tag {
+  padding: 0.3rem 0.6rem;
+  border: 1px solid currentColor;
+  border-radius: 12px;
+  font-size: clamp(0.5rem, 1.2vw, 0.6rem);
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  background: rgba(0,0,0,0.2);
+  backdrop-filter: blur(3px);
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.opponent-tag:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+  #setup-screen .setup-section:not(.opponent-section) {
+    max-width: 280px !important;
+    max-height: 350px !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+  }
+  
+  .setup-section.opponent-section {
+    max-width: 500px;
+    max-height: none;
+  }
+  
+  .opponent-card {
+    grid-template-columns: 160px 1fr;
+    max-width: 480px;
+    padding: 0.7rem;
+    gap: 0.8rem;
+  }
+  
+  .opponent-avatar {
+    width: 160px;
+    height: 160px;
+  }
+  
+  .opponent-info {
+    min-height: 160px;
+  }
+  
+  .opponent-nav-btn {
+    min-width: 100px;
+    padding: 0.6rem 1rem;
+    font-size: clamp(0.75rem, 1.6vw, 0.85rem);
+  }
+  
+  .opponent-stats {
+    grid-template-columns: 1fr;
+    gap: 0.25rem 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .setup-section.opponent-section {
+    max-width: 100%;
+  }
+  
+  .opponent-card {
+    grid-template-columns: 1fr;
+    max-width: 100%;
+    padding: 0.6rem;
+    gap: 0.5rem;
+  }
+  
+  .opponent-avatar {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto;
+  }
+  
+  .opponent-info {
+    min-height: auto;
+  }
+  
+  .opponent-nav-btn {
+    min-width: 80px;
+    padding: 0.5rem 0.8rem;
+    font-size: clamp(0.7rem, 1.4vw, 0.8rem);
+  }
+  
+  .opponent-nav-buttons {
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-top: 0.3rem;
+  }
+  
+  .opponent-stats {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.25rem 0.4rem;
+  }
+}
+
+.opponent-counter {
+  font-size: 0.75rem;
+  color: var(--text-accent);
+  background: rgba(61, 40, 23, 0.9);
+  padding: 0.3rem 0.6rem;
+  border-radius: 12px;
+  border: 2px solid var(--text-accent);
+  font-weight: bold;
+  box-shadow: var(--shadow-soft);
+  backdrop-filter: blur(5px);
+  margin-top: 0.5rem;
+}
+
+.opponent-nav-buttons {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+  grid-column: 1 / -1;
+  grid-row: 3 / 4;
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+}
+
+.opponent-selector-placeholder {
+  background: rgba(61, 40, 23, 0.5);
+  border: 2px solid var(--card-border);
+  border-radius: 12px;
+  padding: 2rem;
+  text-align: center;
+  color: var(--text-secondary);
+  font-style: italic;
 }
 
 .setup-section {
   background: rgba(61, 40, 23, 0.8);
   border: 2px solid var(--card-border);
   border-radius: 12px;
-  padding: 0.7rem;
+  padding: 0.6rem;
   backdrop-filter: blur(10px);
   overflow: visible !important;
+}
+
+#setup-screen .setup-section:not(.opponent-section) {
+  padding: 0.5rem !important;
+  max-height: 380px !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+}
+
+.setup-section.opponent-section {
+  padding-bottom: 0.7rem;
 }
 
 .setup-section:hover {
@@ -3813,13 +4171,60 @@
 .selection-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 0.5rem;
+  gap: 0.05rem;
   align-items: center;
   overflow: visible !important;
 }
 
 .selection-grid:hover {
   overflow: visible !important;
+}
+
+#setup-screen .setup-section:not(.opponent-section) .selection-grid {
+  overflow: visible !important;
+}
+
+/* Highest priority rules for deck and board sections */
+#setup-screen.screen .setup-section:not(.opponent-section) {
+  max-height: 380px !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  position: relative !important;
+}
+
+/* Ensure deck and board sections can scroll */
+@supports (overflow: auto) {
+  #setup-screen.screen.active .setup-section:not(.opponent-section) {
+    overflow-y: auto !important;
+    max-height: 380px !important;
+  }
+}
+
+/* Ultra specific class to force scroll behavior */
+.deck-board-section-scroll-force {
+  max-height: 380px !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  position: relative !important;
+  box-sizing: border-box !important;
+}
+
+.deck-board-section-scroll-force::-webkit-scrollbar {
+  width: 8px;
+}
+
+.deck-board-section-scroll-force::-webkit-scrollbar-track {
+  background: rgba(0,0,0,0.2);
+  border-radius: 4px;
+}
+
+.deck-board-section-scroll-force::-webkit-scrollbar-thumb {
+  background: var(--text-accent);
+  border-radius: 4px;
+}
+
+.deck-board-section-scroll-force::-webkit-scrollbar-thumb:hover {
+  background: var(--orange-accent);
 }
 
 .selection-item {
@@ -3829,7 +4234,7 @@
   transition: all 0.3s;
   overflow: visible !important;
   position: relative;
-  height: 180px;
+  height: 140px;
   width: 70%;
   display: flex;
   align-items: center;
@@ -5019,7 +5424,7 @@
      AI PERSONALITY DISPLAY - RPG-style personality modal
      ======================================== */
 .ai-personality-modal {
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   width: 100%;
@@ -5030,19 +5435,20 @@
   align-items: center;
   z-index: 4000;
   backdrop-filter: blur(10px);
-  padding: 1rem;
+  padding: 0.5rem;
   box-sizing: border-box;
 }
 
 .ai-personality-content {
   background: linear-gradient(145deg, var(--secondary-bg), var(--accent-bg));
   border: 3px solid var(--card-border);
-  border-radius: 16px;
-  padding: 2rem;
-  max-width: 800px;
-  width: 100%;
-  max-height: 90vh;
+  border-radius: 12px;
+  padding: 1rem;
+  max-width: 900px;
+  width: 95%;
+  max-height: 95%;
   overflow-y: auto;
+  overflow-x: hidden;
   box-shadow: var(--shadow-strong), var(--glow-gold);
   animation: personality-enter 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
@@ -5063,13 +5469,13 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
-  padding-bottom: 1rem;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
   border-bottom: 2px solid var(--card-border);
 }
 
 .personality-header h2 {
-  font-size: clamp(1.2rem, 3vw, 1.8rem);
+  font-size: clamp(0.9rem, 2.5vw, 1.3rem);
   color: var(--text-accent);
   margin: 0;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
@@ -5079,15 +5485,16 @@
   background: var(--red-suit);
   border: 2px solid var(--card-border);
   border-radius: 50%;
-  width: 40px;
-  height: 40px;
+  width: 32px;
+  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
-  font-size: 1.2rem;
+  font-size: 1rem;
   cursor: pointer;
   transition: all 0.3s;
+  flex-shrink: 0;
 }
 
 .close-button:hover {
@@ -5098,39 +5505,39 @@
 
 .personality-archetype {
   text-align: center;
-  margin-bottom: 2rem;
-  padding: 1.5rem;
+  margin-bottom: 0.75rem;
+  padding: 0.75rem;
   background: rgba(61, 40, 23, 0.6);
-  border-radius: 12px;
+  border-radius: 8px;
   border: 2px solid var(--card-border);
 }
 
 .personality-archetype h3 {
-  font-size: clamp(1rem, 2.5vw, 1.4rem);
+  font-size: clamp(0.85rem, 2.2vw, 1.1rem);
   color: var(--text-accent);
-  margin: 0 0 0.5rem 0;
+  margin: 0 0 0.3rem 0;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 .archetype-description {
-  font-size: clamp(0.7rem, 1.8vw, 0.9rem);
+  font-size: clamp(0.6rem, 1.5vw, 0.75rem);
   color: var(--text-secondary);
   margin: 0;
-  line-height: 1.4;
+  line-height: 1.3;
 }
 
 .traits-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 2rem;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
 }
 
 .trait-item {
   background: rgba(61, 40, 23, 0.8);
   border: 2px solid var(--card-border);
-  border-radius: 12px;
-  padding: 1.5rem;
+  border-radius: 8px;
+  padding: 0.75rem;
   backdrop-filter: blur(10px);
   transition: all 0.3s;
 }
@@ -5144,32 +5551,32 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 0.8rem;
+  margin-bottom: 0.4rem;
 }
 
 .trait-label span:first-child {
-  font-size: clamp(0.8rem, 2vw, 1rem);
+  font-size: clamp(0.65rem, 1.8vw, 0.8rem);
   color: var(--text-primary);
   font-weight: bold;
 }
 
 .trait-value {
-  font-size: clamp(0.7rem, 1.8vw, 0.9rem);
+  font-size: clamp(0.6rem, 1.5vw, 0.75rem);
   font-weight: bold;
-  padding: 0.3rem 0.6rem;
-  border-radius: 6px;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
   background: rgba(0, 0, 0, 0.3);
-  min-width: 50px;
+  min-width: 40px;
   text-align: center;
 }
 
 .trait-bar {
   width: 100%;
-  height: 12px;
+  height: 8px;
   background: var(--secondary-bg);
-  border-radius: 6px;
+  border-radius: 4px;
   overflow: hidden;
-  margin-bottom: 0.8rem;
+  margin-bottom: 0.4rem;
   border: 1px solid var(--card-border);
 }
 
@@ -5180,30 +5587,30 @@
 }
 
 .trait-description {
-  font-size: clamp(0.6rem, 1.5vw, 0.8rem);
+  font-size: clamp(0.55rem, 1.3vw, 0.65rem);
   color: var(--text-secondary);
-  line-height: 1.4;
+  line-height: 1.3;
   margin: 0;
 }
 
 .personality-analysis {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 2rem;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
 }
 
 .analysis-section {
   background: rgba(61, 40, 23, 0.6);
   border: 2px solid var(--card-border);
-  border-radius: 12px;
-  padding: 1.5rem;
+  border-radius: 8px;
+  padding: 0.75rem;
 }
 
 .analysis-section h4 {
-  font-size: clamp(0.8rem, 2vw, 1rem);
+  font-size: clamp(0.7rem, 1.8vw, 0.85rem);
   color: var(--text-accent);
-  margin: 0 0 1rem 0;
+  margin: 0 0 0.5rem 0;
   text-align: center;
 }
 
@@ -5214,10 +5621,10 @@
 }
 
 .analysis-section li {
-  font-size: clamp(0.6rem, 1.5vw, 0.8rem);
+  font-size: clamp(0.55rem, 1.3vw, 0.65rem);
   color: var(--text-primary);
-  margin-bottom: 0.5rem;
-  padding-left: 1rem;
+  margin-bottom: 0.3rem;
+  padding-left: 0.75rem;
   position: relative;
 }
 
@@ -5232,29 +5639,29 @@
 .personality-summary {
   background: rgba(61, 40, 23, 0.8);
   border: 2px solid var(--card-border);
-  border-radius: 12px;
-  padding: 1.5rem;
-  margin-bottom: 2rem;
+  border-radius: 8px;
+  padding: 0.75rem;
+  margin-bottom: 0.75rem;
 }
 
 .personality-summary h4 {
-  font-size: clamp(0.8rem, 2vw, 1rem);
+  font-size: clamp(0.7rem, 1.8vw, 0.85rem);
   color: var(--text-accent);
-  margin: 0 0 1rem 0;
+  margin: 0 0 0.5rem 0;
   text-align: center;
 }
 
 .personality-summary p {
-  font-size: clamp(0.7rem, 1.8vw, 0.9rem);
+  font-size: clamp(0.6rem, 1.5vw, 0.75rem);
   color: var(--text-primary);
-  line-height: 1.5;
+  line-height: 1.4;
   margin: 0;
   text-align: justify;
 }
 
 .personality-footer {
   text-align: center;
-  padding-top: 1rem;
+  padding-top: 0.5rem;
   border-top: 2px solid var(--card-border);
 }
 
@@ -5503,16 +5910,16 @@ html, body {
   overflow: hidden !important; /* Solo bloquear en este nivel */
 }
 
-/* Modal containers must fit within viewport */
+/* Modal containers must fit within viewport - usando absolute para el canvas del juego */
 .modal, .ai-personality-modal, .tutorial-overlay {
-  max-height: 100vh !important;
-  height: 100vh !important;
+  max-height: 100% !important;
+  height: 100% !important;
   overflow: hidden !important;
 }
 
 /* Modal content must not exceed viewport */
 .modal-content, .ai-personality-content {
-  max-height: 90vh !important;
+  max-height: 95% !important;
   overflow-y: auto !important;
   overflow-x: hidden !important;
 }
@@ -5578,18 +5985,18 @@ html, body {
     overflow: hidden !important;
   }
 
-  /* Modal containers */
+  /* Modal containers - absolute para móvil dentro del canvas */
   .modal, .ai-personality-modal, .tutorial-overlay {
-    max-height: 100vh !important;
-    height: 100vh !important;
+    max-height: 100% !important;
+    height: 100% !important;
     overflow: hidden !important;
-    position: fixed !important;
+    position: absolute !important;
   }
 
   /* Modal content */
   .modal-content, .ai-personality-content {
-    max-height: 85vh !important;
-    max-width: 95vw !important;
+    max-height: 90% !important;
+    max-width: 95% !important;
     overflow-y: auto !important;
     overflow-x: hidden !important;
   }
@@ -5598,16 +6005,23 @@ html, body {
 @media (max-width: 480px) {
   /* Even stricter overflow prevention for small screens */
   .modal-content, .ai-personality-content {
-    max-height: 80vh !important;
-    max-width: 90vw !important;
+    max-height: 85% !important;
+    max-width: 92% !important;
+    padding: 0.75rem;
+  }
+  
+  .traits-grid, .personality-analysis {
+    grid-template-columns: 1fr;
+    gap: 0.4rem;
   }
 }
 
 @media (max-width: 320px) {
   /* Maximum overflow prevention for extra small screens */
   .modal-content, .ai-personality-content {
-    max-height: 75vh !important;
-    max-width: 85vw !important;
+    max-height: 80% !important;
+    max-width: 90% !important;
+    padding: 0.5rem;
   }
 }
 
@@ -6002,6 +6416,12 @@ html, body {
     padding: 1rem;
   }
 
+  /* Opponent selector mobile adjustments */
+  .opponent-nav-btn {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: rgba(255, 215, 0, 0.3);
+  }
+
   .setup-title {
     font-size: clamp(0.8rem, 4vw, 1.1rem);
     margin-bottom: 0.8rem;
@@ -6009,7 +6429,7 @@ html, body {
 
   .selection-grid {
     grid-template-columns: repeat(3, 1fr);
-    gap: 0.5rem;
+    gap: 0.1rem;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
@@ -6017,7 +6437,7 @@ html, body {
   }
 
   .selection-item {
-    height: 100px;
+    height: 80px;
     width: 80px;
     min-height: 44px;
     min-width: 70px;
@@ -6059,7 +6479,7 @@ html, body {
   }
 
   /* Continue button mobile optimization */
-  #continue-to-difficulty-btn {
+#start-game-btn {
     margin-top: 1rem !important;
     min-height: 44px;
     padding: 0.75rem 1.5rem;
@@ -6234,17 +6654,19 @@ html, body {
     padding: 0.75rem;
   }
 
+  /* Small mobile opponent selector adjustments - handled in main mobile section */
+
   .setup-title {
     font-size: clamp(0.7rem, 3.5vw, 1rem);
     margin-bottom: 0.6rem;
   }
 
   .selection-grid {
-    gap: 0.6rem;
+    gap: 0.1rem;
   }
 
   .selection-item {
-    height: 90px;
+    height: 70px;
     width: 70px;
     min-width: 60px;
   }
@@ -6267,7 +6689,7 @@ html, body {
     font-size: clamp(0.6rem, 2.5vw, 0.8rem);
   }
 
-  #continue-to-difficulty-btn {
+  #start-game-btn {
     margin-top: 0.75rem !important;
     min-height: 44px;
     padding: 0.6rem 1rem;
@@ -6396,17 +6818,55 @@ html, body {
     padding: 0.5rem;
   }
 
+  /* Extra small mobile opponent selector adjustments */
+  .opponent-card {
+    padding: 0.5rem;
+    gap: 0.4rem;
+  }
+  
+  .opponent-avatar {
+    width: 100px;
+    height: 100px;
+  }
+  
+  .opponent-nav-btn {
+    min-width: 70px;
+    padding: 0.4rem 0.6rem;
+    font-size: 0.65rem;
+  }
+  
+  .opponent-nav-buttons {
+    gap: 0.5rem;
+  }
+
+  .stat-label {
+    font-size: 0.6rem;
+  }
+
+  .stat-value {
+    font-size: 0.6rem;
+  }
+
+  .opponent-tag {
+    font-size: 0.55rem;
+    padding: 0.15rem 0.3rem;
+  }
+
+  .opponent-counter {
+    font-size: 0.55rem;
+  }
+
   .setup-title {
     font-size: clamp(0.6rem, 3vw, 0.9rem);
     margin-bottom: 0.5rem;
   }
 
   .selection-grid {
-    gap: 0.5rem;
+    gap: 0.1rem;
   }
 
   .selection-item {
-    height: 75px;
+    height: 60px;
     width: 60px;
     min-width: 50px;
     min-height: 44px;
@@ -6431,12 +6891,133 @@ html, body {
     line-height: 1.3;
   }
 
-  #continue-to-difficulty-btn {
+  #start-game-btn {
     margin-top: 0.5rem !important;
     min-height: 44px;
     padding: 0.5rem 0.75rem;
     font-size: 0.7rem;
     width: 100%;
     max-width: 250px;
+  }
+}
+
+/* ========================================
+   SETUP SCREEN SPECIFIC OVERRIDES - Ultra specific rules ONLY for Preparar Partida screen
+   Only two breakpoints: Desktop (769px+) and Mobile (768px-)
+   ======================================== */
+
+/* CRITICAL: Override global width restrictions specifically for Setup Screen */
+#setup-screen.screen.active * {
+  max-width: none !important;
+}
+
+#setup-screen.screen.active .setup-section {
+  max-width: none !important;
+}
+
+#setup-screen.screen.active .setup-grid {
+  max-width: none !important;
+}
+
+/* DESKTOP/WEB - Default rules for Setup Screen (769px and above) */
+#setup-screen.screen.active .setup-grid {
+  gap: 1.5625rem !important;
+  overflow: visible !important;
+  display: grid !important;
+  grid-template-columns: 280px 280px 540px !important;
+  width: 100% !important;
+  max-width: 1280px !important;
+  align-items: start !important;
+  justify-content: center !important;
+  justify-items: center !important;
+}
+
+#setup-screen.screen.active .selection-grid {
+  gap: 0.3rem !important;
+  overflow: visible !important;
+  display: grid !important;
+  grid-template-columns: repeat(2, 1fr) !important;
+  align-items: center !important;
+  /* Override global width restrictions */
+  max-width: none !important;
+}
+
+/* Critical: Override .game-canvas * and .screen * width restrictions */
+#setup-screen.screen.active .setup-section.opponent-section {
+  max-width: 540px !important;
+  width: 540px !important;
+  min-width: 540px !important;
+  max-height: 520px !important;
+  overflow: hidden !important;
+  padding: 0.8rem !important;
+  /* Force flex grow to allow expansion */
+  flex: 0 0 540px !important;
+  flex-shrink: 0 !important;
+  box-sizing: border-box !important;
+}
+
+#setup-screen.screen.active .setup-section:not(.opponent-section) {
+  max-width: 290px !important;
+  width: 290px !important;
+  min-width: 290px !important;
+  min-height: 320px !important;
+  max-height: 400px !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  /* Force flex properties */
+  flex: 0 0 290px !important;
+  flex-shrink: 0 !important;
+}
+
+/* Selection items hover behavior - Only in Setup Screen Desktop */
+#setup-screen.screen.active .selection-item:hover {
+  transform: scale(2) !important;
+  box-shadow: var(--glow-gold) !important;
+  z-index: 9999 !important;
+  overflow: visible !important;
+  position: relative !important;
+  border: 3px solid var(--text-accent) !important;
+}
+
+/* Fix game-title height in Setup Screen */
+#setup-screen.screen.active .game-title {
+  margin-bottom: 1.5rem !important;
+  padding: 0.5rem 0 !important;
+  min-height: 3rem !important;
+  line-height: 1.2 !important;
+  display: block !important;
+}
+
+/* MOBILE - Setup Screen overrides (768px and below) */
+@media (max-width: 768px) {
+  #setup-screen.screen.active .setup-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.5rem !important;
+  }
+  
+  #setup-screen.screen.active .selection-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 0.05rem !important;
+  }
+  
+  #setup-screen.screen.active .setup-section.opponent-section {
+    max-width: 100% !important;
+    max-height: none !important;
+  }
+  
+  #setup-screen.screen.active .setup-section:not(.opponent-section) {
+    max-width: 100% !important;
+    max-height: 350px !important;
+  }
+  
+  /* Mobile selection items - smaller hover effect */
+  #setup-screen.screen.active .selection-item:hover {
+    transform: scale(1.1) !important;
+  }
+  
+  /* Mobile title fix */
+  #setup-screen.screen.active .game-title {
+    margin-bottom: 1rem !important;
+    min-height: 2.5rem !important;
   }
 }

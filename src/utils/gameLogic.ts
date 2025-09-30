@@ -14,7 +14,7 @@ export function dealCards(): { playerHand: Card[], computerHand: Card[], viraCar
   return { playerHand, computerHand, viraCard };
 }
 
-export function initializeGameState(difficulty: string, selectedAvatar: string): GameState {
+export function initializeGameState(difficulty: string, selectedAvatar: string, selectedOpponent: any = null): GameState {
   // Generate a random personality for each new game
   const randomArchetype = getRandomArchetypeName();
   const aiPersonality = generateRandomPersonality();
@@ -29,7 +29,7 @@ export function initializeGameState(difficulty: string, selectedAvatar: string):
     playerPlayedCard: null,
     computerPlayedCard: null,
     isPlayerTurn: true,
-    difficulty: difficulty as 'easy' | 'medium' | 'hard' | 'master',
+    difficulty: difficulty as 'easy' | 'medium' | 'intermediate' | 'hard' | 'master',
     aiPersonality,
     activeCalls: [],
     roundsWon: { player: 0, computer: 0 },
@@ -47,6 +47,7 @@ export function initializeGameState(difficulty: string, selectedAvatar: string):
     currentStreak: 0,
     bestStreak: 0,
     selectedAvatar,
+    selectedOpponent,
     viraCard: null,
     pericoCard: null,
     // Avatar mood system

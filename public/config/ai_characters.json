@@ -1,0 +1,192 @@
+{
+	"Don Ramiro": {
+		"agresividad": 4,
+		"riesgo": 3,
+		"blufeo": 5,
+		"consistencia": 9,
+		"personaje": "Don Ramiro",
+		"description": "Dueño de sus tierras y de la mesa. Juega con la paciencia del que sabe esperar la cosecha. No arriesga de más, pero no perdona un error.",
+		"avatar": "avatar1-default.jpg",
+		"activo": true
+	},
+	"El Doctor Soto": {
+		"agresividad": 6,
+		"riesgo": 6,
+		"blufeo": 8,
+		"consistencia": 8,
+		"personaje": "El Doctor Soto",
+		"description": "Cada carta es un argumento y cada canto, una objeción. Te llevará a juicio en cada mano. Cuidado con sus faroles, son su especialidad.",
+		"avatar": "avatar2-default.jpg",
+		"activo": true
+	},
+	"El Programador": {
+		"agresividad": 6,
+		"riesgo": 7,
+		"blufeo": 4,
+		"consistencia": 6,
+		"personaje": "El Programador",
+		"description": "Calcula las probabilidades en tiempo real y juega con la lógica de un algoritmo. No es muy expresivo, pero su mente no deja de compilar la mejor jugada.",
+		"avatar": "avatar3-default.jpg",
+		"activo": true
+	},
+	"Valentina": {
+		"agresividad": 8,
+		"riesgo": 8,
+		"blufeo": 7,
+		"consistencia": 6,
+		"personaje": "Valentina",
+		"description": "Con la alegría del caribe y la mente de una académica. Te sonreirá mientras te canta \"quiero vale cuatro\". Su juego es tan vibrante como su vestido.",
+		"avatar": "avatar4-default.jpg",
+		"activo": true
+	},
+	"Carlos, el pana": {
+		"agresividad": 2,
+		"riesgo": 3,
+		"blufeo": 2,
+		"consistencia": 9,
+		"personaje": "Carlos, el pana",
+		"description": "Juega como cuida a su familia: con honestidad y sin riesgos innecesarios. Su amabilidad esconde un juego sólido y consistente.",
+		"avatar": "avatar5-default.jpg",
+		"activo": true
+	},
+	"El Salsero": {
+		"agresividad": 8,
+		"riesgo": 7,
+		"blufeo": 9,
+		"consistencia": 4,
+		"personaje": "El Salsero",
+		"description": "Lleva el ritmo de la salsa a la mesa. Sus jugadas son como un paso de baile: vistosas, inesperadas y siempre con clave.",
+		"avatar": "avatar6-default.jpg",
+		"activo": true
+	},
+	"La Universitaria": {
+		"agresividad": 3,
+		"riesgo": 5,
+		"blufeo": 5,
+		"consistencia": 8,
+		"personaje": "La Universitaria",
+		"description": "Recién graduada de la teoría del Truco, ahora busca la práctica. Juega siguiendo el manual al pie de la letra y a veces sorprende con lo que acaba de aprender.",
+		"avatar": "avatar7-default.jpg",
+		"activo": true
+	},
+	"El Chamo": {
+		"agresividad": 5,
+		"riesgo": 5,
+		"blufeo": 4,
+		"consistencia": 8,
+		"personaje": "El Chamo",
+		"description": "Joven relajado que juega con calma. Ideal para principiantes. No se apura, pero tampoco se queda atrás.",
+		"avatar": "avatar-el-chamo-default.jpg",
+		"activo": false
+	},
+	"La Tía Lulú": {
+		"agresividad": 2,
+		"riesgo": 3,
+		"blufeo": 1,
+		"consistencia": 9,
+		"personaje": "La Tía Lulú",
+		"description": "Señora cautelosa que solo juega si está segura. Perfecta para aprender a no arriesgar innecesariamente.",
+		"avatar": "avatar-la-tia-lulu-default.jpg",
+		"activo": false
+	},
+	"El Borracho de la Esquina": {
+		"agresividad": 6,
+		"riesgo": 7,
+		"blufeo": 8,
+		"consistencia": 3,
+		"personaje": "El Borracho de la Esquina",
+		"description": "Impredecible y divertido. A veces gana con suerte, otras tira todo. ¡Nunca sabrás qué hará!",
+		"avatar": "avatar-el-borracho-de-la-esquina-default.jpg",
+		"activo": false
+	},
+	"El Profesor": {
+		"agresividad": 6,
+		"riesgo": 6,
+		"blufeo": 5,
+		"consistencia": 7,
+		"personaje": "El Profesor",
+		"description": "Analiza cada jugada. No es agresivo, pero sabe cuándo subir la apuesta. Ideal para jugadores intermedios.",
+		"avatar": "avatar-el-profesor-default.jpg",
+		"activo": false
+	},
+	"El Gato": {
+		"agresividad": 9,
+		"riesgo": 8,
+		"blufeo": 7,
+		"consistencia": 6,
+		"personaje": "El Gato",
+		"description": "Agresivo y desafiante. Siempre quiere subir la apuesta. ¡Te retará a cada truco y retruco!",
+		"avatar": "avatar-el-gato-default.jpg",
+		"activo": false
+	},
+	"La Abuela": {
+		"agresividad": 3,
+		"riesgo": 2,
+		"blufeo": 1,
+		"consistencia": 10,
+		"personaje": "La Abuela",
+		"description": "Muy conservadora. Solo juega si tiene cartas fuertes. Te enseñará a jugar seguro y estratégico.",
+		"avatar": "avatar-la-abuela-default.jpg",
+		"activo": false
+	},
+	"El Maestro": {
+		"agresividad": 7,
+		"riesgo": 7,
+		"blufeo": 6,
+		"consistencia": 9,
+		"personaje": "El Maestro",
+		"description": "Jugador perfecto. Sabe leer a sus rivales y juega sin errores. Para expertos que quieren ser desafiados.",
+		"avatar": "avatar-el-maestro-default.jpg",
+		"activo": false
+	},
+	"El Gambetero": {
+		"agresividad": 10,
+		"riesgo": 9,
+		"blufeo": 8,
+		"consistencia": 5,
+		"personaje": "El Gambetero",
+		"description": "Profesional del juego. Busca el ‘vale cuatro’ siempre. Si no ganas, te lleva hasta la casa.",
+		"avatar": "avatar-el-gambetero-default.jpg",
+		"activo": false
+	},
+	"La Bruja": {
+		"agresividad": 1,
+		"riesgo": 1,
+		"blufeo": 2,
+		"consistencia": 10,
+		"personaje": "La Bruja",
+		"description": "Misteriosa y calculadora. Solo juega cuando ‘la brujería lo permite’. Nunca comete errores.",
+		"avatar": "avatar-la-bruja-default.jpg",
+		"activo": false
+	},
+	"El Locochón": {
+		"agresividad": 8,
+		"riesgo": 9,
+		"blufeo": 10,
+		"consistencia": 2,
+		"personaje": "El Locochón",
+		"description": "Caótico y divertido. Juega como si estuviera loco. ¡Nunca sabrás si está blufeando o no!",
+		"avatar": "avatar-el-locochon-default.jpg",
+		"activo": false
+	},
+	"El Estratega": {
+		"agresividad": 8,
+		"riesgo": 8,
+		"blufeo": 7,
+		"consistencia": 10,
+		"personaje": "El Estratega",
+		"description": "Planificador militar. No comete errores. Cada jugada está calculada. ¡Desafío extremo!",
+		"avatar": "avatar-el-estratega-default.jpg",
+		"activo": false
+	},
+	"El Fantasma": {
+		"agresividad": 7,
+		"riesgo": 6,
+		"blufeo": 9,
+		"consistencia": 1,
+		"personaje": "El Fantasma",
+		"description": "Figura etérea que aparece y desaparece. Juega como si fuera un espectro. Impredecible al máximo.",
+		"avatar": "avatar-el-fantasma-default.jpg",
+		"activo": false
+	}
+}
