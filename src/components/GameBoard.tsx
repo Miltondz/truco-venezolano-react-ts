@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { GameBoardProps } from '../types';
 import Card from './Card';
 import AIPersonalityDisplay from './AIPersonalityDisplay';
+import LorePanel from './LorePanel';
 import { getAvatarImagePath, resetAvatarsToDefault, getFallbackAvatarPath, getSmartFallbackPath } from '../utils/avatarMoods';
 
 const GameBoard: React.FC<GameBoardProps> = ({
@@ -12,7 +13,6 @@ const GameBoard: React.FC<GameBoardProps> = ({
   onPlayCard,
   onCallTruco,
   onCallRetruco,
-  onCallVale4,
   onCallEnvido,
   onAcceptCall,
   onRejectCall,
@@ -103,11 +103,6 @@ const GameBoard: React.FC<GameBoardProps> = ({
               </span>
             </div>
             <div className="round-info" id="round-info">Ronda {gameState.currentRound} de {gameState.maxRounds}</div>
-            <div className="active-calls" id="active-calls">
-              {gameState.activeCalls.map((call, index) => (
-                <div key={index} className="call-badge">{call}</div>
-              ))}
-            </div>
           </div>
           <div className="scoreboard">
             <div className="score-item">
@@ -120,6 +115,12 @@ const GameBoard: React.FC<GameBoardProps> = ({
             </div>
           </div>
         </div>
+
+        {/* Lore / Jugadas explicativas */}
+        <LorePanel
+          events={gameState.activeCalls}
+          manoIsPlayer={gameState.manoIsPlayer === true}
+        />
 
         <div className="game-area">
           <div className="computer-section">
@@ -243,7 +244,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
                 disabled={gameState.currentEnvidoLevel !== 1 || isActionDisabled}
                 style={{ display: gameState.currentEnvidoLevel === 1 && !isActionDisabled ? 'block' : 'none' }}
               >
-                🎶 Real Envido
+                🎶 +2 piedras
               </button>
               <button
                 className="action-button"
@@ -274,19 +275,10 @@ const GameBoard: React.FC<GameBoardProps> = ({
               </button>
               <button
                 className="action-button"
-                id="vale4-btn"
-                onClick={onCallVale4}
-                disabled={gameState.currentTrucoLevel !== 2 || isActionDisabled}
-                style={{ display: gameState.currentTrucoLevel === 2 && !isActionDisabled ? 'block' : 'none' }}
-              >
-                ⚡⚡⚡ Vale 4
-              </button>
-              <button
-                className="action-button"
                 id="vale-nueve-btn"
                 onClick={onCallValeNueve}
-                disabled={gameState.waitingForResponse}
-                style={{ display: !gameState.waitingForResponse ? 'block' : 'none' }}
+                disabled={gameState.currentTrucoLevel !== 2 || isActionDisabled}
+                style={{ display: gameState.currentTrucoLevel === 2 && !isActionDisabled ? 'block' : 'none' }}
               >
                 🎯 Vale Nueve
               </button>
@@ -294,8 +286,8 @@ const GameBoard: React.FC<GameBoardProps> = ({
                 className="action-button"
                 id="vale-juego-btn"
                 onClick={onCallValeJuego}
-                disabled={gameState.waitingForResponse}
-                style={{ display: !gameState.waitingForResponse ? 'block' : 'none' }}
+                disabled={gameState.currentTrucoLevel !== 3 || isActionDisabled}
+                style={{ display: gameState.currentTrucoLevel === 3 && !isActionDisabled ? 'block' : 'none' }}
               >
                 🎲 Vale Juego
               </button>
@@ -330,8 +322,8 @@ const GameBoard: React.FC<GameBoardProps> = ({
                 className="action-button"
                 id="me-voy-btn"
                 onClick={onFoldHand}
-                disabled={gameState.waitingForResponse}
-                style={{ display: !gameState.waitingForResponse ? 'block' : 'none' }}
+                disabled={gameState.waitingForResponse || gameState.isProcessingAction}
+                style={{ display: (!gameState.waitingForResponse && !gameState.isProcessingAction) ? 'block' : 'none' }}
               >
                 🚪 Me Voy
               </button>

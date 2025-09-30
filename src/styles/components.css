@@ -3378,13 +3378,14 @@
 .computer-avatar {
   width: 224px !important;
   height: 224px !important;
-  border-radius: 14px !important;
+  border-radius: 24px !important;
   border: 3px solid var(--text-accent) !important;
   box-shadow: var(--shadow-strong), var(--glow-gold) !important;
   object-fit: cover !important;
   background: var(--card-bg);
   display: block !important;
   visibility: visible !important;
+  overflow: hidden !important;
 }
 
 .computer-hand {
@@ -3502,13 +3503,14 @@
 .player-avatar {
   width: 224px !important;
   height: 224px !important;
-  border-radius: 14px !important;
+  border-radius: 24px !important;
   border: 3px solid var(--blue-accent) !important;
   box-shadow: var(--shadow-strong), var(--glow-blue) !important;
   object-fit: cover !important;
   background: var(--card-bg);
   display: block !important;
   visibility: visible !important;
+  overflow: hidden !important;
 }
 
 .action-buttons {
@@ -3745,6 +3747,13 @@
 
 #setup-screen .screen-content {
   overflow: visible !important;
+  max-width: 980px;
+  margin: 1rem auto;
+  background: rgba(61, 40, 23, 0.85);
+  border: 2px solid var(--card-border);
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: var(--shadow-soft);
 }
 
 #setup-screen .setup-grid {
@@ -5866,6 +5875,92 @@
   }
 }
 
+/* Lore panel (top-right) */
+
+/* Avatar rounded corners ensure */
+.avatar-image {
+  border-radius: 16px !important;
+  overflow: hidden;
+}
+.lore-panel {
+  position: absolute;
+  top: 110px;
+  right: 10px;
+  width: min(320px, 26vw);
+  height: 300px;
+  padding: 0.75rem;
+  background: rgba(42, 24, 16, 0.65);
+  border: 2px solid var(--card-border);
+  border-radius: 10px;
+  color: var(--text-primary);
+  box-shadow: var(--shadow-soft);
+  backdrop-filter: blur(6px);
+  z-index: 120;
+  overflow: hidden;
+}
+
+.lore-panel.collapsed {
+  height: 40px;
+}
+
+.lore-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-weight: bold;
+  color: var(--text-accent);
+  margin-bottom: 0.5rem;
+  text-align: left;
+}
+
+.lore-toggle {
+  background: rgba(0,0,0,0.3);
+  border: 1px solid var(--card-border);
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-size: 0.8rem;
+  width: 28px;
+  height: 28px;
+  cursor: pointer;
+}
+
+.lore-meta {
+  font-size: clamp(0.55rem, 1.6vw, 0.8rem);
+  color: var(--text-secondary);
+  margin-bottom: 0.25rem;
+}
+
+.lore-body {
+  height: calc(300px - 50px);
+  overflow-y: auto;
+}
+
+.lore-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.lore-item {
+  font-size: clamp(0.55rem, 1.6vw, 0.85rem);
+  padding: 0.2rem 0;
+  border-bottom: 1px dashed rgba(255,255,255,0.15);
+}
+
+.lore-placeholder {
+  font-size: clamp(0.55rem, 1.6vw, 0.85rem);
+  color: var(--text-secondary);
+}
+
+@media (max-width: 768px) {
+  .lore-panel {
+    width: 60%;
+    right: 8px;
+    top: 8px;
+  }
+}
+
 /* ========================================
       GLOBAL OVERFLOW PREVENTION - No scrolling allowed
       ======================================== */
@@ -6921,12 +7016,12 @@ html, body {
 
 /* DESKTOP/WEB - Default rules for Setup Screen (769px and above) */
 #setup-screen.screen.active .setup-grid {
-  gap: 1.5625rem !important;
+  gap: 1rem !important;
   overflow: visible !important;
   display: grid !important;
-  grid-template-columns: 280px 280px 540px !important;
+  grid-template-columns: 260px 260px 480px !important;
   width: 100% !important;
-  max-width: 1280px !important;
+  max-width: 960px !important;
   align-items: start !important;
   justify-content: center !important;
   justify-items: center !important;
@@ -6944,28 +7039,28 @@ html, body {
 
 /* Critical: Override .game-canvas * and .screen * width restrictions */
 #setup-screen.screen.active .setup-section.opponent-section {
-  max-width: 540px !important;
-  width: 540px !important;
-  min-width: 540px !important;
+  max-width: 480px !important;
+  width: 480px !important;
+  min-width: 480px !important;
   max-height: 520px !important;
   overflow: hidden !important;
   padding: 0.8rem !important;
   /* Force flex grow to allow expansion */
-  flex: 0 0 540px !important;
+  flex: 0 0 480px !important;
   flex-shrink: 0 !important;
   box-sizing: border-box !important;
 }
 
 #setup-screen.screen.active .setup-section:not(.opponent-section) {
-  max-width: 290px !important;
-  width: 290px !important;
-  min-width: 290px !important;
-  min-height: 320px !important;
-  max-height: 400px !important;
+  max-width: 260px !important;
+  width: 260px !important;
+  min-width: 260px !important;
+  min-height: 300px !important;
+  max-height: 380px !important;
   overflow-y: auto !important;
   overflow-x: hidden !important;
   /* Force flex properties */
-  flex: 0 0 290px !important;
+  flex: 0 0 260px !important;
   flex-shrink: 0 !important;
 }
 

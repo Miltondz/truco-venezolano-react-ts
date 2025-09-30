@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './styles/App.css';
 import { GameState, GameSettings, PlayerStats, Achievement, DECKS, BOARDS, AVATARS, AICharacter, Tournament, TournamentProgress } from './types';
-import { initializeGameState, startNewHand, playCard, computerPlayCard, evaluateRound, endHand, checkGameEnd, callTruco, callRetruco, callVale4, callEnvido, acceptCall, rejectCall, resolveEnvido, callFlor, foldHand, getAiDelay, callValeNueve, callValeJuego, callRealEnvido, callFaltaEnvido, callEstarCantando } from './utils/gameLogic';
+import { initializeGameState, startNewHand, playCard, computerPlayCard, evaluateRound, endHand, checkGameEnd, callTruco, callRetruco, callEnvido, acceptCall, rejectCall, resolveEnvido, callFlor, foldHand, getAiDelay, callValeNueve, callValeJuego, callRealEnvido, callFaltaEnvido, callEstarCantando, applyRoundResult } from './utils/gameLogic';
 import { initializeAudio, playSound } from './utils/sound';
 import { loadSettings, saveSettings, loadStats, saveStats, loadAchievements, saveAchievements } from './utils/storage';
 import { startTournament, getTournamentProgress, defeatOpponent, completeRound, setCurrentActiveTournament } from './utils/tournamentStorage';
@@ -109,7 +109,7 @@ const App: React.FC = () => {
   const [activeTournament, setActiveTournament] = useState<Tournament | null>(null);
   
   // Victory splash state
-  const [victoryState, setVictoryState] = useState<{
+const [victoryState, setVictoryState] = useState<{
     show: boolean;
     type: 'match' | 'round' | 'tournament';
     opponentName?: string;
@@ -118,7 +118,8 @@ const App: React.FC = () => {
     reward?: string;
     levelUp?: { from: number; to: number };
     experienceGained?: number;
-  }>({ show: false, type: 'match' });
+    autoHide?: boolean;
+  }>({ show: false, type: 'match', autoHide: true });
 
   // UI state
   const [loading, setLoading] = useState(true);
@@ -211,13 +212,24 @@ const App: React.FC = () => {
     // Prevent multiple actions
     if (gameState.isProcessingAction) return;
     
-    // Set processing state
-    const newGameState = { ...playCard(gameState, cardIndex, gameSettings), isProcessingAction: true };
+    const played = gameState.playerHand[cardIndex];
+
+    // Set processing state and log player's move
+    const newGameState = {
+      ...playCard(gameState, cardIndex, gameSettings),
+      isProcessingAction: true,
+      activeCalls: [...gameState.activeCalls, `Jugador jugó: ${played.name}`].slice(-50)
+    };
     setGameState(newGameState);
 
     // Computer's turn
     setTimeout(() => {
-      const computerState = computerPlayCard(newGameState, gameSettings);
+      const computerStateRaw = computerPlayCard(newGameState, gameSettings);
+      const compPlayed = computerStateRaw.computerPlayedCard;
+      const computerState = {
+        ...computerStateRaw,
+        activeCalls: compPlayed ? [...computerStateRaw.activeCalls, `Computadora jugó: ${compPlayed.name}`].slice(-50) : computerStateRaw.activeCalls
+      };
       setGameState(computerState);
 
       // Evaluate round
@@ -249,50 +261,27 @@ const App: React.FC = () => {
           const finalState = { ...evaluatedState, isProcessingAction: false };
           setGameState(finalState);
           handleRoundResult(finalState, winner);
-        }, 3000);
-      }, 1500);
+        }, 3500);
+      }, 3500);
     }, getAiDelay(gameSettings));
   };
 
   const handleRoundResult = (currentState: GameState, winner: 'player' | 'computer' | 'tie') => {
-    const newRoundsWon = { ...currentState.roundsWon };
-    if (winner === 'player') newRoundsWon.player++;
-    else if (winner === 'computer') newRoundsWon.computer++;
+    const result = applyRoundResult(currentState, winner, gameSettings);
+    setGameState(result.state);
 
-    let handWinner: 'player' | 'computer' | 'tie' = 'tie';
-
-    if (newRoundsWon.player >= 2) handWinner = 'player';
-    else if (newRoundsWon.computer >= 2) handWinner = 'computer';
-    else if (currentState.currentRound >= currentState.maxRounds) {
-      if (newRoundsWon.player > newRoundsWon.computer) handWinner = 'player';
-      else if (newRoundsWon.computer > newRoundsWon.player) handWinner = 'computer';
+    if (result.gameEnded) {
+      const finalWinner = result.state.playerScore >= 24 ? 'player' : 'computer';
+      handleGameEnd(result.state, finalWinner as 'player' | 'computer');
+      return;
     }
 
-    if (handWinner !== 'tie') {
-      const { gameState: endState, pointsAdded } = endHand(currentState, handWinner, gameSettings);
-      const finalState = { ...endState, roundsWon: newRoundsWon };
-      setGameState(finalState);
-
-      const gameEnd = checkGameEnd(finalState);
-      if (gameEnd) {
-        handleGameEnd(finalState, gameEnd);
-      } else {
-        // Start new hand
-        setTimeout(() => {
-          const newHandState = startNewHand(finalState);
-          setGameState(newHandState);
-        }, 2000);
-      }
-    } else {
-      // Continue to next round
-      setGameState({
-        ...currentState,
-        currentRound: currentState.currentRound + 1,
-        isPlayerTurn: true,
-        roundsWon: newRoundsWon,
-        playerPlayedCard: null,
-        computerPlayedCard: null
-      });
+    if (result.handEnded) {
+      // Start new hand after pause
+      setTimeout(() => {
+        const newHandState = startNewHand(result.state);
+        setGameState(newHandState);
+      }, 4000);
     }
   };
 
@@ -313,6 +302,9 @@ const App: React.FC = () => {
       updateAvatarMood(finalState, setGameState, true, 'excellent');
       updateAvatarMood(finalState, setGameState, false, 'terrible');
 
+      // Lore indicator
+      setGameState(s => ({ ...s, activeCalls: [...s.activeCalls, '— Partida terminada: Gana Jugador —'].slice(-50) }));
+
       showNotification('¡Felicidades! ¡Has ganado el juego!', 'success');
       playSound('gameWin', gameSettings);
       
@@ -327,6 +319,9 @@ const App: React.FC = () => {
       // Computer wins game - excellent result for AI
       updateAvatarMood(finalState, setGameState, false, 'excellent');
       updateAvatarMood(finalState, setGameState, true, 'terrible');
+
+      // Lore indicator
+      setGameState(s => ({ ...s, activeCalls: [...s.activeCalls, '— Partida terminada: Gana Computadora —'].slice(-50) }));
       
       showNotification('La computadora ha ganado. ¡Mejor suerte la próxima vez!', 'error');
       playSound('gameLose', gameSettings);
@@ -352,10 +347,10 @@ const App: React.FC = () => {
 
     setPlayerStats(newStats);
 
-    // Only navigate to main screen if not in tournament
-    setTimeout(() => {
-      navigateTo('main-screen');
-    }, 3000);
+    // Mostrar splash con botón para salir (si no es torneo y no fue manejado arriba)
+    if (!finalState.tournamentContext?.isInTournament) {
+      setVictoryState({ show: true, type: 'match', opponentName: finalState.selectedOpponent?.name, autoHide: false });
+    }
   };
 
   // Helper function for protected call actions
@@ -379,7 +374,6 @@ const App: React.FC = () => {
   const handleCallTruco = () => executeProtectedAction(() => callTruco(gameState, gameSettings), 'call');
   
   const handleCallRetruco = () => executeProtectedAction(() => callRetruco(gameState, gameSettings), 'call');
-  const handleCallVale4 = () => executeProtectedAction(() => callVale4(gameState, gameSettings), 'call');
   const handleCallEnvido = () => executeProtectedAction(() => callEnvido(gameState, gameSettings), 'call');
   const handleAcceptCall = () => {
     executeProtectedAction(() => acceptCall(gameState, gameSettings), 'response', true);
@@ -390,7 +384,13 @@ const App: React.FC = () => {
   };
   
   const handleCallFlor = () => executeProtectedAction(() => callFlor(gameState, gameSettings), 'call');
-  const handleFoldHand = () => executeProtectedAction(() => foldHand(gameState, gameSettings), 'response', false);
+  const handleFoldHand = () => {
+    executeProtectedAction(() => foldHand(gameState, gameSettings), 'response', false);
+    // Programar nueva mano para evitar spam de "Me voy"
+    setTimeout(() => {
+      setGameState(prev => startNewHand(prev));
+    }, 3200);
+  };
   const handleCallValeNueve = () => executeProtectedAction(() => callValeNueve(gameState, gameSettings), 'call');
   const handleCallValeJuego = () => executeProtectedAction(() => callValeJuego(gameState, gameSettings), 'call');
   const handleCallRealEnvido = () => executeProtectedAction(() => callRealEnvido(gameState, gameSettings), 'call');
@@ -652,7 +652,6 @@ const App: React.FC = () => {
           onPlayCard={handlePlayCard}
           onCallTruco={handleCallTruco}
           onCallRetruco={handleCallRetruco}
-          onCallVale4={handleCallVale4}
           onCallEnvido={handleCallEnvido}
           onAcceptCall={handleAcceptCall}
           onRejectCall={handleRejectCall}
@@ -737,15 +736,17 @@ const App: React.FC = () => {
           experienceGained={victoryState.experienceGained}
           onDismiss={() => {
             setVictoryState({ ...victoryState, show: false });
-            // Navigate back to tournament bracket or appropriate screen
+            // Navigate back
             if (victoryState.type === 'tournament') {
               navigateTo('tournaments-screen');
             } else if (activeTournament) {
               navigateTo(`tournament-bracket-${activeTournament.id}`);
+            } else {
+              navigateTo('main-screen');
             }
           }}
-          autoHide={victoryState.type !== 'tournament'}
-          hideDelay={victoryState.type === 'round' ? 4000 : 3000}
+          autoHide={victoryState.autoHide !== undefined ? victoryState.autoHide : (victoryState.type !== 'tournament')}
+          hideDelay={victoryState.type === 'round' ? 6000 : 5000}
         />
       )}
     </div>

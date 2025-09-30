@@ -50,12 +50,21 @@ export interface GameState {
   roundsWon: { player: number; computer: number };
   gameInProgress: boolean;
   handInProgress: boolean;
-  currentTrucoLevel: number;
-  currentEnvidoLevel: number;
+  // Truco (Venezolano): tracking accepted pot and pending offer
+  currentTrucoLevel: number; // 0: none, 1: Truco, 2: Retruco, 3: Vale Nueve, 4+: Vale Juego (accepted)
+  trucoAcceptedPot?: number | 'game'; // 1 by default, 3/6/9 or 'game' when accepted
+  trucoPendingOffer?: number | 'game' | null; // Offer waiting for response
+  // Envido (Venezolano)
+  currentEnvidoLevel: number; // 0 none, 1 Envido(2), 2 +2 piedras(4), 3 Falta
   playerEnvidoPoints: number;
   computerEnvidoPoints: number;
+  // Flor
   playerHasFlor: boolean;
   computerHasFlor: boolean;
+  playerHasFlorReservada?: boolean;
+  computerHasFlorReservada?: boolean;
+  // Mano/Pie
+  manoIsPlayer?: boolean;
   waitingForResponse: boolean;
   lastCall: string | null;
   gameStartTime: number;
@@ -281,7 +290,6 @@ export interface GameBoardProps extends BaseScreenProps {
   onPlayCard: (cardIndex: number) => void;
   onCallTruco: () => void;
   onCallRetruco: () => void;
-  onCallVale4: () => void;
   onCallEnvido: () => void;
   onAcceptCall: () => void;
   onRejectCall: () => void;
@@ -289,7 +297,7 @@ export interface GameBoardProps extends BaseScreenProps {
   onFoldHand: () => void;
   onCallValeNueve: () => void;
   onCallValeJuego: () => void;
-  onCallRealEnvido: () => void;
+  onCallRealEnvido: () => void; // Usado como "+2 piedras"
   onCallFaltaEnvido: () => void;
   onCallEstarCantando: () => void;
 }

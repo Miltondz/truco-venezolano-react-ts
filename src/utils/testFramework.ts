@@ -9,7 +9,6 @@ import {
   checkGameEnd,
   callTruco,
   callRetruco,
-  callVale4,
   callValeNueve,
   callValeJuego,
   callEnvido,
@@ -23,6 +22,7 @@ import {
   foldHand
 } from './gameLogic';
 import { cards, calculateEnvidoPoints, hasFlor, getPericoCard } from './cards';
+import { applyRoundResult } from './gameLogic';
 import { getAIResponse, selectBestCardForAI } from './ai';
 import { PERSONALITY_ARCHETYPES } from './personality';
 
@@ -52,6 +52,7 @@ export class TrucoTestFramework {
     this.logs = [];
   }
 
+
   private log(message: string): void {
     this.logs.push(`[${new Date().toISOString()}] ${message}`);
     console.log(message);
@@ -73,11 +74,64 @@ export class TrucoTestFramework {
       computerHand: computerCards,
       viraCard,
       pericoCard: getPericoCard(viraCard),
-      playerEnvidoPoints: calculateEnvidoPoints(playerCards),
-      computerEnvidoPoints: calculateEnvidoPoints(computerCards),
-      playerHasFlor: hasFlor(playerCards),
-      computerHasFlor: hasFlor(computerCards)
+      playerEnvidoPoints: calculateEnvidoPoints(playerCards, viraCard),
+      computerEnvidoPoints: calculateEnvidoPoints(computerCards, viraCard),
+      playerHasFlor: hasFlor(playerCards, viraCard),
+      computerHasFlor: hasFlor(computerCards, viraCard)
     };
+  }
+
+  async simulateFullGames(count: number = 10): Promise<TestResult> {
+    this.log(`=== Starting Full Game Simulations (${count}) ===`);
+    const errors: string[] = [];
+    const logs: string[] = [];
+
+    try {
+      let playerWins = 0;
+      let computerWins = 0;
+
+      for (let g = 1; g <= count; g++) {
+        let gs = this.createTestGameState('medium');
+        gs = startNewHand(gs);
+        let safety = 0;
+
+        while (!checkGameEnd(gs) && safety < 300) {
+          safety++;
+          // Simple play loop without calls: just play first available card, then AI
+          if (gs.isPlayerTurn && gs.playerHand.length > 0 && !gs.waitingForResponse) {
+            gs = playCard(gs, 0, { soundEffectsEnabled: false } as any);
+          }
+          if (!gs.isPlayerTurn && gs.computerHand.length > 0 && !gs.waitingForResponse) {
+            gs = computerPlayCard(gs, { soundEffectsEnabled: false } as any);
+          }
+          // If both played a card, evaluate round
+          if (gs.playerPlayedCard || gs.computerPlayedCard) {
+            const { winner, gameState: afterEval } = evaluateRound(gs, { soundEffectsEnabled: false } as any);
+            const applyRes = (window as any)?.applyRoundResult
+              ? (window as any).applyRoundResult(afterEval, winner, { soundEffectsEnabled: false } as any)
+              : null;
+            // Use imported applyRoundResult from gameLogic directly
+            const res = applyRoundResult(afterEval, winner, { soundEffectsEnabled: false } as any);
+            gs = res.state;
+            if (res.gameEnded) break;
+            if (res.handEnded) {
+              gs = startNewHand(gs);
+            }
+          }
+        }
+
+        const end = checkGameEnd(gs);
+        if (end === 'player') playerWins++; else if (end === 'computer') computerWins++; else errors.push(`Game ${g}: ended without winner`);
+        logs.push(`Game ${g} result: ${end || 'No Winner'} | Final Score P:${gs.playerScore} C:${gs.computerScore}`);
+      }
+
+      const details = `Simulated ${count} games. Player wins: ${playerWins}, Computer wins: ${computerWins}`;
+      return { scenario: `Full Game Simulations (${count})`, passed: errors.length === 0, details, errors, logs };
+
+    } catch (error) {
+      errors.push(String(error));
+      return { scenario: `Full Game Simulations`, passed: false, details: 'Simulation failed', errors, logs };
+    }
   }
 
   // Test 1: Basic Game Flow
@@ -255,13 +309,7 @@ export class TrucoTestFramework {
       gameState = acceptCall(gameState, { soundEffectsEnabled: false } as any);
       logs.push('Computer accepted Retruco');
 
-      // Test Vale 4
-      logs.push('--- Testing Vale 4 ---');
-      gameState = callVale4(gameState, { soundEffectsEnabled: false } as any);
-      logs.push('Player called Vale 4');
-
-      gameState = acceptCall(gameState, { soundEffectsEnabled: false } as any);
-      logs.push('Computer accepted Vale 4');
+      // Vale 4 (omitido en versión venezolana)
 
       // Test Vale Nueve
       logs.push('--- Testing Vale Nueve ---');
@@ -527,8 +575,9 @@ export class TrucoTestFramework {
         [cards[0], cards[1], cards[16]] // Two same, one different
       ];
 
+      const viraCard = cards[32];
       testHands.forEach((hand, index) => {
-        const points = calculateEnvidoPoints(hand);
+        const points = calculateEnvidoPoints(hand, viraCard);
         logs.push(`Hand ${index + 1} envido points: ${points}`);
       });
 
@@ -582,7 +631,8 @@ export class TrucoTestFramework {
 
       // Test Flor detection
       const florHand = [cards[0], cards[1], cards[2]];
-      const hasFlorResult = hasFlor(florHand);
+      const viraCardFlor = cards[32];
+      const hasFlorResult = hasFlor(florHand, viraCardFlor);
       logs.push(`Flor detection: ${hasFlorResult}`);
 
       logs.push('Rule Compliance Test completed successfully');

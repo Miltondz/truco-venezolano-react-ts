@@ -76,6 +76,8 @@ const SetupScreen: React.FC<SetupScreenProps> = ({ onNavigate, gameSettings, set
     
     onStartGame();
   };
+
+
   return (
     <div id="setup-screen" className="screen active">
       <button className="back-button" onClick={() => onNavigate('main-screen')}>← Volver</button>
@@ -120,9 +122,11 @@ const SetupScreen: React.FC<SetupScreenProps> = ({ onNavigate, gameSettings, set
             />
           </div>
         </div>
-        <button id="start-game-btn" className="menu-button" onClick={handleStartGame}>
-          🎮 Iniciar Partida
-        </button>
+        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', justifyContent: 'center', marginTop: '0.5rem' }}>
+          <button id="start-game-btn" className="menu-button" onClick={handleStartGame}>
+            🎮 Iniciar Partida
+          </button>
+        </div>
       </div>
     </div>
   );
