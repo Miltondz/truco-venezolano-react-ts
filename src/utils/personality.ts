@@ -139,3 +139,61 @@ export function getPersonalityWeaknesses(personality: AIPersonality): string[] {
 
   return weaknesses.length > 0 ? weaknesses : ['Sin debilidades evidentes'];
 }
+
+/**
+ * Convierte los atributos del AICharacter a AIPersonality
+ * Usa los atributos del oponente (agresividad, riesgo, blufeo, consistencia)
+ * para crear una personalidad coherente
+ */
+export function convertOpponentToPersonality(opponent: any): AIPersonality {
+  if (!opponent) {
+    return generateRandomPersonality();
+  }
+
+  // Mapear atributos del oponente a personalidad de IA
+  // agresividad -> agresividad (directo)
+  // blufeo -> intimidacion (capacidad de farolear)
+  // riesgo -> calculo inverso (a mayor riesgo, menor cálculo)
+  // consistencia -> adaptabilidad (habilidad de mantener estrategia)
+  
+  const agresividad = opponent.agresividad || 5;
+  const intimidacion = opponent.blufeo || 5;
+  const calculo = Math.max(1, Math.min(10, 11 - (opponent.riesgo || 5))); // Inverso del riesgo
+  const adaptabilidad = opponent.consistencia || 5;
+
+  const personalityLabel = getPersonalityLabelFromTraits(agresividad, intimidacion, calculo, adaptabilidad);
+
+  return {
+    agresividad,
+    intimidacion,
+    calculo,
+    adaptabilidad,
+    archetype: opponent.name || 'Oponente',
+    description: `${opponent.name}: ${personalityLabel}`
+  };
+}
+
+/**
+ * Determina la etiqueta de personalidad según los rasgos
+ */
+function getPersonalityLabelFromTraits(agresividad: number, intimidacion: number, calculo: number, adaptabilidad: number): string {
+  if (agresividad >= 8 && intimidacion >= 7) {
+    return 'Psicólogo Agresivo';
+  } else if (calculo >= 8 && agresividad <= 4) {
+    return 'Calculador Defensivo';
+  } else if (adaptabilidad >= 8 && calculo >= 7) {
+    return 'Estratega Adaptable';
+  } else if (intimidacion >= 7 && calculo >= 7) {
+    return 'Intimidante Calculador';
+  } else if (agresividad >= 7) {
+    return 'Jugador Agresivo';
+  } else if (calculo >= 7) {
+    return 'Jugador Calculador';
+  } else if (intimidacion >= 7) {
+    return 'Farolero Experto';
+  } else if (adaptabilidad >= 7) {
+    return 'Jugador Adaptable';
+  } else {
+    return 'Jugador Equilibrado';
+  }
+}

@@ -2,7 +2,7 @@ import { Card, GameState, GameSettings, PlayerStats } from '../types';
 import { shuffleDeck, calculateEnvidoPoints, hasFlor, calculateHandStrength, getPericoCard, getCardTrucoRank } from './cards';
 import { getAIResponse, selectBestCardForAI } from './ai';
 import { playSound } from './sound';
-import { generateRandomPersonality, getRandomArchetypeName } from './personality';
+import { generateRandomPersonality, getRandomArchetypeName, convertOpponentToPersonality } from './personality';
 
 // Cap lore/event log to avoid unbounded growth
 const capLore = (events: string[], max: number = 50) => (events.length > max ? events.slice(events.length - max) : events);
@@ -22,9 +22,17 @@ export function dealCards(): { playerHand: Card[], computerHand: Card[], viraCar
 }
 
 export function initializeGameState(difficulty: string, selectedAvatar: string, selectedOpponent: any = null): GameState {
-  // Generate a random personality for each new game
-  const randomArchetype = getRandomArchetypeName();
-  const aiPersonality = generateRandomPersonality();
+  // CORRECCIÓN: Usar la personalidad ESPECÍFICA del oponente seleccionado
+  // Si hay un oponente seleccionado, convertir sus atributos a AIPersonality
+  // Si no, generar una personalidad aleatoria (legacy)
+  const aiPersonality = selectedOpponent 
+    ? convertOpponentToPersonality(selectedOpponent)
+    : generateRandomPersonality();
+  
+  console.log('initializeGameState - Using AI Personality:', {
+    opponent: selectedOpponent?.name,
+    personality: aiPersonality
+  });
 
 return {
     playerScore: 0,

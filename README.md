@@ -6,6 +6,13 @@
 
 Una implementación digital completa del **Truco Venezolano**, el popular juego de cartas tradicional de Venezuela, desarrollado con React y TypeScript. Esta versión mantiene toda la autenticidad del juego tradicional mientras ofrece una experiencia moderna con interfaz visual inspirada en Balatro.
 
+## 🆕 Novedades (Oct 2025)
+- Scroll del tutorial corregido: un único contenedor con scroll vertical para evitar barras duplicadas y cortes de contenido.
+- IA del oponente: ahora usa la personalidad específica del oponente elegido (ya no se genera aleatoriamente al iniciar partida).
+- Canvas y video de fondo: tamaño de canvas fijo 1280x720 (16:9) y recomendación de video 1280x720@30fps con imagen fallback.
+- Plan multi‑juego: documento técnico/comercial para agregar Brisca, Escoba, Crazy Eights, Blackjack y Gin/Chinchón con motores modulares. Ver [docs/multi-game-plan.md](./docs/multi-game-plan.md).
+- Soporte de baraja francesa de 52 cartas considerado para juegos nuevos (Blackjack, Crazy Eights, Gin, etc.).
+
 ## 🎯 ¿Qué es Truco Venezolano?
 
 ### Antecedentes Históricos
@@ -220,6 +227,10 @@ La aplicación utiliza React hooks para manejar el estado:
 - **Bundle Splitting**: División del código para mejor performance
 - **Image Optimization**: Sprites y formatos optimizados
 
+## 📐 Canvas y video de fondo
+- Canvas del tablero: 1280x720 (16:9). El layout es responsive pero la zona jugable respeta esta relación.
+- Video recomendado para fondo: 1280x720 @ 30fps, H.264, ~5–6 MB, sin audio (o con muy bajo bitrate), con imagen fallback.
+
 ### Arquitectura de Código
 
 #### Principios SOLID
@@ -289,6 +300,10 @@ La aplicación utiliza React hooks para manejar el estado:
 
 ## 📚 Documentación Técnica
 
+## 🃏 Multijuego (plan)
+Este proyecto puede escalar a un HUB de juegos de cartas con motores modulares (Brisca, Escoba 15, Crazy Eights, Blackjack, Gin/Chinchón). Consulta el plan técnico y la estrategia comercial en:
+- [docs/multi-game-plan.md](./docs/multi-game-plan.md)
+
 ### Problemas Conocidos y Soluciones
 
 #### ✅ **Sistema de Tutorial - Scroll Vertical (Resuelto - Sept 28, 2025)**
@@ -313,8 +328,8 @@ La aplicación utiliza React hooks para manejar el estado:
 ### Instalación
 ```bash
 # Clonar el repositorio
-git clone https://github.com/tu-usuario/truco-venezolano-react.git
-cd truco-venezolano-react
+git clone https://github.com/Miltondz/truco-venezolano-react-ts.git
+cd truco-venezolano-react-ts
 
 # Instalar dependencias
 npm install
@@ -331,6 +346,11 @@ npm run build
 - `npm run build`: Construye la aplicación para producción
 - `npm test`: Ejecuta los tests
 - `npm run eject`: Expulsa la configuración (irreversible)
+
+## 🤝 Contribuir
+- Abre un issue para propuestas o bugs.
+- Para juegos nuevos, sugiere un mini‑engine basado en la interfaz del plan multi‑juego.
+- Pull requests bienvenidos: lint/format y commit claro.
 
 ## 📄 Licencia
 

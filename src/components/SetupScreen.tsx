@@ -41,22 +41,17 @@ const SetupScreen: React.FC<SetupScreenProps> = ({ onNavigate, gameSettings, set
     setAvatarError(false);
   }, [gameState.selectedAvatar]);
   
-  // Auto-advance only when a NEW selection is made within the active tab
+  // Track selections but DON'T auto-advance - let user control tab navigation
   React.useEffect(() => {
-    // Check if deck was just selected (and it's different from previous)
-    if (currentTab === 0 && gameSettings.selectedDeck && gameSettings.selectedDeck !== prevDeckRef.current) {
+    // Update refs when selections change, but don't change tabs automatically
+    if (gameSettings.selectedDeck && gameSettings.selectedDeck !== prevDeckRef.current) {
       prevDeckRef.current = gameSettings.selectedDeck;
-      // Advance to board tab after selecting deck
-      setTimeout(() => setCurrentTab(1), 300);
     }
     
-    // Check if board was just selected (and it's different from previous)
-    if (currentTab === 1 && gameSettings.selectedBoard && gameSettings.selectedBoard !== prevBoardRef.current) {
+    if (gameSettings.selectedBoard && gameSettings.selectedBoard !== prevBoardRef.current) {
       prevBoardRef.current = gameSettings.selectedBoard;
-      // Advance to opponent tab after selecting board
-      setTimeout(() => setCurrentTab(2), 300);
     }
-  }, [gameSettings.selectedDeck, gameSettings.selectedBoard, currentTab]);
+  }, [gameSettings.selectedDeck, gameSettings.selectedBoard]);
   
   // Handle opponent selection
   const handleOpponentSelect = (opponent: AICharacter) => {
@@ -105,14 +100,23 @@ const SetupScreen: React.FC<SetupScreenProps> = ({ onNavigate, gameSettings, set
           {tabs.map((tab) => (
             <button
               key={tab.id}
-              className={`tab-button ${currentTab === tab.id ? 'active' : ''} ${currentTab > tab.id ? 'completed' : ''}`}
+              className={`tab-button ${currentTab === tab.id ? 'active' : ''} ${
+                (tab.id === 0 && gameSettings.selectedDeck) ||
+                (tab.id === 1 && gameSettings.selectedBoard) ||
+                (tab.id === 2 && gameState.selectedOpponent)
+                  ? 'completed' : ''
+              }`}
               onClick={() => setCurrentTab(tab.id)}
-              disabled={tab.id > currentTab && (
+              disabled={
                 (tab.id === 1 && !gameSettings.selectedDeck) ||
                 (tab.id === 2 && (!gameSettings.selectedDeck || !gameSettings.selectedBoard))
-              )}
+              }
             >
-              {currentTab > tab.id && '✓ '}{tab.title}
+              {/* Mostrar checkmark si el tab está completo */}
+              {((tab.id === 0 && gameSettings.selectedDeck) ||
+                (tab.id === 1 && gameSettings.selectedBoard) ||
+                (tab.id === 2 && gameState.selectedOpponent)) && '✓ '}
+              {tab.title}
             </button>
           ))}
         </div>

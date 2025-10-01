@@ -21,6 +21,7 @@ html, body {
   max-width: 100vw !important;
   margin: 0 !important;
   padding: 0 !important;
+  position: fixed !important;
 }
 
 /* Base screen layout – header + content */
@@ -30,8 +31,8 @@ html, body {
   min-height: 100vh;
 }
 
-/* Cancel absolute positioning that impedía scroll (excepto game-board) */
-.screen:not(.game-board) {
+/* Cancel absolute positioning that impedía scroll (excepto game-board y lesson-screen) */
+.screen:not(.game-board):not(.lesson-screen) {
   position: static !important;
   height: auto !important;
   min-height: 100vh !important;
@@ -1259,23 +1260,21 @@ html, body {
   z-index: 2;
 }
 
-/* LESSON SCREEN - RESPETANDO LÍMITES DEL CANVAS CON SCROLL FUNCIONAL */
-.lesson-screen {
+/* LESSON SCREEN - SIN SCROLL PROPIO (solo scroll en step-content-scrollable) */
+.lesson-screen.screen {
   width: 100%;
-  /* ALTURA LIMITADA AL CANVAS PARA MANTENER BOTONES VISIBLES */
   height: 100% !important;
   max-height: 100% !important;
   min-height: 100%;
-  /* OVERFLOW CONTROLADO: Scroll dentro del canvas */
-  overflow-y: hidden !important;
-  overflow-x: hidden !important;
+  /* SIN SCROLL - Solo el contenido interno scrollea */
+  overflow: hidden !important;
   background: var(--primary-bg);
   /* POSICIONAMIENTO ABSOLUTO DENTRO DEL CANVAS */
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  bottom: 0; /* RESTAURAR: Mantener dentro del canvas */
+  bottom: 0;
   /* LAYOUT FLEX PARA ORGANIZACIÓN INTERNA */
   display: flex;
   flex-direction: column;
@@ -1285,63 +1284,18 @@ html, body {
   box-sizing: border-box;
 }
 
-.lesson-screen-content {
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: var(--spacing-sm);
-  /* ALTURA CONTROLADA PARA DISTRIBUCIÓN CORRECTA */
-  height: 100% !important;
-  max-height: 100% !important;
-  min-height: 100%;
-  /* FLEX PARA DISTRIBUCIÓN VERTICAL */
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-sm);
-  box-sizing: border-box;
-  /* OVERFLOW OCULTO - El scroll estará en el contenido interno */
-  overflow-y: hidden !important;
-  overflow-x: hidden !important;
-}
+/* NOTA: .lesson-screen-content NO SE USA en LessonScreen.tsx - ELIMINADA */
 
 /* CONTENEDOR DE PASOS - OCUPAR ESPACIO RESTANTE DESPUÉS DE HEADER Y CONTROLES */
 .lesson-step-container {
-  flex: 1 1 auto; /* CRECER PARA OCUPAR ESPACIO DISPONIBLE */
+  flex: 1 1 auto;
   display: flex;
   flex-direction: column;
   margin-bottom: var(--spacing-sm);
-  /* OVERFLOW CONTROLADO - SIN scroll en este nivel */
-  overflow-y: hidden;
-  overflow-x: hidden;
-  /* ALTURA MÍNIMA PARA FORZAR DISTRIBUCIÓN */
-  min-height: 300px; /* Mínimo para garantizar espacio */
+  /* SIN SCROLL - Todo el scroll está en step-content-scrollable */
+  overflow: hidden !important;
+  min-height: 300px;
   max-height: 100%;
-}
-
-/* SCROLLBAR PERSONALIZADO PARA CONTENEDOR DE PASOS */
-.lesson-step-container::-webkit-scrollbar {
-  width: 10px;
-}
-
-.lesson-step-container::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: var(--border-radius-sm);
-}
-
-.lesson-step-container::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, var(--border-teal), var(--border-electric));
-  border-radius: var(--border-radius-sm);
-  box-shadow: 0 0 5px rgba(0, 255, 255, 0.3);
-}
-
-.lesson-step-container::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(135deg, var(--border-electric), var(--btn1-bg));
-  box-shadow: 0 0 8px rgba(0, 255, 255, 0.5);
-}
-
-/* Scrollbar para Firefox */
-.lesson-step-container {
-  scrollbar-width: thin;
-  scrollbar-color: var(--border-teal) rgba(0, 0, 0, 0.2);
 }
 
 /* LESSON-STEP - CONTENEDOR PRINCIPAL CON DISTRIBUCIÓN INTERNA */
@@ -1353,15 +1307,12 @@ html, body {
   border-radius: var(--border-radius);
   padding: var(--spacing-sm);
   box-shadow: var(--glow-secondary), var(--shadow-soft);
-  /* FLEX CONTAINER PARA DISTRIBUCIÓN INTERNA */
   display: flex;
   flex-direction: column;
-  /* OCUPAR TODO EL ESPACIO DISPONIBLE */
   flex: 1 1 auto;
-  min-height: 280px; /* Mínimo para contenido */
-  /* OVERFLOW CONTROLADO - SIN scroll en este nivel */
-  overflow-y: hidden;
-  overflow-x: hidden;
+  min-height: 280px;
+  /* SIN SCROLL - Todo el scroll está en step-content-scrollable */
+  overflow: hidden !important;
 }
 
 .step-title {
@@ -1389,145 +1340,59 @@ html, body {
   padding: 0 var(--spacing-sm);
 }
 
-/* CONTENEDOR SCROLLABLE - USAR ESPACIO RESTANTE CON SCROLL FUNCIONAL */
+/* ====================================================================
+   ÚNICO PUNTO DE SCROLL EN LECCIONES
+   ==================================================================== */
 .lesson-screen .lesson-step .step-content-scrollable {
-  /* SCROLL FUNCIONAL - SOBRESCRIBIR REGLAS GLOBALES CON ULTRA ESPECIFICIDAD */
+  /* SCROLL VERTICAL ÚNICO */
   overflow-y: auto !important;
   overflow-x: hidden !important;
-  margin-bottom: var(--spacing-sm);
-  padding: var(--spacing-sm);
-  padding-right: var(--spacing-md); /* Espacio para scrollbar */
-  scroll-behavior: smooth;
-  /* OCUPAR ESPACIO RESTANTE DESPUÉS DEL TÍTULO */
-  flex: 1 1 auto; /* CRECER PARA USAR ESPACIO DISPONIBLE */
-  min-height: 220px; /* Mínimo para contenido visible */
-  /* VISUAL MEJORADO */
-  border: 1px solid rgba(0, 255, 255, 0.2);
-  border-radius: var(--border-radius-sm);
-  background: rgba(0, 0, 0, 0.2);
-  /* ASEGURAR FUNCIONALIDAD SCROLL */
-  position: relative;
-}
-
-/* REGLAS ULTRA ESPECÍFICAS PARA ELIMINAR TODAS LAS LIMITACIONES DE ALTURA */
-.lesson-screen.screen.active .lesson-step-container .lesson-step .step-content-scrollable,
-.main-container .lesson-screen .lesson-step-container .lesson-step .step-content-scrollable,
-.lesson-screen .lesson-step-container,
-.lesson-screen .lesson-step-container .lesson-step,
-.lesson-screen .lesson-step-container .lesson-step .step-content-scrollable {
-  /* ELIMINAR TODAS LAS LIMITACIONES DE ALTURA */
-  height: auto !important;
-  max-height: none !important;
-  min-height: auto !important;
-  /* PERMITIR SCROLL VERTICAL */
-  overflow: visible !important;
-  overflow-y: auto !important;
-  overflow-x: hidden !important;
-  /* FLEXBOX PARA PERMITIR CRECIMIENTO */
+  
+  /* LAYOUT */
   flex: 1 1 auto !important;
-}
-
-/* FORZAR SCROLLBAR VISIBLE SIEMPRE - ESPECIALMENTE PARA CONTENIDO EXTENSO */
-.step-content-scrollable {
-  scrollbar-width: auto !important;
-  scrollbar-color: var(--border-teal) rgba(0, 0, 0, 0.3) !important;
-}
-
-.step-content-scrollable::-webkit-scrollbar {
-  width: 12px !important;
-  display: block !important;
-  visibility: visible !important;
-}
-
-.step-content-scrollable::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.3) !important;
-  border-radius: 6px !important;
-  display: block !important;
-}
-
-.step-content-scrollable::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, #00BFFF, #00FFFF) !important;
-  border-radius: 6px !important;
-  border: 1px solid rgba(0, 255, 255, 0.5) !important;
-  min-height: 30px !important;
-}
-
-.step-content-scrollable::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(135deg, #00FFFF, #FFD700) !important;
-  box-shadow: 0 0 10px rgba(0, 255, 255, 0.8) !important;
-}
-
-/* FALLBACK CON MENOR ESPECIFICIDAD PERO AÚN FUNCIONAL */
-.step-content-scrollable {
-  flex: 1;
-  overflow-y: auto !important;
-  overflow-x: hidden !important;
+  min-height: 220px !important;
+  
+  /* ESPACIADO */
   margin-bottom: var(--spacing-sm);
   padding: var(--spacing-sm);
   padding-right: var(--spacing-md);
-  scroll-behavior: smooth;
-  min-height: 200px;
-  /* max-height: 400px; - ELIMINADO PARA PERMITIR TODO EL CONTENIDO */
+  
+  /* VISUAL */
   border: 1px solid rgba(0, 255, 255, 0.2);
   border-radius: var(--border-radius-sm);
   background: rgba(0, 0, 0, 0.2);
+  
+  /* COMPORTAMIENTO */
+  scroll-behavior: smooth;
   position: relative;
+  box-sizing: border-box;
+  
+  /* SCROLLBAR PERSONALIZADO - WEBKIT */
+  scrollbar-width: thin;
+  scrollbar-color: #00FFFF rgba(0, 0, 0, 0.3);
 }
 
-/* ESTILOS DE SCROLLBAR CON MÁXIMA ESPECIFICIDAD */
+/* SCROLLBAR SIMPLIFICADO - Una sola definición */
 .lesson-screen .lesson-step .step-content-scrollable::-webkit-scrollbar {
-  width: 8px !important;
-  display: block !important;
+  width: 10px !important;
 }
 
 .lesson-screen .lesson-step .step-content-scrollable::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.2) !important;
-  border-radius: var(--border-radius-sm) !important;
+  background: rgba(0, 0, 0, 0.3) !important;
+  border-radius: 5px !important;
 }
 
 .lesson-screen .lesson-step .step-content-scrollable::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, var(--border-teal), var(--border-electric)) !important;
-  border-radius: var(--border-radius-sm) !important;
-  box-shadow: 0 0 5px rgba(0, 255, 255, 0.3) !important;
+  background: linear-gradient(135deg, #00BFFF, #00FFFF) !important;
+  border-radius: 5px !important;
+  border: 1px solid rgba(0, 255, 255, 0.5) !important;
 }
 
 .lesson-screen .lesson-step .step-content-scrollable::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(135deg, var(--border-electric), var(--btn1-bg)) !important;
-  box-shadow: 0 0 8px rgba(0, 255, 255, 0.5) !important;
+  background: linear-gradient(135deg, #00FFFF, #FFD700) !important;
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.6) !important;
 }
 
-/* SCROLLBAR FIREFOX CON ALTA ESPECIFICIDAD */
-.lesson-screen .lesson-step .step-content-scrollable {
-  scrollbar-width: thin !important;
-  scrollbar-color: var(--border-teal) rgba(0, 0, 0, 0.2) !important;
-}
-
-/* ESTILOS DE SCROLLBAR FALLBACK */
-.step-content-scrollable::-webkit-scrollbar {
-  width: 8px !important;
-}
-
-.step-content-scrollable::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.2) !important;
-  border-radius: var(--border-radius-sm) !important;
-}
-
-.step-content-scrollable::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, var(--border-teal), var(--border-electric)) !important;
-  border-radius: var(--border-radius-sm) !important;
-  box-shadow: 0 0 5px rgba(0, 255, 255, 0.3) !important;
-}
-
-.step-content-scrollable::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(135deg, var(--border-electric), var(--btn1-bg)) !important;
-  box-shadow: 0 0 8px rgba(0, 255, 255, 0.5) !important;
-}
-
-/* Scrollbar para Firefox - Fallback */
-.step-content-scrollable {
-  scrollbar-width: thin !important;
-  scrollbar-color: var(--border-teal) rgba(0, 0, 0, 0.2) !important;
-}
 
 .step-content {
   margin-bottom: var(--spacing-md);
@@ -1558,35 +1423,16 @@ html, body {
   margin-right: var(--spacing-sm);
 }
 
-/* Correcciones de contenedor de contenido para evitar cortes */
+/* Contenido interno - permitir crecimiento natural sin forzar overflow */
 .lesson-screen .lesson-step .step-content-scrollable .step-content {
-  overflow: visible !important;
-  height: auto !important;
-  max-height: none !important;
-  width: 100% !important;
+  height: auto;
+  width: 100%;
   box-sizing: border-box;
   margin-bottom: var(--spacing-md);
 }
 
-.lesson-screen .lesson-step .step-content-scrollable .step-content > div {
-  overflow: visible !important;
-  height: auto !important;
-  max-height: none !important;
-  width: 100% !important;
-  box-sizing: border-box;
-}
-
-/* Regla ultra específica para TODOS los elementos dentro del contenido scrollable */
 .lesson-screen .lesson-step .step-content-scrollable * {
-  max-height: none !important;
-  overflow: visible !important;
   box-sizing: border-box;
-}
-
-/* Excepto el contenedor scrollable mismo que debe mantener su overflow */
-.lesson-screen .lesson-step .step-content-scrollable {
-  overflow-y: auto !important;
-  overflow-x: hidden !important;
 }
 
 /* Elementos interactivos */
@@ -1870,23 +1716,251 @@ html, body {
 .truco-sequence {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-md);
-  margin: var(--spacing-md) 0;
+  gap: 0.75rem;
+  margin: 1rem 0;
 }
 
 .hierarchy-level,
 .example,
 .canto-level,
 .truco-level {
-  background: rgba(26, 17, 67, 0.3);
-  border: 1px solid var(--border-teal);
-  border-radius: var(--border-radius-sm);
-  padding: var(--spacing-md);
+  background: rgba(15, 10, 48, 0.6);
+  border: 2px solid var(--border-teal);
+  border-radius: 8px;
+  padding: 0.75rem;
+}
+
+.hierarchy-level strong,
+.example strong,
+.canto-level strong,
+.truco-level strong {
+  color: var(--text-accent);
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: clamp(0.7rem, 1.8vw, 0.9rem);
+}
+
+.hierarchy-level p,
+.example p,
+.canto-level p,
+.truco-level p {
+  color: var(--text-primary);
+  font-size: clamp(0.65rem, 1.6vw, 0.8rem);
+  margin: 0.3rem 0;
+  line-height: 1.5;
+}
+
+/* ========================================
+   ESTILOS PARA LECCIÓN: ESTRATEGIA AVANZADA
+   ======================================== */
+
+/* Técnicas de lectura del oponente */
+.reading-techniques,
+.behavioral-signals,
+.score-strategies,
+.psychological-aspects,
+.advanced-psychology,
+.special-scenarios,
+.expert-rules {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 1rem 0;
+}
+
+/* Elementos individuales de técnicas, señales, etc. */
+.technique,
+.signal,
+.score-situation,
+.psychology-element,
+.scenario,
+.rule,
+.critical-moment {
+  background: rgba(15, 10, 48, 0.6);
+  border: 2px solid var(--border-teal);
+  border-radius: 8px;
+  padding: 0.75rem;
+  transition: all 0.3s ease;
+}
+
+/* Hover effects */
+.technique:hover,
+.signal:hover,
+.score-situation:hover,
+.psychology-element:hover,
+.scenario:hover,
+.rule:hover,
+.critical-moment:hover {
+  background: rgba(15, 10, 48, 0.8);
+  border-color: var(--border-electric);
+  transform: translateX(5px);
+}
+
+/* Nombres/títulos de técnicas y elementos */
+.technique-name,
+.element-name,
+.situation-title,
+.scenario-title {
+  color: var(--text-accent);
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: clamp(0.7rem, 1.8vw, 0.9rem);
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+/* Descripciones de técnicas y estrategias */
+.technique-description,
+.element-description,
+.strategy-description,
+.scenario-description,
+.scenario-strategy {
+  color: var(--text-primary);
+  font-size: clamp(0.65rem, 1.6vw, 0.8rem);
+  line-height: 1.5;
+}
+
+/* Listas dentro de las técnicas */
+.technique-description ul,
+.strategy-description ul,
+.scenario-strategy ul,
+.signal ul {
+  list-style: none;
+  padding-left: 0.5rem;
+  margin: 0.5rem 0;
+}
+
+.technique-description ul li,
+.strategy-description ul li,
+.scenario-strategy ul li,
+.signal ul li {
+  padding: 0.3rem 0;
+  position: relative;
+  padding-left: 1.2rem;
+}
+
+.technique-description ul li:before,
+.strategy-description ul li:before,
+.scenario-strategy ul li:before,
+.signal ul li:before {
+  content: '▸';
+  position: absolute;
+  left: 0;
+  color: var(--border-electric);
+  font-weight: bold;
+}
+
+/* Señales positivas/negativas/blofeo */
+.signal.positive {
+  border-color: var(--success-color);
+  background: rgba(0, 255, 127, 0.05);
+}
+
+.signal.negative {
+  border-color: var(--danger-color);
+  background: rgba(255, 20, 147, 0.05);
+}
+
+.signal.bluff {
+  border-color: var(--warning-color);
+  background: rgba(255, 215, 0, 0.05);
+}
+
+/* Situaciones de puntuación */
+.score-situation.winning {
+  border-color: var(--success-color);
+  background: rgba(0, 255, 127, 0.05);
+}
+
+.score-situation.losing {
+  border-color: var(--danger-color);
+  background: rgba(255, 20, 147, 0.05);
+}
+
+.score-situation.close {
+  border-color: var(--warning-color);
+  background: rgba(255, 215, 0, 0.05);
+}
+
+/* Momentos críticos */
+.critical-situations {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 1rem 0;
+}
+
+.critical-moment {
+  background: rgba(255, 20, 147, 0.1);
+  border-color: var(--danger-color);
+}
+
+.critical-moment strong {
+  color: var(--text-accent);
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: clamp(0.7rem, 1.8vw, 0.9rem);
+}
+
+.critical-moment p {
+  color: var(--text-primary);
+  font-size: clamp(0.65rem, 1.6vw, 0.8rem);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Mentalidad de campeón y sabiduría final */
+.master-mindset,
+.final-wisdom {
+  margin: 1.5rem 0;
+  padding: 1rem;
+  background: linear-gradient(135deg, 
+    rgba(255, 215, 0, 0.1) 0%, 
+    rgba(255, 140, 0, 0.1) 100%);
+  border: 2px solid var(--warning-color);
+  border-radius: 8px;
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
+}
+
+.master-mindset h4,
+.final-wisdom h4 {
+  color: var(--text-accent);
+  font-size: clamp(0.8rem, 2vw, 1rem);
+  margin-bottom: 0.75rem;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.master-mindset blockquote,
+.final-wisdom blockquote {
+  color: var(--text-primary);
+  font-size: clamp(0.7rem, 1.7vw, 0.85rem);
+  font-style: italic;
+  line-height: 1.6;
+  margin: 0;
+  padding: 0.5rem 1rem;
+  border-left: 3px solid var(--warning-color);
+}
+
+.final-wisdom p {
+  color: var(--text-primary);
+  font-size: clamp(0.65rem, 1.6vw, 0.8rem);
+  line-height: 1.6;
+  margin: 0.5rem 0;
+}
+
+.final-wisdom p strong {
+  color: var(--text-accent);
+}
+
+.final-wisdom p em {
+  color: var(--warning-color);
+  font-style: italic;
 }
 
 /* ESTILOS PARA LA PANTALLA PRINCIPAL DEL TUTORIAL */
 
-/* CONTENEDOR TUTORIAL - SCROLL VISIBLE Y FUNCIONAL */
+/* CONTENEDOR TUTORIAL - SCROLL VISIBLE Y FUNCIONAL SOLO EN LISTA DE LECCIONES */
 #tutorial-screen.screen.active {
   width: 100% !important;
   min-height: 100vh !important;
@@ -3042,14 +3116,17 @@ html, body {
 }
 
 .card-hierarchy {
-  max-height: 300px;
-  overflow-y: auto;
+  max-height: none;
+  overflow-y: visible;
   overflow-x: hidden;
   padding: 0.5rem;
   box-sizing: border-box;
   background: rgba(61, 40, 23, 0.3);
   border-radius: 8px;
   border: 1px solid var(--card-border);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 /* Ensure all screen elements respect canvas boundaries */
@@ -3059,23 +3136,26 @@ html, body {
 }
 
 /* Override any overflow visible settings for screens that are not the game board */
-.screen:not(.game-board):not(.welcome-screen):not(#tutorial-screen):not(#achievements-screen):not(#setup-screen),
-.screen:not(.game-board):not(.welcome-screen):not(#tutorial-screen):not(#achievements-screen):not(#setup-screen) *:not(.lessons-grid):not(.lesson-card):not(.tips-grid):not(.tip-card):not(.setup-grid):not(.selection-grid):not(.selection-item),
-.screen:not(.game-board):not(.welcome-screen):not(#tutorial-screen):not(#achievements-screen):not(#setup-screen) .screen-content {
+/* CRITICAL: Exceptuar .lesson-screen para permitir scroll en lecciones */
+.screen:not(.game-board):not(.welcome-screen):not(#tutorial-screen):not(#achievements-screen):not(#setup-screen):not(.lesson-screen),
+.screen:not(.game-board):not(.welcome-screen):not(#tutorial-screen):not(#achievements-screen):not(#setup-screen):not(.lesson-screen) *:not(.lessons-grid):not(.lesson-card):not(.tips-grid):not(.tip-card):not(.setup-grid):not(.selection-grid):not(.selection-item),
+.screen:not(.game-board):not(.welcome-screen):not(#tutorial-screen):not(#achievements-screen):not(#setup-screen):not(.lesson-screen) .screen-content {
   overflow: hidden !important;
 }
 
-/* Tutorial y Achievements necesitan overflow visible para scroll */
-#tutorial-screen, #tutorial-screen *, 
-#achievements-screen, #achievements-screen * {
-  overflow: visible !important;
-}
-
+/* Tutorial y Achievements screens - SCROLL SOLO EN LISTA DE LECCIONES */
 #tutorial-screen.screen,
 #achievements-screen.screen {
   overflow-y: scroll !important;
   overflow-x: hidden !important;
 }
+
+#tutorial-screen,
+#achievements-screen {
+  overflow: visible;
+}
+
+/* NOTA: Definición de scroll ya existe en línea ~1360 - DUPLICADO ELIMINADO */
 
 /* Allow setup sections to have their own overflow rules */
 .screen:not(.game-board):not(.welcome-screen):not(#setup-screen) .setup-section.opponent-section {
@@ -3088,8 +3168,8 @@ html, body {
   z-index: 9999 !important;
 }
 
-/* Ensure screen content has proper scrolling */
-.screen:not(.game-board) .screen-content {
+/* Ensure screen content has proper scrolling (excepto lesson-screen que no usa screen-content) */
+.screen:not(.game-board):not(.lesson-screen) .screen-content {
   overflow-y: auto !important;
   overflow-x: hidden !important;
 }
@@ -4816,23 +4896,24 @@ html, body {
     max-height: none !important;
   }
   
+  /* lesson-screen: SIN SCROLL PROPIO - solo scroll interno en step-content-scrollable */
   .lesson-screen.screen {
     height: 100vh !important;
     max-height: 100vh !important;
     padding: 0.5rem;
     padding-bottom: 2rem;
-    overflow-y: auto !important;
-    overflow-x: hidden !important;
-    -webkit-overflow-scrolling: touch;
-    display: block !important;
+    overflow: hidden !important; /* CRÍTICO: Sin scroll propio */
+    display: flex !important;
+    flex-direction: column !important;
   }
 
-  .lesson-screen.screen::-webkit-scrollbar {
+  /* Scrollbar solo para step-content-scrollable, NO para lesson-screen */
+  .lesson-screen .step-content-scrollable::-webkit-scrollbar {
     width: 8px;
     display: block !important;
   }
 
-  .lesson-screen.screen::-webkit-scrollbar-thumb {
+  .lesson-screen .step-content-scrollable::-webkit-scrollbar-thumb {
     background: rgba(0, 255, 255, 0.6);
     border-radius: 4px;
   }
@@ -4846,6 +4927,7 @@ html, body {
   .lesson-screen.screen {
     padding: 0.3rem;
     padding-bottom: 2.5rem;
+    overflow: hidden !important; /* Mantener sin scroll */
   }
 
   .lessons-grid {
@@ -5084,10 +5166,33 @@ html, body {
 }
 
 .card-hierarchy {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-  gap: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
   margin: 1rem 0;
+}
+
+.hierarchy-level {
+  background: rgba(15, 10, 48, 0.6);
+  border: 2px solid var(--border-teal);
+  border-radius: 8px;
+  padding: 0.75rem;
+  text-align: left;
+}
+
+.hierarchy-level strong {
+  color: var(--text-accent);
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: clamp(0.65rem, 1.8vw, 0.85rem);
+}
+
+.hierarchy-level p {
+  color: var(--text-primary);
+  font-size: clamp(0.6rem, 1.6vw, 0.75rem);
+  margin: 0.25rem 0;
+  padding-left: 0.5rem;
+  border-left: 2px solid var(--border-electric);
 }
 
 .hierarchy-card {
@@ -7025,7 +7130,11 @@ html, body {
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
+    justify-content: center !important;
     gap: 0.25rem !important;
+    min-height: 45px !important;
+    height: 45px !important;
+    padding: 0.3rem 0.6rem !important;
   }
   
   .turn-indicator {
@@ -7036,12 +7145,18 @@ html, body {
     font-size: 0.65rem !important;
   }
 
+  /* Scoreboard - SAME HEIGHT as game-status (45px) */
   .scoreboard {
     display: flex !important;
     flex-direction: row !important;
     gap: 0.5rem !important;
-    padding: 0.25rem 0.5rem !important;
+    padding: 0.3rem 0.6rem !important;
     font-size: 0.7rem !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-height: 45px !important;
+    height: 45px !important;
+    flex-shrink: 0 !important;
   }
   
   .score-item {
@@ -7146,15 +7261,15 @@ html, body {
     max-width: calc(100% - 50px) !important;
   }
 
-  /* Personality indicators - positioned 268px from top (253px + 15px) */
-  /* CRITICAL: Width matches computer-avatar width (150px) */
+  /* Personality indicators - SUBIDO 40px (268px - 40px = 228px) */
+  /* CRITICAL: Width 150px matches computer-avatar width */
   .personality-indicators,
   .game-board .personality-indicators,
   .game-board.active .personality-indicators {
     position: absolute !important;
     bottom: auto !important;
     left: 0.5rem !important;
-    top: 268px !important;
+    top: 228px !important;
     right: auto !important;
     transform: none !important;
     z-index: 3 !important;
@@ -7183,10 +7298,17 @@ html, body {
     box-sizing: border-box !important;
   }
 
+  /* ai-thinking - BAJADO 270px total (258px + 20px = 278px) */
+  /* CRITICAL: Width 150px matches personality-indicators and avatar */
   .ai-thinking {
     position: absolute !important;
-    top: 0.5rem !important;
-    right: 0.5rem !important;
+    top: 278px !important;
+    right: auto !important;
+    left: 0.5rem !important;
+    width: 150px !important;
+    max-width: 150px !important;
+    min-width: 150px !important;
+    box-sizing: border-box !important;
     transform: none !important;
     z-index: 3 !important;
     font-size: 0.65rem !important;
