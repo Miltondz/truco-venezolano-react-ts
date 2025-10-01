@@ -9,8 +9,8 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onNavigate }) => {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
   useEffect(() => {
-    // Preload video for better performance
-    const videoSrc = window.innerWidth <= 768 ? '/images/cover-mobile.mp4' : '/images/cover.mp4';
+    // Preload splash video for better performance
+    const videoSrc = '/images/cover-splash.mp4';
     const video = document.createElement('video');
     video.src = videoSrc;
     video.onloadeddata = () => setVideoLoaded(true);
@@ -45,7 +45,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onNavigate }) => {
             onError={() => setVideoError(true)}
           >
             <source 
-              src={isMobile ? "/images/cover-mobile.mp4" : "/images/cover.mp4"} 
+              src={"/images/cover-splash.mp4"} 
               type="video/mp4" 
             />
           </video>
