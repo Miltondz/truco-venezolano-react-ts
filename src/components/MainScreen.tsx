@@ -27,7 +27,7 @@ const MainScreen: React.FC<MainScreenProps> = ({ onNavigate }) => {
             muted
             loop
             playsInline
-            className="background-video"
+className="cover-video"
             poster={isMobile ? "/images/cover-mobile.jpg" : "/images/cover.jpg"}
             onError={() => setVideoError(true)}
           >

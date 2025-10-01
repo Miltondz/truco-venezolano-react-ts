@@ -111,13 +111,27 @@ html, body {
 }
 
 /* Video element styling */
-.background-video,
-.cover-video {
+/* Modo "contain" (no recortes) */
+.background-video {
   max-width: 100%;
   max-height: 100%;
   width: auto;
   height: auto;
   object-fit: contain;
+  object-position: center;
+  position: relative;
+  z-index: -1;
+  /* Performance optimizations */
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* Modo "cover" (llenar toda el área, puede recortar bordes) */
+.cover-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
   object-position: center;
   position: relative;
   z-index: -1;
@@ -140,13 +154,25 @@ html, body {
 }
 
 /* Fallback image styling */
-.background-image,
-.cover-image {
+.background-image {
   max-width: 100%;
   max-height: 100%;
   width: auto;
   height: auto;
   object-fit: contain;
+  object-position: center;
+  position: relative;
+  z-index: -1;
+  /* Performance optimizations */
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.cover-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
   object-position: center;
   position: relative;
   z-index: -1;
