@@ -1,30 +1,44 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BaseScreenProps } from '../types';
 
 interface MainScreenProps extends BaseScreenProps {}
 
 const MainScreen: React.FC<MainScreenProps> = ({ onNavigate }) => {
   const [videoError, setVideoError] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   return (
     <div id="main-screen" className="screen main-screen active">
-      {/* Video Background */}
+      {/* Video Background - Responsive */}
       <div className="video-background">
         {!videoError ? (
           <video
+            key={isMobile ? 'mobile' : 'desktop'}
             autoPlay
             muted
             loop
             playsInline
             className="background-video"
-            poster="/images/cover.jpg"
+            poster={isMobile ? "/images/cover-mobile.jpg" : "/images/cover.jpg"}
             onError={() => setVideoError(true)}
           >
-            <source src="/images/cover.mp4" type="video/mp4" />
+            <source 
+              src={isMobile ? "/images/cover-mobile.mp4" : "/images/cover.mp4"} 
+              type="video/mp4" 
+            />
           </video>
         ) : (
           <img
-            src="/images/cover.jpg"
+            src={isMobile ? "/images/cover-mobile.jpg" : "/images/cover.jpg"}
             alt="Truco Venezolano Background"
             className="background-image"
           />

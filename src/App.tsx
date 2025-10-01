@@ -692,9 +692,13 @@ const [victoryState, setVictoryState] = useState<{
 
       {!loading && (
         <div className="main-container">
-          <div className="game-canvas">
-            {renderScreen()}
-          </div>
+          {currentScreen === 'game-board' ? (
+            <div className="game-canvas">
+              {renderScreen()}
+            </div>
+          ) : (
+            renderScreen()
+          )}
         </div>
       )}
 

@@ -6,7 +6,9 @@ interface LorePanelProps {
 }
 
 const LorePanel: React.FC<LorePanelProps> = ({ events, manoIsPlayer }) => {
-  const [collapsed, setCollapsed] = useState(false);
+  // Check if mobile viewport
+  const isMobile = window.innerWidth <= 768;
+  const [collapsed, setCollapsed] = useState(isMobile);
 
   return (
     <div className={`lore-panel ${collapsed ? 'collapsed' : ''}`} aria-live="polite">

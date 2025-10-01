@@ -6,13 +6,23 @@ interface WelcomeScreenProps extends BaseScreenProps {}
 const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onNavigate }) => {
   const [videoLoaded, setVideoLoaded] = useState(false);
   const [videoError, setVideoError] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
   useEffect(() => {
     // Preload video for better performance
+    const videoSrc = window.innerWidth <= 768 ? '/images/cover-mobile.mp4' : '/images/cover.mp4';
     const video = document.createElement('video');
-    video.src = '/images/cover.mp4';
+    video.src = videoSrc;
     video.onloadeddata = () => setVideoLoaded(true);
     video.onerror = () => setVideoError(true);
+
+    // Handle resize
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   const handleEnter = () => {
@@ -21,24 +31,28 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onNavigate }) => {
 
   return (
     <div id="welcome-screen" className="screen welcome-screen active">
-      {/* Video Background */}
+      {/* Video Background - Responsive */}
       <div className="video-background">
         {!videoError ? (
           <video
+            key={isMobile ? 'mobile' : 'desktop'}
             autoPlay
             muted
             loop
             playsInline
             className="cover-video"
-            poster="/images/cover.jpg"
+            poster={isMobile ? "/images/cover-mobile.jpg" : "/images/cover.jpg"}
             onError={() => setVideoError(true)}
           >
-            <source src="/images/cover.mp4" type="video/mp4" />
+            <source 
+              src={isMobile ? "/images/cover-mobile.mp4" : "/images/cover.mp4"} 
+              type="video/mp4" 
+            />
           </video>
         ) : (
           /* Fallback to image if video fails */
           <img
-            src="/images/cover.jpg"
+            src={isMobile ? "/images/cover-mobile.jpg" : "/images/cover.jpg"}
             alt="Truco Venezolano"
             className="cover-image"
           />

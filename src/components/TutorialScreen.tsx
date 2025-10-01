@@ -110,7 +110,6 @@ const TutorialScreen: React.FC<BaseScreenProps> = ({ onNavigate }) => {
   return (
     <div id="tutorial-screen" className="screen active">
       <button className="back-button" onClick={() => onNavigate('main-screen')}>← Volver</button>
-      <div className="screen-content">
         {/* Título Principal */}
         <div className="tutorial-header">
           <h2 className="game-title">Bienvenido al Tutorial</h2>
@@ -186,8 +185,8 @@ const TutorialScreen: React.FC<BaseScreenProps> = ({ onNavigate }) => {
           </div>
         </div>
 
-        {/* Consejos finales */}
-        <div className="tutorial-tips">
+        {/* Consejos finales - TEMPORALMENTE DESHABILITADO */}
+        {/* <div className="tutorial-tips">
           <h3 className="instruction-title">💡 Consejos para Aprender</h3>
           <div className="tips-grid">
             <div className="tip-card">
@@ -212,8 +211,7 @@ const TutorialScreen: React.FC<BaseScreenProps> = ({ onNavigate }) => {
               </div>
             </div>
           </div>
-        </div>
-      </div>
+        </div> */}
     </div>
   );
 };

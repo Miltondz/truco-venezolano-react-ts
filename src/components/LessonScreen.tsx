@@ -86,8 +86,6 @@ const LessonScreen: React.FC<LessonScreenProps> = ({
   return (
     <div className="lesson-screen screen active">
       <button className="back-button" onClick={onBack}>← Volver</button>
-      
-      <div className="lesson-screen-content">
         {/* Header de la lección */}
         <div className="lesson-header">
           <div className="lesson-title-container">
@@ -186,7 +184,6 @@ const LessonScreen: React.FC<LessonScreenProps> = ({
             </div>
           </div>
         )}
-      </div>
     </div>
   );
 };

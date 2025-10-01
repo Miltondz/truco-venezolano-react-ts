@@ -458,23 +458,133 @@
     font-size: 1.2rem;
   }
   
-  /* Tournament cards responsive */
+  /* Tournament cards responsive - HORIZONTAL LAYOUT */
   .tournaments-card-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
     padding: 0.5rem;
   }
   
   .tournament-card {
-    min-height: 280px;
+    flex-direction: row;
+    min-height: auto;
+    height: auto;
+  }
+  
+  .tournament-card-header {
+    flex-direction: column;
+    justify-content: center;
+    min-width: 80px;
+    padding: 10px;
+    border-right: 2px solid rgba(0, 255, 255, 0.2);
+    border-bottom: none;
+  }
+  
+  .tournament-card-body {
+    flex: 1;
+    padding: 12px;
+  }
+  
+  .tournament-card-stats {
+    flex-direction: row;
+    gap: 8px;
+    margin: 8px 0;
+  }
+  
+  .tournament-stat-item {
+    padding: 6px;
+  }
+  
+  .tournament-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 100px;
+    border-top: none;
+    border-left: 2px solid rgba(0, 255, 255, 0.1);
+    padding: 10px;
   }
   
   .tournament-card-title {
-    font-size: 1.1rem;
+    font-size: 1rem;
+    text-align: left;
   }
   
   .tournament-card-description {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
+    text-align: left;
+  }
+  
+  .tournament-icon {
+    font-size: 1.8rem;
+  }
+  
+  .stat-icon {
+    font-size: 1rem;
+  }
+  
+  .stat-number {
+    font-size: 1rem;
+  }
+  
+  .stat-label {
+    font-size: 0.65rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .tournaments-card-grid {
+    gap: 10px;
+    padding: 0.5rem;
+  }
+  
+  .tournament-card {
+    flex-direction: column;
+    min-height: auto;
+  }
+  
+  .tournament-card-header {
+    flex-direction: row;
+    justify-content: space-between;
+    min-width: auto;
+    width: 100%;
+    padding: 10px;
+    border-right: none;
+    border-bottom: 2px solid rgba(0, 255, 255, 0.2);
+  }
+  
+  .tournament-card-body {
+    padding: 12px;
+  }
+  
+  .tournament-card-stats {
+    flex-direction: column;
+    gap: 6px;
+  }
+  
+  .tournament-stat-item {
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 8px;
+  }
+  
+  .tournament-card-footer {
+    width: 100%;
+    min-width: auto;
+    border-left: none;
+    border-top: 2px solid rgba(0, 255, 255, 0.1);
+    padding: 10px;
+  }
+  
+  .tournament-card-title {
+    font-size: 0.95rem;
+    text-align: center;
+  }
+  
+  .tournament-card-description {
+    font-size: 0.75rem;
+    text-align: center;
   }
   
   .tournament-icon {
@@ -482,38 +592,15 @@
   }
   
   .stat-icon {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
+  }
+  
+  .stat-label {
+    flex: 1;
+    text-align: left;
   }
   
   .stat-number {
-    font-size: 1.1rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .tournaments-card-grid {
-    grid-template-columns: 1fr;
-    gap: 10px;
-    padding: 0.5rem;
-  }
-  
-  .tournament-card {
-    min-height: 260px;
-  }
-  
-  .tournament-card-header {
-    padding: 12px;
-  }
-  
-  .tournament-card-body {
-    padding: 15px;
-  }
-  
-  .tournament-card-title {
     font-size: 1rem;
-  }
-  
-  .tournament-card-description {
-    font-size: 0.8rem;
   }
 }

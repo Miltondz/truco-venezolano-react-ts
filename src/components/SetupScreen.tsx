@@ -12,6 +12,18 @@ interface SetupScreenProps extends BaseScreenProps {
 
 const SetupScreen: React.FC<SetupScreenProps> = ({ onNavigate, gameSettings, setGameSettings, gameState, setGameState, onStartGame }) => {
   const [avatarError, setAvatarError] = React.useState(false);
+  const [currentTab, setCurrentTab] = React.useState(0);
+  
+  // Track previous selections to detect new selections only
+  const prevDeckRef = React.useRef<string | null>(null);
+  const prevBoardRef = React.useRef<string | null>(null);
+  
+  // Tab definitions
+  const tabs = [
+    { id: 0, title: '🎴 Baraja', key: 'deck' },
+    { id: 1, title: '🎯 Tablero', key: 'board' },
+    { id: 2, title: '🤖 Oponente', key: 'opponent' }
+  ];
   
   // Handle avatar image loading errors
   const handleAvatarError = (e: React.SyntheticEvent<HTMLImageElement>) => {
@@ -29,18 +41,22 @@ const SetupScreen: React.FC<SetupScreenProps> = ({ onNavigate, gameSettings, set
     setAvatarError(false);
   }, [gameState.selectedAvatar]);
   
-  // Force scroll styles on setup sections
+  // Auto-advance only when a NEW selection is made within the active tab
   React.useEffect(() => {
-    const setupSections = document.querySelectorAll('#setup-screen .setup-section:not(.opponent-section)');
-    setupSections.forEach((section) => {
-      const htmlSection = section as HTMLElement;
-      htmlSection.style.maxHeight = '380px';
-      htmlSection.style.overflowY = 'auto';
-      htmlSection.style.overflowX = 'hidden';
-      htmlSection.style.position = 'relative';
-      htmlSection.style.boxSizing = 'border-box';
-    });
-  }, []);
+    // Check if deck was just selected (and it's different from previous)
+    if (currentTab === 0 && gameSettings.selectedDeck && gameSettings.selectedDeck !== prevDeckRef.current) {
+      prevDeckRef.current = gameSettings.selectedDeck;
+      // Advance to board tab after selecting deck
+      setTimeout(() => setCurrentTab(1), 300);
+    }
+    
+    // Check if board was just selected (and it's different from previous)
+    if (currentTab === 1 && gameSettings.selectedBoard && gameSettings.selectedBoard !== prevBoardRef.current) {
+      prevBoardRef.current = gameSettings.selectedBoard;
+      // Advance to opponent tab after selecting board
+      setTimeout(() => setCurrentTab(2), 300);
+    }
+  }, [gameSettings.selectedDeck, gameSettings.selectedBoard, currentTab]);
   
   // Handle opponent selection
   const handleOpponentSelect = (opponent: AICharacter) => {
@@ -83,50 +99,81 @@ const SetupScreen: React.FC<SetupScreenProps> = ({ onNavigate, gameSettings, set
       <button className="back-button" onClick={() => onNavigate('main-screen')}>← Volver</button>
       <div className="screen-content">
         <h2 className="game-title">Preparar Partida</h2>
-        <div className="setup-grid">
-          <div className="setup-section deck-board-section-scroll-force" style={{maxHeight: '380px', overflowY: 'auto', overflowX: 'hidden'}}>
-            <h3 className="setup-title">Elige tu Baraja</h3>
-            <div className="selection-grid" id="deck-selection">
-              {DECKS.map(deckName => (
-                <div
-                  key={deckName}
-                  className={`selection-item ${gameSettings.selectedDeck === deckName ? 'selected' : ''}`}
-                  onClick={() => setGameSettings({ ...gameSettings, selectedDeck: deckName })}
-                >
-                  <img src={`/images/decks/${deckName}/deck-preview.jpg`} alt={`Preview ${deckName}`} />
-                  <div className="item-name">{deckName}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="setup-section deck-board-section-scroll-force" style={{maxHeight: '380px', overflowY: 'auto', overflowX: 'hidden'}}>
-            <h3 className="setup-title">Elige el Tablero</h3>
-            <div className="selection-grid" id="board-selection">
-              {BOARDS.map(boardFile => (
-                <div
-                  key={boardFile}
-                  className={`selection-item ${gameSettings.selectedBoard === boardFile ? 'selected' : ''}`}
-                  onClick={() => setGameSettings({ ...gameSettings, selectedBoard: boardFile })}
-                >
-                  <img src={`/images/backgrounds/${boardFile}`} alt={`Preview ${boardFile}`} />
-                  <div className="item-name">{boardFile.replace('tablero-', '').replace('.jpg', '')}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="setup-section opponent-section">
-            <h3 className="setup-title">Tu Oponente</h3>
-            <OpponentSelector 
-              selectedOpponent={gameState.selectedOpponent}
-              onOpponentSelect={handleOpponentSelect}
-            />
-          </div>
+        
+        {/* Tab Navigation */}
+        <div className="tab-navigation" style={{ marginBottom: '1rem' }}>
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              className={`tab-button ${currentTab === tab.id ? 'active' : ''} ${currentTab > tab.id ? 'completed' : ''}`}
+              onClick={() => setCurrentTab(tab.id)}
+              disabled={tab.id > currentTab && (
+                (tab.id === 1 && !gameSettings.selectedDeck) ||
+                (tab.id === 2 && (!gameSettings.selectedDeck || !gameSettings.selectedBoard))
+              )}
+            >
+              {currentTab > tab.id && '✓ '}{tab.title}
+            </button>
+          ))}
         </div>
-        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', justifyContent: 'center', marginTop: '0.5rem' }}>
-          <button id="start-game-btn" className="menu-button" onClick={handleStartGame}>
-            🎮 Iniciar Partida
-          </button>
+
+        {/* Tab Content */}
+        <div className="tab-content">
+          {currentTab === 0 && (
+            <div className="setup-section" style={{ maxHeight: 'none', overflow: 'visible' }}>
+              <h3 className="setup-title">Elige tu Baraja</h3>
+              <div className="selection-grid" id="deck-selection">
+                {DECKS.map(deckName => (
+                  <div
+                    key={deckName}
+                    className={`selection-item ${gameSettings.selectedDeck === deckName ? 'selected' : ''}`}
+                    onClick={() => setGameSettings({ ...gameSettings, selectedDeck: deckName })}
+                  >
+                    <img src={`/images/decks/${deckName}/deck-preview.jpg`} alt={`Preview ${deckName}`} />
+                    <div className="item-name">{deckName}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {currentTab === 1 && (
+            <div className="setup-section" style={{ maxHeight: 'none', overflow: 'visible' }}>
+              <h3 className="setup-title">Elige el Tablero</h3>
+              <div className="selection-grid" id="board-selection">
+                {BOARDS.map(boardFile => (
+                  <div
+                    key={boardFile}
+                    className={`selection-item ${gameSettings.selectedBoard === boardFile ? 'selected' : ''}`}
+                    onClick={() => setGameSettings({ ...gameSettings, selectedBoard: boardFile })}
+                  >
+                    <img src={`/images/backgrounds/${boardFile}`} alt={`Preview ${boardFile}`} />
+                    <div className="item-name">{boardFile.replace('tablero-', '').replace('.jpg', '')}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {currentTab === 2 && (
+            <div className="setup-section opponent-section" style={{ maxHeight: 'none', overflow: 'visible' }}>
+              <h3 className="setup-title">Tu Oponente</h3>
+              <OpponentSelector 
+                selectedOpponent={gameState.selectedOpponent}
+                onOpponentSelect={handleOpponentSelect}
+              />
+            </div>
+          )}
         </div>
+
+        {/* Start Game Button - Only visible on last tab */}
+        {currentTab === 2 && (
+          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', justifyContent: 'center', marginTop: '1rem' }}>
+            <button id="start-game-btn" className="menu-button" onClick={handleStartGame}>
+              🎮 Iniciar Partida
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

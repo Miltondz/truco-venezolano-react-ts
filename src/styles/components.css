@@ -1,45 +1,187 @@
+
+/* ========================================
+   UNIVERSAL SCROLL / MOBILE FIXES 2025-09-30
+   ======================================== */
+
+/* Utility helpers */
+.no-scroll {
+  overflow: hidden !important;
+}
+.scroll-y {
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* CRITICAL: Prevent any scroll on html/body for mobile game */
+html, body {
+  overflow: hidden !important;
+  height: 100vh !important;
+  max-height: 100vh !important;
+  width: 100vw !important;
+  max-width: 100vw !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Base screen layout – header + content */
+.screen {
+  display: flex !important;
+  flex-direction: column !important;
+  min-height: 100vh;
+}
+
+/* Cancel absolute positioning that impedía scroll (excepto game-board) */
+.screen:not(.game-board) {
+  position: static !important;
+  height: auto !important;
+  min-height: 100vh !important;
+  overflow: visible !important;
+}
+
+/* Header fijo */
+.back-button, .screen-header {
+  flex: 0 0 auto;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+/* Contenedor principal con scroll */
+.screen-content {
+  flex: 1 1 auto;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Mostrar siempre scrollbar fino */
+.screen-content::-webkit-scrollbar {
+  width: 6px;
+}
+.screen-content::-webkit-scrollbar-thumb {
+  background: rgba(0, 255, 255, 0.5);
+  border-radius: 3px;
+}
+.screen-content {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 255, 255, 0.5) transparent;
+}
+
+/* Desactivar zoom en hover para táctiles */
+@media (hover: hover) and (pointer: fine) {
+  .selection-item:hover {
+    transform: scale(1.25);
+    z-index: 5;
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .selection-item:hover {
+    transform: none !important;
+  }
+}
+
+/* Tarjetas responsivas - altura automática, mínimo 110px */
+.stat-card {
+  min-height: 110px;
+  height: auto !important;
+  aspect-ratio: unset !important; /* Evita forzar cuadrado en móvil */
+}
+
+
+
+
 /* ========================================
    VIDEO BACKGROUND STYLES - Para WelcomeScreen y MainScreen
    ======================================== */
 
 /* Video background container */
 .video-background {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
+  width: 100vw;
+  height: 100vh;
+  overflow: visible;
   z-index: -1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Video element styling */
 .background-video,
 .cover-video {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  position: absolute;
-  top: 0;
-  left: 0;
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  object-position: center;
+  position: relative;
   z-index: -1;
+  /* Performance optimizations */
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* Mobile video optimizations */
+@media (max-width: 768px) {
+  .background-video,
+  .cover-video {
+    /* Reduce quality slightly for better performance */
+    image-rendering: optimizeSpeed;
+    /* Optimize compositing */
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+  }
 }
 
 /* Fallback image styling */
 .background-image,
 .cover-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  object-position: center;
+  position: relative;
+  z-index: -1;
+  /* Performance optimizations */
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* Mobile image optimizations */
+@media (max-width: 768px) {
+  .background-image,
+  .cover-image {
+    /* Optimize for mobile rendering */
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+}
+
+/* Video overlay - visible en mobile para mejor contraste */
+.video-overlay {
   position: absolute;
   top: 0;
   left: 0;
-  z-index: -1;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.15);
+  z-index: 0;
+  pointer-events: none;
 }
 
-/* Video overlay eliminado - sin difuminado */
-.video-overlay {
-  display: none;
+/* Desktop: sin overlay */
+@media (min-width: 769px) {
+  .video-overlay {
+    display: none;
+  }
 }
 
 /* Welcome Screen specific styles */
@@ -135,39 +277,59 @@
   padding: 0;
 }
 
-/* Botones del menú principal en dos filas en la parte inferior */
+/* Botones del menú principal - Desktop: 3x2 grid */
 .main-menu-buttons-bottom {
   position: absolute;
-  bottom: 15px;
+  bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
   display: grid;
-  grid-template-columns: repeat(3, 200px);
-  grid-template-rows: repeat(2, 24px);
-  gap: var(--spacing-sm);
+  grid-template-columns: repeat(3, 220px);
+  grid-template-rows: repeat(2, auto);
+  gap: 12px;
   justify-content: center;
+  align-items: center;
   z-index: 2;
+  max-width: calc(100vw - 40px);
 }
 
-/* BOTONES MENÚ PRINCIPAL - FORZAR TAMAÑO EXACTO */
+/* BOTONES MENÚ PRINCIPAL - Tamaño desktop mejorado */
 .main-menu-buttons-bottom button {
-  width: 200px !important;
-  min-width: 200px !important;
-  max-width: 200px !important;
-  height: 24px !important;
-  min-height: 24px !important;
-  max-height: 24px !important;
-  padding: 4px 8px !important;
-  font-size: var(--font-size-sm) !important;
-  white-space: nowrap !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-  box-sizing: border-box !important;
-  flex: 0 0 200px !important;
+  width: 220px;
+  min-width: 220px;
+  max-width: 220px;
+  height: 48px;
+  min-height: 48px;
+  padding: 12px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s ease;
 }
 
-/* Responsive video styles */
+.main-menu-buttons-bottom button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 255, 255, 0.3);
+}
+
+.main-menu-buttons-bottom button:active {
+  transform: translateY(0);
+}
+
+/* ========================================
+   RESPONSIVE STYLES - Tablet & Mobile
+   ======================================== */
+
+/* Tablet & Large Mobile (481px - 768px) */
 @media (max-width: 768px) {
+  /* Welcome screen adjustments */
   .welcome-enter-btn {
     font-size: clamp(0.9rem, 4vw, 1.2rem);
     padding: var(--spacing-md) var(--spacing-lg);
@@ -178,22 +340,38 @@
     bottom: 10px;
   }
   
+  /* Main menu: 2 columnas en tablet */
   .main-menu-buttons-bottom {
-    grid-template-columns: repeat(2, 180px);
-    grid-template-rows: repeat(3, 20px);
+    grid-template-columns: repeat(2, minmax(160px, 200px));
+    grid-template-rows: repeat(3, auto);
+    gap: 10px;
     bottom: 20px;
+    padding: 0 10px;
   }
   
   .main-menu-buttons-bottom button {
-    width: 180px !important;
-    min-width: 180px !important;
-    max-width: 180px !important;
-    height: 20px !important;
-    min-height: 20px !important;
-    flex: 0 0 180px !important;
+    width: 100%;
+    min-width: 160px;
+    max-width: 200px;
+    height: 48px;
+    min-height: 48px;
+    font-size: 13px;
+    padding: 10px 14px;
+  }
+  
+  /* Incrementar overlay para mejor legibilidad */
+  .video-overlay {
+    background: rgba(0, 0, 0, 0.35);
+  }
+  
+  /* Optimizar video background en tablets */
+  .background-video,
+  .cover-video {
+    object-fit: cover;
   }
 }
 
+/* Mobile Medium (375px - 480px) */
 @media (max-width: 480px) {
   .welcome-enter-btn {
     min-width: 120px;
@@ -204,22 +382,59 @@
     bottom: 10px;
   }
   
+  /* Main menu: 2 columnas apretadas en mobile medio */
   .main-menu-buttons-bottom {
-    grid-template-columns: 1fr;
-    grid-template-rows: repeat(6, 18px);
+    grid-template-columns: repeat(2, minmax(140px, 1fr));
+    grid-template-rows: repeat(3, auto);
+    gap: 8px;
     bottom: 15px;
-    gap: var(--spacing-xs);
-    max-width: 160px;
-    justify-self: center;
+    padding: 0 8px;
+    max-width: calc(100vw - 20px);
   }
   
   .main-menu-buttons-bottom button {
-    width: 160px !important;
-    min-width: 160px !important;
-    max-width: 160px !important;
-    height: 18px !important;
-    min-height: 18px !important;
-    flex: 0 0 160px !important;
+    width: 100%;
+    min-width: 140px;
+    max-width: 180px;
+    height: 50px;
+    min-height: 50px;
+    font-size: 12px;
+    padding: 10px 12px;
+    gap: 6px;
+  }
+  
+  /* Incrementar más el overlay para mejor contraste */
+  .video-overlay {
+    background: rgba(0, 0, 0, 0.45);
+  }
+}
+
+/* Mobile Small (320px - 374px) */
+@media (max-width: 374px) {
+  /* Main menu: 1 columna en móviles pequeños */
+  .main-menu-buttons-bottom {
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(6, auto);
+    gap: 8px;
+    bottom: 12px;
+    padding: 0 8px;
+    max-width: min(280px, calc(100vw - 20px));
+  }
+  
+  .main-menu-buttons-bottom button {
+    width: 100%;
+    min-width: 100%;
+    max-width: 100%;
+    height: 44px;
+    min-height: 44px;
+    font-size: 11px;
+    padding: 8px 12px;
+    gap: 4px;
+  }
+  
+  /* Máximo contraste en pantallas muy pequeñas */
+  .video-overlay {
+    background: rgba(0, 0, 0, 0.55);
   }
 }
 
@@ -227,11 +442,9 @@
    SCREEN STYLES - Main screen overlays
    ======================================== */
 .screen:not(.game-board) {
-  position: absolute;
-  top: 0;
-  left: 0;
+  /* Permitir que crezca libremente - NO usar absolute */
   width: 100%;
-  height: 100%;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -253,13 +466,9 @@
   transform: scale(0.95);
   pointer-events: none;
   box-sizing: border-box;
-  overflow: hidden;
   box-shadow: var(--glow-secondary), inset 0 0 50px rgba(0, 255, 255, 0.05);
 }
 
-.screen:not(.game-board):hover {
-  overflow: visible;
-}
 
 .screen:not(.game-board).active {
   opacity: 1;
@@ -292,9 +501,6 @@
   align-items: center;
   gap: var(--spacing-md);
   animation: screen-enter 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-  overflow-y: auto;
-  overflow-x: hidden;
-  max-height: calc(100% - 2rem);
   padding: var(--spacing-lg);
   border-radius: var(--border-radius-sm);
   box-sizing: border-box;
@@ -305,10 +511,6 @@
   border: 1px solid rgba(0, 255, 255, 0.1);
 }
 
-.screen-content:hover {
-  overflow-y: auto;
-  overflow-x: hidden;
-}
 
 /* Custom scrollbar for webkit browsers - Cyber style */
 .screen-content::-webkit-scrollbar {
@@ -1684,190 +1886,105 @@
 
 /* ESTILOS PARA LA PANTALLA PRINCIPAL DEL TUTORIAL */
 
-/* CONTENEDOR TUTORIAL - POSICIONAMIENTO CORREGIDO PARA MARGEN SUPERIOR */
-#tutorial-screen {
-  width: 100%;
-  height: calc(100vh - 10px); /* Reducir altura para compensar margen superior */
-  overflow-y: auto !important;
+/* CONTENEDOR TUTORIAL - SCROLL VISIBLE Y FUNCIONAL */
+#tutorial-screen.screen.active {
+  width: 100% !important;
+  min-height: 100vh !important;
+  height: auto !important;
+  max-height: none !important;
+  overflow-y: scroll !important;
   overflow-x: hidden !important;
-  background: var(--primary-bg);
-  /* SOBRESCRIBIR: position absolute heredado de .screen con margen superior */
-  position: absolute !important;
-  top: 10px !important; /* MARGEN SUPERIOR: 10px relativo a la ventana */
-  left: 0 !important;
-  /* SOBRESCRIBIR: flex centering que interfiere con el espaciado superior */
-  justify-content: flex-start !important; /* No centrar verticalmente */
-  align-items: stretch !important; /* Permitir que el contenido use todo el ancho */
-  scroll-behavior: smooth;
-  box-sizing: border-box;
+  background: var(--primary-bg) !important;
+  position: relative !important;
+  padding: 4rem 1.5rem 3rem 1.5rem !important;
+  box-sizing: border-box !important;
+  /* Override .screen centering */
+  display: block !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+  align-items: flex-start !important;
 }
 
-#tutorial-screen::-webkit-scrollbar {
+/* Scrollbar personalizado para tutorial - SIEMPRE VISIBLE */
+#tutorial-screen.screen::-webkit-scrollbar {
   width: 12px !important;
   display: block !important;
 }
 
-#tutorial-screen::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.3) !important;
-  border-radius: 6px !important;
+#tutorial-screen.screen::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.5) !important;
+  border-radius: 4px !important;
 }
 
-#tutorial-screen::-webkit-scrollbar-thumb {
+#tutorial-screen.screen::-webkit-scrollbar-thumb {
   background: linear-gradient(135deg, var(--border-teal), var(--border-electric)) !important;
-  border-radius: 6px !important;
+  border-radius: 4px !important;
   box-shadow: 0 0 8px rgba(0, 255, 255, 0.4) !important;
 }
 
-/* Scrollbar personalizado para tutorial principal */
-#tutorial-screen::-webkit-scrollbar {
-  width: 10px;
-}
-
-#tutorial-screen::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.3);
-  border-radius: var(--border-radius-sm);
-}
-
-#tutorial-screen::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, var(--border-teal), var(--border-electric));
-  border-radius: var(--border-radius-sm);
-  box-shadow: 0 0 8px rgba(0, 255, 255, 0.4);
-}
-
-#tutorial-screen::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(135deg, var(--border-electric), var(--btn1-bg));
-  box-shadow: 0 0 12px rgba(0, 255, 255, 0.6);
+#tutorial-screen.screen::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, var(--border-electric), var(--btn1-bg)) !important;
+  box-shadow: 0 0 12px rgba(0, 255, 255, 0.6) !important;
 }
 
 /* Scrollbar para Firefox */
-#tutorial-screen {
-  scrollbar-width: thin;
-  scrollbar-color: var(--border-teal) rgba(0, 0, 0, 0.3);
+#tutorial-screen.screen {
+  scrollbar-width: auto !important;
+  scrollbar-color: var(--border-teal) rgba(0, 0, 0, 0.5) !important;
 }
 
-/* LAYOUT TUTORIAL - SIN LIMITACIONES DE ALTURA PARA PERMITIR CONTENIDO COMPLETO */
-#tutorial-screen .screen-content {
-  position: relative;
-  width: 100%;
-  /* ELIMINAR LIMITACIONES: Permitir que el contenido determine la altura */
-  min-height: auto !important;
-  /* SOBRESCRIBIR: max-height heredado de .screen-content base (calc(100% - 2rem)) */
-  max-height: none !important;
-  max-width: 100vw;
-  overflow: visible !important;
-  /* PADDING MÍNIMO: Solo espacio para back-button + margen del header */
-  padding: 20px var(--spacing-lg) var(--spacing-xl) var(--spacing-lg);
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-lg);
-  margin: 0;
-  /* ASEGURAR: Que no haya restricciones de altura heredadas */
-  height: auto !important;
-}
 
-/* HEADER TUTORIAL - POSICIONAMIENTO SIMPLE CON ESPACIADO GARANTIZADO */
+/* HEADER TUTORIAL - MINIMALISTA */
 .tutorial-header {
-  position: relative;
   width: 100%;
-  max-width: 600px;
-  /* MARGEN SIMPLE: El contenedor principal ya tiene 10px + padding interno 60px */
-  /* = 70px total de espacio superior garantizado */
-  margin: 0 auto;
-  background: linear-gradient(135deg, 
-    rgba(40, 40, 40, 0.85) 0%, 
-    rgba(60, 60, 60, 0.85) 100%);
-  border: 2px solid var(--border-electric);
-  border-radius: 12px;
-  padding: var(--spacing-md);
+  max-width: 800px;
+  margin: 0 auto 2rem auto;
   text-align: center;
-  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(12px);
-  visibility: visible;
-  opacity: 1;
-  z-index: 1;
 }
 
 .tutorial-subtitle {
-  font-size: var(--font-size-md);
+  font-size: var(--font-size-sm);
   color: var(--text-secondary);
-  max-width: 100%;
-  margin: var(--spacing-xs) auto 0;
-  line-height: 1.5;
-  display: block;
-  opacity: 1;
+  margin: 0.5rem auto 0;
+  line-height: 1.4;
+  opacity: 0.9;
 }
 
 /* SECCIÓN DE LECCIONES - CONTENEDOR PRINCIPAL */
 .lessons-section {
-  position: relative;
   width: 100%;
-  padding: 0;
-  overflow: visible;
-  /* MIN-HEIGHT AUTO: Permite que el contenedor crezca según el contenido */
-  min-height: auto;
+  max-width: 1200px;
+  margin: 0 auto;
+  margin-bottom: 4rem;
+  clear: both;
+  position: relative;
+  z-index: 1;
 }
 
-/* TÍTULO DE SECCIÓN - ESTILO CYBERPUNK */
+/* TÍTULO DE SECCIÓN - SIMPLIFICADO */
 .section-title {
   font-family: var(--font-pixel);
-  font-size: var(--font-size-lg);
+  font-size: 1.5rem;
   color: var(--text-accent);
-  text-shadow: var(--glow-text);
   text-align: center;
-  margin: var(--spacing-lg) 0;
+  margin: 0 0 1.5rem 0;
   text-transform: uppercase;
+  letter-spacing: 0.1em;
 }
 
-/* GRID LECCIONES - 2 FILAS × 3 COLUMNAS CON ALTURA CALCULADA */
+/* GRID LECCIONES - RESPONSIVE Y SIMPLE - GARANTIZAR 6 LECCIONES */
 .lessons-grid {
   display: grid;
-  /* COLUMNAS: Máximo 3 columnas con mínimo 280px para caber 3 en pantalla */
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  /* FILAS: Máximo 2 filas para el layout deseado - Altura reducida 20% */
-  grid-auto-rows: minmax(256px, auto);
-  
-  /* VARIABLES PARA CÁLCULO AUTOMÁTICO DE ALTURA DEL CONTENEDOR */
-  /* PARA AJUSTAR EN EL FUTURO: */
-  /* 1. Cambiar --lesson-card-height para ajustar altura de tarjetas */
-  /* 2. El contenedor se recalculará automáticamente */
-  
-  --lesson-card-height: 256px;           /* Altura reducida 20%: 320px → 256px */
-  --gap-between-cards: var(--spacing-md); /* Espacio entre tarjetas (reducido para caber 3) */
-  --margin-top: var(--spacing-sm);        /* Margen superior del grid */
-  --margin-bottom: var(--spacing-lg);     /* Margen inferior del grid */
-  
-  /* ESPACIADO: Usar variables definidas */
-  gap: var(--gap-between-cards);
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.25rem;
   width: 100%;
-  max-width: 100%;
-  margin-top: var(--margin-top);
-  padding-bottom: var(--margin-bottom);
-  
-  box-sizing: border-box;
-  justify-items: stretch; /* Estirar para llenar el espacio disponible */
-  align-items: start;
-  
-  /* ALTURA CALCULADA: (2 filas × altura tarjeta) + gap entre filas + márgenes */
-  min-height: calc(
-    (2 * var(--lesson-card-height)) +      /* Dos filas de tarjetas */
-    var(--gap-between-cards) +             /* Gap entre las dos filas */
-    var(--margin-top) +                    /* Margen superior */
-    var(--margin-bottom)                   /* Margen inferior */
-  ) !important;
-  
-  /* FORZAR ALTURA: Asegurar que el contenedor respete la altura calculada */
-  height: calc(
-    (2 * var(--lesson-card-height)) +      
-    var(--gap-between-cards) + 
-    var(--margin-top) + 
-    var(--margin-bottom)
-  ) !important;
+  /* Asegurar que el grid tenga espacio para todas las lecciones */
+  min-height: min-content;
+  grid-auto-flow: row;
+  position: relative;
+  z-index: 1;
 }
 
-.lesson-card {
-  height: 180px;
-}
 
 .lesson-card-title {
   font-size: 16px;
@@ -1878,55 +1995,61 @@
 }
 
 .lesson-start-btn {
-  height: 32px;
-  font-size: 12px;
-}
-
-.tutorial-tips {
-  position: relative;
   width: 100%;
-  max-width: 1440px;
-  margin: var(--spacing-lg) auto 0;
+  height: 32px;
+  margin-top: auto;
+  padding: 6px 12px;
+  font-family: var(--font-modern);
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  border-radius: var(--border-radius-sm);
+  border: none;
+  background: linear-gradient(135deg, var(--btn1-bg), var(--btn2-bg));
+  color: var(--text-primary);
+  transition: all var(--transition-normal);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-.tips-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
-  gap: var(--spacing-md);
-  margin-top: var(--spacing-md);
+.lesson-start-btn:hover {
+  box-shadow: 
+    0 4px 8px rgba(0, 0, 0, 0.4),
+    0 0 12px rgba(0, 255, 255, 0.3);
+  transform: translateY(-1px);
 }
 
-/* Eliminar definición genérica que conflictuá - usar solo la específica del tutorial */
+.lesson-start-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
 
 /* LESSON CARDS - OPTIMIZADAS PARA GRID 3×2 SIN LÍMITES DE CONTENEDOR INTERNO */
 #tutorial-screen .lesson-card {
   background: linear-gradient(135deg, 
     rgba(15, 10, 48, 0.95) 0%, 
-    rgba(26, 17, 67, 0.95) 100%) !important;
-  border: 1px solid var(--border-teal) !important;
-  border-radius: var(--border-radius-sm) !important;
-  /* PADDING OPTIMIZADO: Balance entre contenido y espacio */
-  padding: var(--spacing-sm) !important;
+    rgba(26, 17, 67, 0.95) 100%);
+  border: 1px solid var(--border-teal);
+  border-radius: var(--border-radius-sm);
+  padding: 1rem;
   transition: all var(--transition-normal);
   box-shadow: 
     0 2px 4px rgba(0, 0, 0, 0.4),
     0 0 6px rgba(0, 255, 255, 0.15);
-  display: flex !important;
-  flex-direction: column !important;
-  justify-content: space-between !important;
-  /* ANCHO: Sin límite máximo para permitir 3 columnas */
-  width: 100% !important;
-  /* ELIMINAR: max-width que limita las 3 columnas */
-  /* max-width: 380px !important; */
-  /* ALTURA FIJA: Exactamente 256px (reducida 20%) para cálculos precisos */
-  height: 256px !important;
-  min-height: 256px !important;
-  max-height: 256px !important;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 220px;
+  height: auto;
   backdrop-filter: blur(4px);
-  box-sizing: border-box !important;
-  position: relative !important;
-  /* ELIMINAR LIMITACIONES DE OVERFLOW */
-  overflow: visible !important;
+  box-sizing: border-box;
+  position: relative;
 }
 
 .lesson-card:hover {
@@ -2133,15 +2256,16 @@
   
   .lessons-grid {
     grid-template-columns: 1fr;
-    grid-template-rows: repeat(auto, 140px);
+    grid-auto-rows: auto;
     gap: 12px;
-    padding-bottom: 30px;
+    margin-bottom: 1.5rem;
   }
   
   /* Tarjetas de lecciones - Móvil */
   .lesson-card {
     width: 100%;
-    height: 140px;
+    min-height: 140px;
+    height: auto;
     padding: 10px;
   }
   
@@ -2197,148 +2321,83 @@
     height: 12px;
     padding: 3px 4px;
   }
-}
 
-.lesson-start-btn {
-  width: 100%;
-  height: 28px;
-  margin-top: auto;
-  padding: 4px 8px;
-  font-family: var(--font-modern);
-  font-weight: 600;
-  font-size: 9px;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-  border-radius: var(--border-radius-sm);
-  border: none;
-  background: linear-gradient(135deg, var(--btn1-bg), var(--btn2-bg));
-  color: var(--text-primary);
-  transition: all var(--transition-normal);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-}
-
-.lesson-start-btn:hover {
-  box-shadow: 
-    0 2px 4px rgba(0, 0, 0, 0.4),
-    0 0 8px rgba(0, 255, 255, 0.3);
-}
-
-.lesson-start-btn:active {
-  transform: translateY(0);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  .lesson-start-btn {
+    height: 28px;
+    font-size: 10px;
+    padding: 6px 10px;
+  }
 }
 
 /* lesson-reward definido más abajo con estilos mejorados */
 
 /* reward-icon y reward-text definidos más abajo con estilos mejorados */
 
-/* SECCIÓN DE CONSEJOS - OPTIMIZADA PARA MENOS ESPACIO VERTICAL */
+/* SECCIÓN DE CONSEJOS - ULTRA SIMPLIFICADA - SEPARADA DE LECCIONES */
 .tutorial-tips {
-  margin: var(--spacing-lg) 0 0 0;
   width: 100%;
-  /* MAX-WIDTH: Aumentado 20% de 1200px a 1440px para consejos más anchos */
-  max-width: 1440px;
-  margin: var(--spacing-lg) auto 0;
-  /* PADDING REDUCIDO: Menos espacio vertical para compactar la sección */
-  padding-bottom: var(--spacing-lg);
+  max-width: 900px;
+  margin: 0 auto;
+  margin-top: 3rem;
+  padding-bottom: 3rem;
+  clear: both;
+  position: relative;
+  z-index: 1;
 }
 
-/* GRID DE CONSEJOS - LAYOUT HORIZONTAL COMPACTO */
+/* GRID DE CONSEJOS - LAYOUT SIMPLE */
 .tips-grid {
-  display: grid;
-  /* COLUMNAS: Mínimo 360px (20% más que los 300px originales) */
-  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
-  /* GAP REDUCIDO: Menor separación para compactar verticalmente */
-  gap: var(--spacing-md);
-  margin-top: var(--spacing-md);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
   width: 100%;
-  box-sizing: border-box;
-  justify-items: center;
 }
 
-/* TIP CARDS - ALTURA TRIPLICADA PARA MEJOR VISUALIZACIÓN */
+/* TIP CARDS - MINIMALISTAS */
 #tutorial-screen .tip-card {
-  background: linear-gradient(135deg, 
-    rgba(0, 191, 255, 0.15) 0%, 
-    rgba(0, 255, 255, 0.15) 100%) !important;
-  border: 1px solid var(--border-teal) !important;
-  border-radius: var(--border-radius-sm) !important;
-  padding: var(--spacing-md) !important; /* Aumentado padding para mejor espaciado */
-  text-align: left !important;
-  transition: all var(--transition-normal);
-  backdrop-filter: blur(2px);
-  /* ALTURA TRIPLICADA: 90px (3 veces los 30px anteriores) */
-  height: 90px !important;
-  width: 100% !important;
-  /* ANCHO MÁXIMO: 360px (mantenido según especificaciones) */
-  max-width: 360px !important;
-  /* LAYOUT: Mantener horizontal pero con más espacio vertical */
-  display: flex !important;
-  flex-direction: row !important;
-  justify-content: flex-start !important;
-  align-items: center !important;
-  gap: var(--spacing-md) !important; /* Aumentado gap para mejor espaciado */
-  box-sizing: border-box !important;
-  box-shadow: 
-    0 2px 4px rgba(0, 0, 0, 0.3), /* Sombra más pronunciada para mayor altura */
-    0 0 6px rgba(0, 255, 255, 0.15);
-  margin-bottom: var(--spacing-md) !important; /* Aumentado margen inferior */
+  background: rgba(0, 191, 255, 0.08);
+  border-left: 3px solid var(--border-teal);
+  border-radius: 4px;
+  padding: 0.875rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  transition: all 0.2s ease;
 }
 
 .tip-card:hover {
-  border-color: var(--border-electric);
-  box-shadow: var(--glow-secondary);
+  background: rgba(0, 191, 255, 0.12);
+  border-left-color: var(--border-electric);
 }
 
-/* TIP-CARD ELEMENTOS INTERNOS - TAMAÑOS AUMENTADOS PARA MEJOR APROVECHAMIENTO */
+/* TIP-CARD ELEMENTOS INTERNOS */
 #tutorial-screen .tip-icon {
-  font-size: 1.5rem !important; /* Aumentado de 1rem para mayor altura */
-  display: block !important;
-  margin: 0 !important;
-  filter: drop-shadow(0 0 3px currentColor);
-  flex-shrink: 0 !important;
-  width: 32px !important; /* Aumentado de 24px */
-  text-align: center !important;
+  font-size: 1.25rem;
+  flex-shrink: 0;
+  line-height: 1;
+  opacity: 0.9;
 }
 
 #tutorial-screen .tip-card-content {
-  flex: 1 !important;
-  text-align: left !important;
-  display: flex !important;
-  flex-direction: column !important;
-  justify-content: center !important;
-  gap: var(--spacing-xs) !important; /* Separación entre título y texto */
+  flex: 1;
+  min-width: 0;
 }
 
 #tutorial-screen .tip-card h4 {
-  font-family: var(--font-modern) !important;
-  font-size: var(--font-size-sm) !important; /* Aumentado de 10px */
-  color: var(--text-primary) !important;
-  margin: 0 !important;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
-  font-weight: 600 !important;
-  line-height: 1.2 !important;
-  /* ELIMINAR RESTRICCIONES: Permitir texto completo */
-  white-space: normal !important;
-  overflow: visible !important;
-  text-overflow: initial !important;
+  font-family: var(--font-modern);
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  font-weight: 600;
+  margin: 0 0 0.25rem 0;
+  line-height: 1.3;
 }
 
 #tutorial-screen .tip-card p {
-  color: var(--text-secondary) !important;
-  font-size: var(--font-size-xs) !important; /* Aumentado de 8px */
-  line-height: 1.3 !important; /* Aumentado para mejor legibilidad */
-  margin: 0 !important;
-  font-weight: 400 !important;
-  /* ELIMINAR RESTRICCIONES: Permitir texto completo */
-  overflow: visible !important;
-  text-overflow: initial !important;
-  white-space: normal !important;
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  line-height: 1.4;
+  margin: 0;
+  opacity: 0.85;
 }
 
 /* Estilos específicos para instruction-section */
@@ -2357,11 +2416,12 @@
 
 .instruction-title {
   font-family: var(--font-pixel);
-  font-size: var(--font-size-md);
+  font-size: 1.1rem;
   color: var(--text-accent);
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
-  margin-bottom: var(--spacing-xs);
+  margin-bottom: 1rem;
   text-align: center;
+  font-weight: normal;
+  letter-spacing: 0.05em;
 }
 
 .instruction-text {
@@ -2436,24 +2496,26 @@
 /* Responsive tutorial main screen */
 @media (max-width: 768px) {
   #tutorial-screen {
-    padding: 0;
+    padding: 3.5rem 1rem 1.5rem 1rem;
   }
   
-  #tutorial-screen .screen-content {
-    padding: var(--spacing-sm) var(--spacing-md) var(--spacing-xl) var(--spacing-md);
-    gap: var(--spacing-md);
-    max-width: 100%;
+  .tutorial-header {
+    margin-bottom: 1.5rem;
+  }
+  
+  .lessons-section {
+    margin-bottom: 2rem;
   }
   
   .lessons-grid {
     grid-template-columns: 1fr;
-    gap: var(--spacing-md);
+    gap: 1rem;
   }
   
   .lesson-card {
     padding: var(--spacing-md);
-    min-height: 280px;
-    max-height: 350px;
+    min-height: 200px;
+    height: auto;
     max-width: none;
     gap: var(--spacing-sm);
   }
@@ -2485,28 +2547,26 @@
   }
   
   .tips-grid {
-    grid-template-columns: 1fr;
-    gap: var(--spacing-md);
+    gap: 0.625rem;
   }
   
-  /* Mantener especificidad para tutorial tips */
   #tutorial-screen .tip-card {
-    max-width: 100% !important;
-    min-height: 30px !important;
-    padding: var(--spacing-sm) !important;
+    padding: 0.75rem 0.875rem;
+    gap: 0.75rem;
   }
   
   #tutorial-screen .tip-icon {
-    font-size: 1rem !important;
+    font-size: 1.1rem;
   }
   
   #tutorial-screen .tip-card h4 {
-    font-size: 10px !important;
+    font-size: 0.8rem;
   }
   
   #tutorial-screen .tip-card p {
-    font-size: 8px !important;
+    font-size: 0.75rem;
   }
+  
   
   .tutorial-progress-section {
     padding: var(--spacing-md);
@@ -2547,14 +2607,27 @@
 
 /* Responsive para pantallas muy pequeñas */
 @media (max-width: 480px) {
-  #tutorial-screen .screen-content {
-    padding: var(--spacing-xs) var(--spacing-sm) var(--spacing-lg) var(--spacing-sm);
+  #tutorial-screen {
+    padding: 3rem 0.75rem 1rem 0.75rem;
+  }
+  
+  .tutorial-header {
+    margin-bottom: 1.25rem;
+  }
+  
+  .section-title {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+  }
+  
+  .lessons-grid {
+    gap: 0.875rem;
   }
   
   .lesson-card {
-    min-height: 260px;
-    max-height: 320px;
-    padding: var(--spacing-sm);
+    min-height: 180px;
+    height: auto;
+    padding: 0.875rem;
   }
   
   .lesson-card-icon {
@@ -2575,18 +2648,29 @@
     font-size: 10px;
   }
   
-  /* Mantener especificidad para tutorial tips en móviles pequeños */
+  .tutorial-tips {
+    max-width: 100%;
+  }
+  
+  .instruction-title {
+    font-size: 1rem;
+  }
+  
   #tutorial-screen .tip-card {
-    min-height: 30px !important;
-    padding: var(--spacing-sm) !important;
+    padding: 0.625rem 0.75rem;
+    gap: 0.625rem;
   }
   
-  .overall-progress-bar {
-    height: 25px;
+  #tutorial-screen .tip-icon {
+    font-size: 1rem;
   }
   
-  .overall-progress-text {
-    font-size: var(--font-size-xs);
+  #tutorial-screen .tip-card h4 {
+    font-size: 0.75rem;
+  }
+  
+  #tutorial-screen .tip-card p {
+    font-size: 0.7rem;
   }
 }
 
@@ -2642,31 +2726,62 @@
 
 /* Desktop screen optimization - Only for non-game screens */
 @media (min-width: 769px) {
-  .screen:not(.game-board) {
+  .screen:not(.game-board):not(#tutorial-screen):not(#achievements-screen) {
     width: min(1280px, 100vw) !important;
     height: min(720px, 100vh) !important;
     max-width: 1280px;
     max-height: 720px;
   }
+  
+  /* Tutorial y Achievements necesitan altura dinámica */
+  #tutorial-screen.screen,
+  #achievements-screen.screen {
+    width: min(1280px, 100vw) !important;
+    min-height: 100vh !important;
+    height: auto !important;
+    max-height: none !important;
+    max-width: 1280px;
+    overflow-y: scroll !important;
+    overflow-x: hidden !important;
+  }
 }
 
-/* Mobile screen optimizations - Only for non-game screens */
+/* Mobile screen optimizations - WelcomeScreen y MainScreen fullscreen */
 @media (max-width: 768px) {
-  .screen:not(.game-board) {
+  /* Welcome y Main screen son fullscreen */
+  .welcome-screen.screen,
+  .main-screen.screen {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    max-width: 100vw !important;
+    max-height: 100vh !important;
+    padding: 0 !important;
+    border: none !important;
+    border-radius: 0 !important;
+  }
+  
+  /* Otros screens (config, tutorial, etc) se mantienen en el canvas */
+  .screen:not(.game-board):not(.welcome-screen):not(.main-screen) {
     padding: 0.5rem;
     border-radius: 8px;
   }
 
   .screen:not(.game-board) .screen-content {
-    max-height: calc(100% - 1rem);
-    gap: 0.5rem;
-    border-radius: 6px;
-    padding: 0.8rem;
+    overflow-y: auto; /* Permitir scroll vertical */
+    -webkit-overflow-scrolling: touch; /* Scroll suave en iOS */
+    padding: 1rem; /* Espaciado interno consistente */
+    max-height: 100%; /* Ocupa la altura disponible */
+    box-sizing: border-box;
   }
 
   .main-screen .screen-content {
-    justify-content: flex-start;
-    padding-top: 1rem;
+    justify-content: flex-end !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border: none !important;
   }
 
   .back-button {
@@ -2697,7 +2812,22 @@
 }
 
 @media (max-width: 480px) {
-  .screen:not(.game-board) {
+  /* Welcome y Main screen son fullscreen */
+  .welcome-screen.screen,
+  .main-screen.screen {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    max-width: 100vw !important;
+    max-height: 100vh !important;
+    padding: 0 !important;
+    border: none !important;
+    border-radius: 0 !important;
+  }
+  
+  .screen:not(.game-board):not(.welcome-screen):not(.main-screen) {
     padding: 0.25rem;
     border-radius: 6px;
   }
@@ -2710,7 +2840,10 @@
   }
 
   .main-screen .screen-content {
-    padding-top: 0.5rem;
+    justify-content: flex-end !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border: none !important;
   }
 
   .back-button {
@@ -2739,7 +2872,22 @@
 }
 
 @media (max-width: 320px) {
-  .screen:not(.game-board) {
+  /* Welcome y Main screen son fullscreen */
+  .welcome-screen.screen,
+  .main-screen.screen {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    max-width: 100vw !important;
+    max-height: 100vh !important;
+    padding: 0 !important;
+    border: none !important;
+    border-radius: 0 !important;
+  }
+  
+  .screen:not(.game-board):not(.welcome-screen):not(.main-screen) {
     padding: 0.125rem;
     border-radius: 4px;
   }
@@ -2752,7 +2900,10 @@
   }
 
   .main-screen .screen-content {
-    padding-top: 0.25rem;
+    justify-content: flex-end !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border: none !important;
   }
 
   .back-button {
@@ -2908,16 +3059,26 @@
 }
 
 /* Override any overflow visible settings for screens that are not the game board */
-.screen:not(.game-board):not(.welcome-screen),
-.screen:not(.game-board):not(.welcome-screen) *,
-.screen:not(.game-board):not(.welcome-screen) .screen-content,
-.screen:not(.game-board):not(.welcome-screen) .setup-grid,
-.screen:not(.game-board):not(.welcome-screen) .selection-grid {
+.screen:not(.game-board):not(.welcome-screen):not(#tutorial-screen):not(#achievements-screen):not(#setup-screen),
+.screen:not(.game-board):not(.welcome-screen):not(#tutorial-screen):not(#achievements-screen):not(#setup-screen) *:not(.lessons-grid):not(.lesson-card):not(.tips-grid):not(.tip-card):not(.setup-grid):not(.selection-grid):not(.selection-item),
+.screen:not(.game-board):not(.welcome-screen):not(#tutorial-screen):not(#achievements-screen):not(#setup-screen) .screen-content {
   overflow: hidden !important;
 }
 
+/* Tutorial y Achievements necesitan overflow visible para scroll */
+#tutorial-screen, #tutorial-screen *, 
+#achievements-screen, #achievements-screen * {
+  overflow: visible !important;
+}
+
+#tutorial-screen.screen,
+#achievements-screen.screen {
+  overflow-y: scroll !important;
+  overflow-x: hidden !important;
+}
+
 /* Allow setup sections to have their own overflow rules */
-.screen:not(.game-board):not(.welcome-screen) .setup-section.opponent-section {
+.screen:not(.game-board):not(.welcome-screen):not(#setup-screen) .setup-section.opponent-section {
   overflow: hidden !important;
 }
 
@@ -3550,6 +3711,17 @@
    overflow: visible !important;
 }
 
+/* Mobile override for personality indicators width */
+@media (max-width: 768px) {
+  .personality-indicators {
+    width: 150px !important;
+    max-width: 150px !important;
+    min-width: 150px !important;
+    flex-direction: column !important;
+    gap: 0.25rem !important;
+  }
+}
+
 .ai-thinking {
    position: absolute !important;
    top: 310px !important;
@@ -3627,14 +3799,16 @@
    CORRECCIONES PARA ELEMENTOS VISIBLES
    ======================================== */
 
-/* Asegurar que todos los elementos del juego sean visibles */
-.game-board.active,
-.game-board.active .game-layout,
-.game-board.active .game-area,
-.game-board.active .computer-section,
-.game-board.active .player-section,
-.game-board.active .play-area {
-  overflow: visible !important;
+/* Asegurar que todos los elementos del juego sean visibles - DESKTOP ONLY */
+@media (min-width: 769px) {
+  .game-board.active,
+  .game-board.active .game-layout,
+  .game-board.active .game-area,
+  .game-board.active .computer-section,
+  .game-board.active .player-section,
+  .game-board.active .play-area {
+    overflow: visible !important;
+  }
 }
 
 /* Asegurar que las cartas sean completamente visibles */
@@ -3663,20 +3837,22 @@
     GAME BOARD ACTIVE STATE - Clean active state rules
     ======================================== */
 
-/* Ensure proper layout when game board is active */
-.game-board.active {
-  display: block;
-}
+/* Ensure proper layout when game board is active - DESKTOP ONLY */
+@media (min-width: 769px) {
+  .game-board.active {
+    display: block;
+  }
 
-.game-board.active .game-area {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  height: calc(100% - 100px);
-  min-height: 500px;
-  gap: 0.5rem;
-  padding: 0.5rem;
-  position: relative;
+  .game-board.active .game-area {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: calc(100% - 100px);
+    min-height: 500px;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    position: relative;
+  }
 }
 
 /* Canvas centering for different aspect ratios */
@@ -3792,18 +3968,20 @@
 }
 
 /* Force hover behavior on all selection items regardless of position or state */
-.selection-item:hover,
-.selection-item:first-child:hover,
-.selection-item:last-child:hover,
-.selection-item.selected:hover,
-#deck-selection .selection-item:hover,
-#board-selection .selection-item:hover {
+@media (hover: hover) and (pointer: fine) {
+  .selection-item:hover,
+  .selection-item:first-child:hover,
+  .selection-item:last-child:hover,
+  .selection-item.selected:hover,
+  #deck-selection .selection-item:hover,
+  #board-selection .selection-item:hover {
   transform: scale(2) !important;
   box-shadow: var(--glow-gold) !important;
   z-index: 9999 !important;
   overflow: visible !important;
   position: relative !important;
   border: 3px solid var(--text-accent) !important;
+}
 }
 
 @media (min-width: 769px) {
@@ -4032,83 +4210,324 @@
 
 /* Responsive tweaks */
 @media (max-width: 768px) {
+  /* Configuración específica para setup-screen en móvil */
+  #setup-screen.screen {
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding: 0.5rem;
+  }
+
+  #setup-screen .screen-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    -webkit-overflow-scrolling: touch;
+    max-height: none !important;
+    height: auto !important;
+    padding: 0.5rem;
+    padding-bottom: 2rem;
+    margin-top: 0.5rem;
+    background: transparent !important;
+    border: none !important;
+  }
+
+  /* Scrollbar visible en webkit móvil */
+  #setup-screen .screen-content::-webkit-scrollbar {
+    width: 6px;
+    display: block !important;
+    opacity: 1 !important;
+  }
+
+  #setup-screen .screen-content::-webkit-scrollbar-track {
+    background: rgba(15, 10, 48, 0.3);
+    border-radius: 3px;
+  }
+
+  #setup-screen .screen-content::-webkit-scrollbar-thumb {
+    background: rgba(0, 255, 255, 0.5);
+    border-radius: 3px;
+    border: 1px solid rgba(0, 255, 255, 0.3);
+  }
+
+  /* Grid de setup en una columna para móvil */
+  #setup-screen .setup-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    width: 100%;
+    overflow: visible !important;
+  }
+
+  /* Secciones de baraja y tablero */
   #setup-screen .setup-section:not(.opponent-section) {
-    max-width: 280px !important;
+    width: 100% !important;
+    max-width: 100% !important;
     max-height: 350px !important;
     overflow-y: auto !important;
     overflow-x: hidden !important;
+    margin-bottom: 0;
+    padding: 1rem !important;
+    background: rgba(61, 40, 23, 0.85) !important;
+    border: 2px solid var(--card-border) !important;
+    border-radius: 12px !important;
+  }
+
+  /* Grid de selección - grid 2 columnas en móvil */
+  #setup-screen .selection-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 1rem !important;
+    overflow: visible !important;
+    padding: 1rem 0;
+    width: 100% !important;
+  }
+
+  #setup-screen .selection-item {
+    width: 100% !important;
+    height: auto !important;
+    aspect-ratio: 1 / 1;
+    min-height: 120px !important;
+    margin: 0;
+    padding: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden !important;
+    box-sizing: border-box;
+    background: rgba(61, 40, 23, 0.6);
+    border: 2px solid var(--card-border);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+  }
+
+  #setup-screen .selection-item:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(0, 255, 255, 0.4) !important;
+    border-color: var(--text-accent) !important;
+    z-index: 10 !important;
+  }
+
+  #setup-screen .selection-item img {
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: 4px;
+  }
+  
+  #setup-screen .selection-item .item-name {
+    font-size: 0.7rem;
+    margin-top: 0.25rem;
+    text-align: center;
+    color: var(--text-secondary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100%;
+  }
+  
+  #setup-screen .selection-item.selected {
+    border-color: var(--text-accent) !important;
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.5) !important;
+    background: rgba(0, 255, 255, 0.15) !important;
   }
   
   .setup-section.opponent-section {
-    max-width: 500px;
-    max-height: none;
+    width: 100% !important;
+    max-width: 100% !important;
+    max-height: none !important;
+    overflow: visible !important;
+    padding: 1rem !important;
+    background: rgba(61, 40, 23, 0.85) !important;
+    border: 2px solid var(--card-border) !important;
+    border-radius: 12px !important;
   }
   
+  /* Tarjeta de oponente en móvil */
   .opponent-card {
-    grid-template-columns: 160px 1fr;
-    max-width: 480px;
-    padding: 0.7rem;
+    display: flex !important;
+    flex-direction: column !important;
+    max-width: 100% !important;
+    padding: 0.8rem;
     gap: 0.8rem;
+    align-items: center;
+  }
+  
+  .opponent-avatar-section {
+    grid-column: unset !important;
+    grid-row: unset !important;
   }
   
   .opponent-avatar {
-    width: 160px;
-    height: 160px;
+    width: 140px;
+    height: 140px;
   }
   
   .opponent-info {
-    min-height: 160px;
+    min-height: auto;
+    text-align: center;
+    grid-column: unset !important;
+    grid-row: unset !important;
+  }
+  
+  .opponent-description {
+    font-size: 0.75rem;
+    line-height: 1.3;
+  }
+  
+  .opponent-nav-buttons {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    gap: 0.5rem;
+    grid-column: unset !important;
+    grid-row: unset !important;
   }
   
   .opponent-nav-btn {
-    min-width: 100px;
-    padding: 0.6rem 1rem;
-    font-size: clamp(0.75rem, 1.6vw, 0.85rem);
+    flex: 1;
+    min-width: 80px;
+    padding: 0.5rem 0.8rem;
+    font-size: 0.75rem;
+    height: 40px;
   }
   
   .opponent-stats {
-    grid-template-columns: 1fr;
-    gap: 0.25rem 0.5rem;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.3rem;
+    width: 100%;
+  }
+
+  /* Títulos de sección */
+  #setup-screen .setup-title {
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+    padding: 0.3rem;
+    background: rgba(15, 10, 48, 0.6);
+    border-radius: 6px;
+  }
+
+  /* Botón volver siempre visible */
+  #setup-screen .back-button {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: rgba(15, 10, 48, 0.95);
+    margin-bottom: 0.5rem;
+    font-size: 0.75rem;
+    padding: 0.4rem 0.6rem;
+  }
+
+  /* Botón iniciar partida */
+  #start-game-btn {
+    width: 100%;
+    max-width: 300px;
+    margin: 1rem auto;
+    padding: 0.8rem;
+    font-size: 0.9rem;
   }
 }
 
 @media (max-width: 480px) {
-  .setup-section.opponent-section {
-    max-width: 100%;
+  /* Ajustes más específicos para móviles pequeños */
+  #setup-screen.screen {
+    padding: 0.3rem;
+  }
+
+  #setup-screen .screen-content {
+    max-height: calc(100vh - 3.5rem) !important;
+    padding: 0.4rem;
+    padding-bottom: 2rem;
+  }
+
+  /* Indicador de scroll disponible */
+  #setup-screen .screen-content::after {
+    content: '';
+    position: sticky;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 20px;
+    background: linear-gradient(to bottom, transparent, rgba(0, 255, 255, 0.1));
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* Secciones compactas */
+  #setup-screen .setup-section {
+    padding: 0.6rem !important;
+    margin-bottom: 0.5rem;
+  }
+
+  /* Grid de selección más compacto */
+  #setup-screen .selection-grid {
+    padding: 0.3rem 0;
+    gap: 0.5rem;
+  }
+
+  #setup-screen .selection-item {
+    width: 100px !important;
+    height: 100px !important;
+  }
+
+  #setup-screen .selection-item .item-name {
+    font-size: 0.6rem;
+    padding: 0.15rem;
   }
   
+  /* Oponente más compacto */
   .opponent-card {
-    grid-template-columns: 1fr;
-    max-width: 100%;
     padding: 0.6rem;
     gap: 0.5rem;
   }
   
   .opponent-avatar {
-    width: 120px;
-    height: 120px;
-    margin: 0 auto;
+    width: 100px;
+    height: 100px;
   }
   
-  .opponent-info {
-    min-height: auto;
+  .opponent-name h4 {
+    font-size: 0.9rem;
+  }
+  
+  .opponent-description {
+    font-size: 0.65rem;
+    padding: 0.3rem;
   }
   
   .opponent-nav-btn {
-    min-width: 80px;
-    padding: 0.5rem 0.8rem;
-    font-size: clamp(0.7rem, 1.4vw, 0.8rem);
-  }
-  
-  .opponent-nav-buttons {
-    gap: 0.75rem;
-    flex-wrap: wrap;
-    margin-top: 0.3rem;
+    font-size: 0.7rem;
+    padding: 0.4rem 0.6rem;
+    height: 35px;
   }
   
   .opponent-stats {
-    grid-template-columns: 1fr 1fr;
-    gap: 0.25rem 0.4rem;
+    font-size: 0.6rem;
+    gap: 0.2rem;
+  }
+
+  .opponent-counter {
+    font-size: 0.65rem;
+    padding: 0.2rem 0.4rem;
+  }
+
+  /* Títulos más pequeños */
+  #setup-screen .setup-title {
+    font-size: 0.8rem;
+    margin-bottom: 0.3rem;
+  }
+
+  /* Botón iniciar partida */
+  #start-game-btn {
+    padding: 0.6rem;
+    font-size: 0.8rem;
   }
 }
 
@@ -4346,52 +4765,294 @@
   word-wrap: break-word;
 }
 
-/* Responsive adjustments for stat cards */
+/* Tab Navigation Styles */
+.tab-navigation {
+  display: flex;
+  gap: 0.5rem;
+  margin: 1rem 0;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.tab-button {
+  padding: 0.6rem 1.2rem;
+  font-size: clamp(0.8rem, 2.5vw, 1rem);
+  font-weight: 600;
+  border: 2px solid var(--card-border);
+  border-radius: 8px;
+  background: rgba(61, 40, 23, 0.6);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 120px;
+}
+
+.tab-button:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-soft);
+  border-color: var(--text-accent);
+}
+
+.tab-button.active {
+  background: linear-gradient(145deg, var(--btn1-bg), var(--btn1-bg-hover));
+  color: var(--text-primary);
+  border-color: var(--text-accent);
+  box-shadow: var(--glow-gold);
+}
+
+.tab-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0.5rem 0;
+}
+
+/* Tutorial Screen Mobile - SOLO AJUSTES DE PADDING Y SCROLL */
 @media (max-width: 768px) {
-  .stats-grid {
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 0.6rem;
+  #tutorial-screen.screen {
+    padding: 3.5rem 1rem 2rem 1rem !important;
+    height: auto !important;
+    min-height: 100vh !important;
+    max-height: none !important;
   }
   
-  .stat-card {
-    padding: 0.8rem;
+  .lesson-screen.screen {
+    height: 100vh !important;
+    max-height: 100vh !important;
+    padding: 0.5rem;
+    padding-bottom: 2rem;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    -webkit-overflow-scrolling: touch;
+    display: block !important;
   }
-  
-  .stat-title {
-    font-size: clamp(0.55rem, 1.4vw, 0.7rem);
+
+  .lesson-screen.screen::-webkit-scrollbar {
+    width: 8px;
+    display: block !important;
   }
-  
-  .stat-value {
-    font-size: clamp(0.7rem, 1.8vw, 0.9rem);
-  }
-  
-  .stat-description {
-    font-size: clamp(0.45rem, 1.2vw, 0.6rem);
+
+  .lesson-screen.screen::-webkit-scrollbar-thumb {
+    background: rgba(0, 255, 255, 0.6);
+    border-radius: 4px;
   }
 }
 
 @media (max-width: 480px) {
-  .stats-grid {
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    gap: 0.4rem;
+  #tutorial-screen.screen {
+    padding: 3rem 0.75rem 1.5rem 0.75rem !important;
   }
   
-  .stat-card {
+  .lesson-screen.screen {
+    padding: 0.3rem;
+    padding-bottom: 2.5rem;
+  }
+
+  .lessons-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.8rem;
+  }
+
+  .lesson-card {
     padding: 0.6rem;
   }
-  
-  .stat-title {
-    font-size: clamp(0.5rem, 1.3vw, 0.65rem);
-    margin-bottom: 0.3rem;
+}
+
+/* Responsive adjustments for stat cards */
+@media (max-width: 768px) {
+  /* Configuración específica para achievements-screen en móvil */
+  #achievements-screen.screen {
+    height: 100vh !important;
+    max-height: 100vh !important;
+    padding: 0.5rem;
+    padding-bottom: 2rem;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    -webkit-overflow-scrolling: touch;
+    display: block !important; /* Flujo normal */
+  }
+
+  /* Scrollbar visible en webkit móvil */
+  #achievements-screen.screen::-webkit-scrollbar {
+    width: 8px;
+    display: block !important;
+  }
+
+  #achievements-screen.screen::-webkit-scrollbar-track {
+    background: rgba(15, 10, 48, 0.5);
+    border-radius: 4px;
+  }
+
+  #achievements-screen.screen::-webkit-scrollbar-thumb {
+    background: rgba(0, 255, 255, 0.6);
+    border-radius: 4px;
+    border: 2px solid rgba(0, 255, 255, 0.3);
+  }
+
+  /* Achievements: cuadrícula de 2 por fila y tarjetas cuadradas */
+#achievements-screen .stats-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.4rem;
+    grid-auto-rows: auto;
+    align-content: start;
+    margin-bottom: 0.6rem;
   }
   
-  .stat-value {
-    font-size: clamp(0.65rem, 1.6vw, 0.8rem);
-    margin-bottom: 0.3rem;
+  /* Tarjetas de LOGROS - 20% más pequeñas */
+  #achievements-grid .stat-card {
+    padding: 0.5rem;
+    min-height: 88px; /* 110px - 20% = 88px */
+    height: auto !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    box-sizing: border-box;
+  }
+
+  /* Tarjetas de ESTADÍSTICAS - 20% más compactas */
+  #achievements-screen .stats-grid:not(#achievements-grid) .stat-card {
+    padding: 0.4rem;
+    min-height: 68px; /* 85px - 20% = 68px */
+    height: auto !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    box-sizing: border-box;
   }
   
-  .stat-description {
-    font-size: clamp(0.4rem, 1.1vw, 0.55rem);
+  #achievements-screen .stat-title {
+    font-size: clamp(0.55rem, 2.8vw, 0.8rem);
+    line-height: 1.1;
+    margin-bottom: 0.2rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  #achievements-screen .stat-value {
+    font-size: clamp(0.7rem, 3.2vw, 1rem);
+    line-height: 1.1;
+    margin-bottom: 0.2rem;
+  }
+  
+  #achievements-screen .stat-description {
+    font-size: clamp(0.45rem, 2.4vw, 0.7rem);
+    line-height: 1.15;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  #achievements-screen .game-title {
+    font-size: clamp(0.9rem, 4.5vw, 1.2rem);
+    line-height: 1.1;
+    margin: 1.5rem 0 0.5rem 0; /* Más separación superior */
+    padding: 0.3rem;
+    background: rgba(15, 10, 48, 0.6);
+    border-radius: 8px;
+    clear: both; /* Forzar nueva línea */
+  }
+
+  /* Asegurar el botón volver esté siempre visible */
+  #achievements-screen .back-button {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: rgba(15, 10, 48, 0.95);
+    margin-bottom: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Ajustes más específicos para móviles pequeños */
+  #achievements-screen.screen {
+    height: 100vh !important;
+    max-height: 100vh !important;
+    padding: 0.3rem;
+    padding-bottom: 2.5rem;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    -webkit-overflow-scrolling: touch;
+    display: block !important;
+  }
+
+  /* Indicador visual de scroll disponible */
+  #achievements-screen .screen-content::after {
+    content: '';
+    position: sticky;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 20px;
+    background: linear-gradient(to bottom, transparent, rgba(0, 255, 255, 0.1));
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  #achievements-screen .stats-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.3rem;
+    grid-auto-rows: auto;
+    align-content: start;
+    margin-bottom: 0.6rem;
+  }
+  
+  /* Tarjetas de LOGROS - móvil pequeño, 20% reducidas */
+  #achievements-grid .stat-card {
+    padding: 0.4rem;
+    min-height: 80px; /* 100px - 20% = 80px */
+    height: auto !important;
+    box-sizing: border-box;
+    border: 2px solid rgba(0, 255, 255, 0.3);
+  }
+
+  /* Tarjetas de ESTADÍSTICAS - más compactas en móvil pequeño, 20% reducidas */
+  #achievements-screen .stats-grid:not(#achievements-grid) .stat-card {
+    padding: 0.3rem;
+    min-height: 60px; /* 75px - 20% = 60px */
+    height: auto !important;
+    box-sizing: border-box;
+    border: 2px solid rgba(255, 215, 0, 0.3); /* Color diferente para distinguir */
+  }
+  
+  #achievements-screen .stat-title {
+    font-size: clamp(0.5rem, 3vw, 0.8rem);
+    margin-bottom: 0.15rem;
+  }
+  
+  #achievements-screen .stat-value {
+    font-size: clamp(0.65rem, 3.3vw, 0.95rem);
+    margin-bottom: 0.15rem;
+    font-weight: 600;
+  }
+  
+  #achievements-screen .stat-description {
+    font-size: clamp(0.4rem, 2.8vw, 0.7rem);
+    opacity: 0.9;
+  }
+
+  #achievements-screen .game-title {
+    font-size: clamp(0.8rem, 4.5vw, 1rem);
+    line-height: 1.05;
+    margin: 1.5rem 0 0.3rem 0; /* Separación clara entre secciones */
+    padding: 0.25rem;
+    background: rgba(15, 10, 48, 0.95);
+    border-radius: 6px;
+    border: 1px solid rgba(0, 255, 255, 0.2);
+    clear: both;
+  }
+
+  /* Botón volver optimizado para móvil */
+  #achievements-screen .back-button {
+    font-size: 0.75rem;
+    padding: 0.4rem 0.6rem;
+    margin-bottom: 0.3rem;
   }
 }
 
@@ -5810,6 +6471,18 @@
   z-index: 100;
 }
 
+/* Mobile override for personality indicators width */
+@media (max-width: 768px) {
+  .personality-indicators {
+    width: 150px !important;
+    max-width: 150px !important;
+    min-width: 150px !important;
+    flex-direction: column !important;
+    gap: 0.25rem !important;
+    left: 0.5rem !important;
+  }
+}
+
 .personality-indicator {
   background: rgba(61, 40, 23, 0.9);
   border: 2px solid var(--card-border);
@@ -5954,148 +6627,131 @@
 }
 
 @media (max-width: 768px) {
-  .lore-panel {
-    width: 60%;
-    right: 8px;
-    top: 8px;
+  .lore-panel,
+  .game-board .lore-panel,
+  .game-board.active .lore-panel {
+    position: absolute !important;
+    top: calc(0.25rem + 215px) !important;
+    bottom: auto !important;
+    right: 0.5rem !important;
+    left: auto !important;
+    width: 55% !important;
+    max-width: 55% !important;
+    min-width: 180px !important;
+    height: auto !important;
+    max-height: 150px !important;
+    padding: 0.35rem !important;
+    z-index: 100 !important;
+    font-size: 0.55rem !important;
+    opacity: 0.95 !important;
+    transform-origin: top !important;
+    pointer-events: auto !important;
+  }
+  
+  .lore-panel.collapsed,
+  .game-board .lore-panel.collapsed,
+  .game-board.active .lore-panel.collapsed {
+    height: 26px !important;
+    min-height: 26px !important;
+    max-height: 26px !important;
+    overflow: hidden !important;
+  }
+  
+  .lore-header,
+  .game-board .lore-header,
+  .game-board.active .lore-header {
+    font-size: 0.55rem !important;
+    margin-bottom: 0 !important;
+    padding: 0 !important;
+    line-height: 1.1 !important;
+    min-height: 18px !important;
+    position: relative !important;
+    z-index: 101 !important;
+    pointer-events: auto !important;
+  }
+  
+  .lore-body,
+  .game-board .lore-body,
+  .game-board.active .lore-body {
+    height: auto !important;
+    max-height: 100px !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+  }
+  
+  .lore-item,
+  .game-board .lore-item,
+  .game-board.active .lore-item {
+    font-size: 0.55rem !important;
+    padding: 0.1rem 0 !important;
+    line-height: 1.2 !important;
+  }
+  
+  .lore-toggle,
+  .game-board .lore-toggle,
+  .game-board.active .lore-toggle {
+    width: 18px !important;
+    height: 18px !important;
+    min-width: 18px !important;
+    min-height: 18px !important;
+    font-size: 0.55rem !important;
+    flex-shrink: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    line-height: 1 !important;
+    cursor: pointer !important;
+    background: rgba(0, 0, 0, 0.4) !important;
+    border: 1px solid var(--card-border) !important;
+    border-radius: 4px !important;
+    color: var(--text-primary) !important;
+    transition: all 0.2s ease !important;
+    position: relative !important;
+    z-index: 102 !important;
+    pointer-events: auto !important;
+  }
+  
+  .lore-toggle:hover,
+  .game-board .lore-toggle:hover,
+  .game-board.active .lore-toggle:hover {
+    background: rgba(255, 215, 0, 0.2) !important;
+    border-color: var(--text-accent) !important;
+    transform: scale(1.1) !important;
+  }
+  
+  .lore-toggle:active,
+  .game-board .lore-toggle:active,
+  .game-board.active .lore-toggle:active {
+    transform: scale(0.95) !important;
   }
 }
 
 /* ========================================
-      GLOBAL OVERFLOW PREVENTION - No scrolling allowed
+      DEPRECATED - Old overflow prevention removed
+      Modern approach: let screens grow with content
       ======================================== */
 
-/* Ensure no vertical overflow on any screen */
-html, body {
-  overflow: hidden !important;
-  max-height: 100vh !important;
-  height: 100vh !important;
-}
-
-/* Prevent any element from causing overflow */
+/* Box sizing for all elements */
 * {
   box-sizing: border-box;
 }
 
-/* Screen containers must not overflow - RESPETANDO GAME-CANVAS */
-.screen:not(.lesson-screen), .main-screen, .test-screen, .game-board {
-  max-height: 100% !important;
-  height: 100% !important;
-  overflow: hidden !important;
-}
-
-/* LESSON SCREEN - Permitir scroll interno controlado */
-.lesson-screen {
-  max-height: 100% !important;
-  height: 100% !important;
-  overflow: hidden !important; /* Solo en el contenedor raíz */
-}
-
-/* Screen content containers - CON EXCEPCIÓN PARA LESSON CONTENT */
-.screen-content:not(.lesson-screen-content), .test-container, .game-layout {
-  max-height: 100% !important;
-  overflow: hidden !important;
-  height: 100% !important;
-}
-
-/* LESSON SCREEN CONTENT - Permitir organización flex sin bloquear scroll interno */
-.lesson-screen-content {
-  max-height: 100% !important;
-  height: 100% !important;
-  overflow: hidden !important; /* Solo bloquear en este nivel */
-}
-
-/* Modal containers must fit within viewport - usando absolute para el canvas del juego */
-.modal, .ai-personality-modal, .tutorial-overlay {
-  max-height: 100% !important;
-  height: 100% !important;
-  overflow: hidden !important;
-}
-
-/* Modal content must not exceed viewport */
+/* Modal content scrolling */
 .modal-content, .ai-personality-content {
-  max-height: 95% !important;
-  overflow-y: auto !important;
-  overflow-x: hidden !important;
+  max-height: 95%;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
-/* Ensure cards don't cause overflow */
+/* Cards responsive */
 .card {
-  flex-shrink: 0 !important;
-  max-width: 100% !important;
+  flex-shrink: 0;
+  max-width: 100%;
 }
 
-/* Button containers must not overflow */
-.menu-buttons, .main-menu-buttons, .action-buttons, .test-navigation {
-  max-width: 100% !important;
-  overflow: hidden !important;
-}
-
-/* Grid containers must respect boundaries */
-.setup-grid, .traits-grid, .personality-analysis, .test-results-grid {
-  max-height: 100% !important;
-  overflow: hidden !important;
-}
-
-/* Mobile overflow prevention */
-@media (max-width: 768px) {
-  /* Reinforce no overflow on mobile */
-  html, body {
-    overflow: hidden !important;
-    max-height: 100vh !important;
-    height: 100vh !important;
-  }
-
-  /* All screens must fit - RESPETANDO GAME-CANVAS MÓVIL */
-  .screen:not(.lesson-screen), .main-screen, .test-screen, .game-board {
-    max-height: 100% !important;
-    height: 100% !important;
-    overflow: hidden !important;
-    position: absolute !important; /* CORREGIDO: Dentro del canvas */
-    top: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    bottom: 0 !important;
-  }
-  
-  /* LESSON SCREEN MÓVIL - Mantener dentro del canvas */
-  .lesson-screen {
-    max-height: 100% !important;
-    height: 100% !important;
-    overflow: hidden !important;
-    position: absolute !important; /* Dentro del canvas, no fixed */
-  }
-
-  /* Content containers - RESPETANDO GAME-CANVAS MÓVIL */
-  .screen-content:not(.lesson-screen-content), .test-container, .game-layout {
-    max-height: 100% !important;
-    height: 100% !important;
-    overflow: hidden !important;
-  }
-  
-  /* LESSON SCREEN CONTENT MÓVIL */
-  .lesson-screen-content {
-    max-height: 100% !important;
-    height: 100% !important;
-    overflow: hidden !important;
-  }
-
-  /* Modal containers - absolute para móvil dentro del canvas */
-  .modal, .ai-personality-modal, .tutorial-overlay {
-    max-height: 100% !important;
-    height: 100% !important;
-    overflow: hidden !important;
-    position: absolute !important;
-  }
-
-  /* Modal content */
-  .modal-content, .ai-personality-content {
-    max-height: 90% !important;
-    max-width: 95% !important;
-    overflow-y: auto !important;
-    overflow-x: hidden !important;
-  }
-}
+/* Mobile-specific adjustments (deprecated old rules removed) */
 
 @media (max-width: 480px) {
   /* Even stricter overflow prevention for small screens */
@@ -6124,8 +6780,8 @@ html, body {
         ZOOM SCALING FIXES - Ensure layout works at different zoom levels
         ======================================== */
 
-/* Fix for 100% zoom - ensure minimum sizes are respected */
-@media screen and (max-width: 1400px) and (min-width: 1200px) {
+/* Fix for 100% zoom - ensure minimum sizes are respected - DESKTOP ONLY */
+@media screen and (max-width: 1400px) and (min-width: 1200px) and (min-width: 769px) {
   .play-area {
     width: min(600px, 80vw);
     height: min(160px, 22vh);
@@ -6145,8 +6801,8 @@ html, body {
   }
 }
 
-/* Fix for smaller desktop screens */
-@media screen and (max-width: 1200px) and (min-width: 900px) {
+/* Fix for smaller desktop screens - DESKTOP ONLY */
+@media screen and (max-width: 1200px) and (min-width: 900px) and (min-width: 769px) {
   .play-area {
     width: min(550px, 75vw);
     height: min(150px, 20vh);
@@ -6166,8 +6822,8 @@ html, body {
   }
 }
 
-/* Specific fixes for 100% browser zoom - MORE AGGRESSIVE */
-@media screen and (max-width: 1600px) and (min-width: 1000px) {
+/* Specific fixes for 100% browser zoom - MORE AGGRESSIVE - DESKTOP ONLY */
+@media screen and (max-width: 1600px) and (min-width: 1000px) and (min-width: 769px) {
     .game-area {
       height: calc(100vh - 140px) !important;
       gap: 0.25rem !important;
@@ -6209,13 +6865,14 @@ html, body {
          ======================================== */
 
 /* Desktop layout optimization - proper positioning for desktop screens */
+/* IMPORTANT: These rules apply ONLY to desktop (min-width: 1280px) */
 @media screen and (min-width: 1280px) {
   .game-board.active .computer-section {
-    position: absolute;
-    top: 0px;
-    left: 0;
-    right: 0;
-    height: 160px;
+    position: absolute !important;
+    top: 0px !important;
+    left: 0 !important;
+    right: 0 !important;
+    height: 160px !important;
   }
 
   .game-board.active .computer-info {
@@ -6291,158 +6948,440 @@ html, body {
         RESPONSIVE DESIGN - Desktop-first breakpoints
         ======================================== */
 
+/* ========================================
+   MOBILE LAYOUT - CRITICAL OVERRIDES
+   ALL desktop rules must be overridden here
+   ======================================== */
+
 /* Tablet and mobile styles (768px and below) */
 @media (max-width: 768px) {
-  /* Base mobile layout adjustments */
-  .game-layout {
-    grid-template-rows: auto auto 1fr auto;
-    gap: 0.5rem;
+  /* CRITICAL: Override ALL desktop scaling and positioning */
+  .game-board,
+  .game-board.active,
+  #game-board,
+  .game-canvas #game-board,
+  body #game-board {
+    transform: none !important;
+    position: static !important;
+    width: 100% !important;
+    height: 98vh !important;
+    max-width: 100vw !important;
+    min-width: 100vw !important;
+    max-height: 98vh !important;
+    min-height: 98vh !important;
+    left: auto !important;
+    top: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+  }
+  
+  /* CRITICAL: Override ALL desktop layout rules */
+  .game-layout,
+  .game-board .game-layout,
+  .game-board.active .game-layout {
+    display: flex !important;
+    flex-direction: column !important;
+    height: auto !important;
+    width: 100% !important;
+    min-height: 98vh !important;
+    max-height: 98vh !important;
+    gap: 0.15rem !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: visible !important;
+    position: static !important;
+    transform: none !important;
+    left: auto !important;
+    top: auto !important;
+    grid-template-rows: unset !important;
   }
 
   .game-header {
-    flex-direction: column;
-    gap: 0.5rem;
-    padding: 0.5rem;
-    min-height: auto;
-    max-height: none;
-    align-items: stretch;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    gap: 0.4rem !important;
+    padding: 0.4rem 0.5rem !important;
+    min-height: auto !important;
+    max-height: 55px !important;
+    height: 55px !important;
+    flex-shrink: 0 !important;
+    background: rgba(0, 0, 0, 0.7) !important;
   }
 
   .game-header .nav-button {
-    align-self: flex-start;
-    min-width: 80px;
-  }
-
-  .game-header .scoreboard {
-    align-self: flex-end;
-    gap: 0.25rem;
-    padding: 0.3rem 0.5rem;
+    min-width: 70px !important;
+    padding: 0.5rem 0.75rem !important;
+    font-size: 0.75rem !important;
   }
 
   .game-status {
-    position: static;
-    transform: none;
-    margin: 0.5rem 0;
-    flex-direction: column;
-    gap: 0.5rem;
+    flex: 1 !important;
+    text-align: center !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 0.25rem !important;
+  }
+  
+  .turn-indicator {
+    font-size: 0.75rem !important;
+  }
+  
+  .round-info {
+    font-size: 0.65rem !important;
   }
 
   .scoreboard {
-    flex-direction: column;
-    gap: 0.5rem;
-    padding: 0.5rem;
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 0.5rem !important;
+    padding: 0.25rem 0.5rem !important;
+    font-size: 0.7rem !important;
+  }
+  
+  .score-item {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+  }
+  
+  .score-label {
+    font-size: 0.6rem !important;
+  }
+  
+  .score-value {
+    font-size: 0.85rem !important;
+    font-weight: bold !important;
   }
 
-  .game-area {
-    flex-direction: column;
-    gap: 0.5rem;
-    padding: 0.5rem;
-    height: auto;
-  }
-
-  /* Computer section mobile */
-  .computer-section {
-    position: static !important;
-    height: auto;
-    padding: 0.5rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  .computer-info {
-    position: static !important;
-    text-align: center;
-  }
-
-  .computer-hand {
+  /* CRITICAL: Override desktop game-area rules */
+  /* FIT ALL CONTENT WITHOUT VERTICAL SCROLL */
+  .game-area,
+  .game-board .game-area,
+  .game-board.active .game-area {
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    gap: 0.15rem !important;
+    padding: 0.15rem !important;
+    height: auto !important;
+    min-height: unset !important;
+    max-height: none !important;
+    overflow-y: visible !important;
+    overflow-x: hidden !important;
     position: static !important;
     transform: none !important;
-    justify-content: center;
-    margin: 0.5rem 0;
   }
 
-  .personality-indicators {
-    position: static;
-    justify-content: center;
-    margin: 0.5rem 0;
+  /* Computer section mobile - TOP section with symmetry */
+  /* CRITICAL: Override ALL desktop absolute positioning */
+  .computer-section,
+  .game-board .computer-section,
+  .game-board.active .computer-section {
+    position: relative !important;
+    height: auto !important;
+    flex: 0 0 auto !important;
+    min-height: 175px !important;
+    max-height: 190px !important;
+    padding: 0.4rem !important;
+    padding-bottom: 1.2rem !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 0.4rem !important;
+    flex-shrink: 0 !important;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.4), transparent) !important;
+    /* Override desktop rules */
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    transform: none !important;
+    z-index: 1 !important;
+    overflow: visible !important;
+  }
+
+  /* CRITICAL: Override desktop computer-info positioning */
+  .computer-info,
+  .game-board .computer-info,
+  .game-board.active .computer-info {
+    position: absolute !important;
+    left: 0.5rem !important;
+    top: 50% !important;
+    right: auto !important;
+    bottom: auto !important;
+    transform: translateY(-50%) !important;
+    flex-shrink: 0 !important;
+    z-index: 2 !important;
+  }
+
+  /* CRITICAL: Override desktop computer-hand positioning */
+  /* Moved 50px to the right */
+  .computer-hand,
+  .game-board .computer-hand,
+  .game-board.active .computer-hand {
+    position: relative !important;
+    transform: translateX(50px) !important;
+    width: calc(100% - 50px) !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+    margin: 0.5rem 0 !important;
+    margin-left: 50px !important;
+    padding: 0 110px !important;
+    z-index: 1 !important;
+    /* Override desktop */
+    left: auto !important;
+    top: auto !important;
+    bottom: auto !important;
+    right: auto !important;
+    max-width: calc(100% - 50px) !important;
+  }
+
+  /* Personality indicators - positioned 268px from top (253px + 15px) */
+  /* CRITICAL: Width matches computer-avatar width (150px) */
+  .personality-indicators,
+  .game-board .personality-indicators,
+  .game-board.active .personality-indicators {
+    position: absolute !important;
+    bottom: auto !important;
+    left: 0.5rem !important;
+    top: 268px !important;
+    right: auto !important;
+    transform: none !important;
+    z-index: 3 !important;
+    margin: 0 !important;
+    width: 150px !important;
+    max-width: 150px !important;
+    min-width: 150px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.25rem !important;
+    padding: 0 !important;
+  }
+  
+  .personality-indicator,
+  .game-board .personality-indicator,
+  .game-board.active .personality-indicator {
+    font-size: 0.55rem !important;
+    padding: 0.25rem 0.4rem !important;
+    white-space: nowrap !important;
+    backdrop-filter: blur(8px) !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: unset !important;
+    box-sizing: border-box !important;
   }
 
   .ai-thinking {
-    position: static;
-    text-align: center;
-    margin: 0.5rem 0;
+    position: absolute !important;
+    top: 0.5rem !important;
+    right: 0.5rem !important;
+    transform: none !important;
+    z-index: 3 !important;
+    font-size: 0.65rem !important;
+    padding: 0.25rem 0.5rem !important;
+    margin: 0 !important;
   }
 
-  /* Play area mobile */
-  .play-area {
-    position: static !important;
-    transform: none !important;
-    width: 100%;
-    height: auto;
-    flex-direction: column;
-    gap: 1rem;
-    padding: 1rem;
+  /* Play area mobile - CENTRAL battle zone */
+  /* CRITICAL: Override ALL desktop play-area absolute positioning */
+  /* REDUCED 20% in size */
+  .play-area,
+  .game-board .play-area,
+  .game-board.active .play-area {
+    position: relative !important;
+    transform: scale(0.75) !important;
+    width: 100% !important;
+    flex: 0 0 auto !important;
+    min-height: 150px !important;
+    max-height: 170px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 0.3rem !important;
+    padding: 0.5rem 0.3rem !important;
+    background: radial-gradient(circle at center, rgba(255, 215, 0, 0.1), transparent 70%) !important;
+    border-top: 1px solid rgba(255, 215, 0, 0.2) !important;
+    border-bottom: 1px solid rgba(255, 215, 0, 0.2) !important;
+    /* Override desktop */
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    height: auto !important;
+    visibility: visible !important;
   }
 
   .played-cards {
-    flex-direction: column;
-    gap: 1rem;
-    align-items: center;
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 0.8rem !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    max-width: 320px !important;
   }
 
   .played-card-slot {
-    min-width: auto;
+    min-width: auto !important;
+    flex: 1 !important;
+    max-width: 40% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+  }
+  
+  .card-label {
+    font-size: 0.7rem !important;
+    font-weight: 600 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    max-width: 100% !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8) !important;
+  }
+  
+  .vs-indicator {
+    font-size: 0.85rem !important;
+    font-weight: bold !important;
+    padding: 0.2rem 0.4rem !important;
+    flex-shrink: 0 !important;
+    background: rgba(255, 215, 0, 0.2) !important;
+    border-radius: 50% !important;
+    width: 32px !important;
+    height: 32px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3) !important;
   }
 
-  /* Player section mobile */
-  .player-section {
-    position: static !important;
-    height: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    padding: 0.5rem;
+  /* Player section mobile - BOTTOM section (symmetrical to computer) */
+  /* CRITICAL: Override ALL desktop player-section absolute positioning */
+  /* MOVED 30px UP and 30px LEFT */
+  .player-section,
+  .game-board .player-section,
+  .game-board.active .player-section {
+    position: relative !important;
+    height: auto !important;
+    flex: 0 0 auto !important;
+    min-height: 185px !important;
+    max-height: 220px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: 0.4rem !important;
+    padding: 0.4rem !important;
+    padding-bottom: 3rem !important;
+    flex-shrink: 0 !important;
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.4), transparent) !important;
+    /* Override desktop */
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    transform: translate(-30px, -30px) !important;
+    margin-bottom: -30px !important;
   }
 
-  .player-info {
-    position: static !important;
-    text-align: center;
+  /* CRITICAL: Override desktop player-info positioning */
+  /* Moved additional 15px LEFT (total: 15px right, 60px up) */
+  .player-info,
+  .game-board .player-info,
+  .game-board.active .player-info {
+    position: absolute !important;
+    right: calc(0.5rem + 5px) !important;
+    top: calc(50% - 60px) !important;
+    left: auto !important;
+    bottom: auto !important;
+    transform: translateY(-50%) !important;
+    flex-shrink: 0 !important;
+    z-index: 2 !important;
   }
 
-  .player-hand {
-    position: static !important;
+  /* CRITICAL: Override desktop player-hand positioning */
+  /* Moved 30px MORE RIGHT and 30px UP (adjusting to -40px left total) */
+  .player-hand,
+  .game-board .player-hand,
+  .game-board.active .player-hand {
+    position: relative !important;
+    transform: translate(-40px, -30px) !important;
+    width: calc(100% + 40px) !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+    margin: 0.5rem 0 !important;
+    margin-right: 40px !important;
+    margin-top: calc(0.5rem + 30px) !important;
+    padding: 0 70px !important;
+    z-index: 1 !important;
+    /* Override desktop */
+    left: auto !important;
+    top: auto !important;
+    bottom: auto !important;
+    right: auto !important;
+    max-width: calc(100% + 40px) !important;
+  }
+
+  /* CRITICAL: Override desktop action-buttons positioning */
+  /* Moved 30px UP and 30px LEFT (plus inherit section move) */
+  .action-buttons,
+  .game-board .action-buttons,
+  .game-board.active .action-buttons {
+    position: absolute !important;
+    bottom: calc(0.5rem + 30px) !important;
+    left: calc(0.5rem - 30px) !important;
+    right: calc(0.5rem + 30px) !important;
+    top: auto !important;
     transform: none !important;
-    justify-content: center;
-    margin: 0.5rem 0;
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.3rem !important;
+    max-width: 100% !important;
+    width: auto !important;
+    z-index: 10 !important;
+    padding: 0 !important;
   }
 
-  .action-buttons {
-    position: static !important;
-    transform: none !important;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0.5rem;
-    max-width: none;
-  }
-
-  /* Touch-friendly button sizes */
+  /* Touch-friendly button sizes - optimized */
   .menu-button, .action-button, .nav-button {
     min-height: 44px;
-    padding: 0.75rem 1rem;
-    font-size: 0.9rem;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.7rem;
     touch-action: manipulation;
     -webkit-tap-highlight-color: rgba(255, 215, 0, 0.3);
     tap-highlight-color: rgba(255, 215, 0, 0.3);
   }
 
   .action-button {
-    min-height: 48px;
-    font-size: 0.8rem;
-    min-width: 100px;
+    min-height: 44px;
+    font-size: 0.65rem;
+    min-width: 70px;
+    padding: 0.4rem 0.5rem;
+    flex: 0 1 auto;
+    max-width: 110px;
+    white-space: nowrap;
   }
 
-  /* Touch-optimized card interactions */
+  /* Touch-optimized card interactions with better sizing */
   .card {
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
@@ -6452,6 +7391,42 @@ html, body {
 
   .card:active {
     transform: scale(0.95);
+  }
+  
+  /* Card sizing - INCREASED 30% for better visibility */
+  /* CRITICAL: Override ALL desktop card sizes */
+  .computer-hand .card,
+  .player-hand .card,
+  .game-board .computer-hand .card,
+  .game-board .player-hand .card,
+  .game-board.active .computer-hand .card,
+  .game-board.active .player-hand .card,
+  #computer-hand .card,
+  #player-hand .card {
+    width: 72px !important;
+    height: 100px !important;
+    min-width: 72px !important;
+    min-height: 100px !important;
+    max-width: 72px !important;
+    max-height: 100px !important;
+  }
+  
+  /* Played cards are larger for visibility - INCREASED 30% */
+  .played-cards .card,
+  #computer-played-card .card,
+  #player-played-card .card,
+  .game-board .played-cards .card,
+  .game-board.active .played-cards .card,
+  .game-board #computer-played-card .card,
+  .game-board #player-played-card .card,
+  .game-board.active #computer-played-card .card,
+  .game-board.active #player-played-card .card {
+    width: 104px !important;
+    height: 146px !important;
+    min-width: 104px !important;
+    min-height: 146px !important;
+    max-width: 104px !important;
+    max-height: 146px !important;
   }
 
   /* Touch-friendly hover states for mobile */
@@ -6471,10 +7446,28 @@ html, body {
     }
   }
 
-  /* Avatar sizes for mobile */
-  .computer-avatar, .player-avatar {
-    width: 80px !important;
-    height: 80px !important;
+  /* Avatar sizes for mobile - LARGER and with SQUARE border */
+  /* CRITICAL: Override ALL desktop avatar sizes */
+  .computer-avatar,
+  .player-avatar,
+  .game-board .computer-avatar,
+  .game-board .player-avatar,
+  .game-board.active .computer-avatar,
+  .game-board.active .player-avatar,
+  #computer-avatar,
+  #player-avatar {
+    width: 150px !important;
+    height: 150px !important;
+    min-width: 150px !important;
+    min-height: 150px !important;
+    max-width: 150px !important;
+    max-height: 150px !important;
+    border-radius: 8px !important;
+    object-fit: cover !important;
+    border: 4px solid var(--text-accent) !important;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.6) !important;
+    display: block !important;
+    visibility: visible !important;
   }
 
   /* Modal and overlay adjustments */
@@ -7083,36 +8076,160 @@ html, body {
   display: block !important;
 }
 
+/* Tab Navigation Styles */
+.tab-navigation {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  margin: 0 auto;
+  max-width: 600px;
+}
+
+.tab-button {
+  flex: 1;
+  min-width: 120px;
+  padding: 0.75rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  background: rgba(0, 0, 0, 0.5);
+  color: var(--text-primary);
+  border: 2px solid rgba(255, 215, 0, 0.3);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.tab-button:hover:not(:disabled) {
+  background: rgba(255, 215, 0, 0.15);
+  border-color: var(--text-accent);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+}
+
+.tab-button.active {
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.3), rgba(255, 165, 0, 0.3));
+  border-color: var(--text-accent);
+  color: var(--text-accent);
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+  transform: scale(1.05);
+}
+
+.tab-button.completed {
+  background: rgba(34, 139, 34, 0.3);
+  border-color: rgba(144, 238, 144, 0.6);
+  color: lightgreen;
+}
+
+.tab-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  border-color: rgba(128, 128, 128, 0.3);
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.tab-content {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 400px;
+}
+
 /* MOBILE - Setup Screen overrides (768px and below) */
 @media (max-width: 768px) {
+  /* Force setup screen to allow overflow */
+  #setup-screen.screen,
+  #setup-screen.screen * {
+    overflow: visible !important;
+  }
+  
   #setup-screen.screen.active .setup-grid {
     grid-template-columns: 1fr !important;
-    gap: 0.5rem !important;
+    gap: 0.75rem !important;
+    overflow: visible !important;
   }
   
   #setup-screen.screen.active .selection-grid {
     grid-template-columns: repeat(3, 1fr) !important;
-    gap: 0.05rem !important;
+    gap: 0.25rem !important;
+    overflow: visible !important;
+  }
+  
+  #setup-screen.screen.active .setup-section {
+    max-width: 100% !important;
+    width: 100% !important;
+    min-height: auto !important;
+    overflow: visible !important;
   }
   
   #setup-screen.screen.active .setup-section.opponent-section {
-    max-width: 100% !important;
     max-height: none !important;
+    height: auto !important;
+    overflow: visible !important;
   }
   
   #setup-screen.screen.active .setup-section:not(.opponent-section) {
-    max-width: 100% !important;
-    max-height: 350px !important;
+    max-height: 400px !important;
+    overflow-y: auto !important;
+    overflow-x: visible !important;
+  }
+  
+  /* Mobile opponent card - vertical layout */
+  .opponent-card {
+    grid-template-columns: 1fr !important;
+    grid-template-rows: auto auto auto !important;
+    max-height: none !important;
+    height: auto !important;
+    gap: 0.75rem !important;
+  }
+  
+  .opponent-avatar-section {
+    grid-column: 1 / 2 !important;
+    grid-row: 1 / 2 !important;
+  }
+  
+  .opponent-avatar {
+    width: 180px !important;
+    height: 180px !important;
+  }
+  
+  .opponent-description {
+    grid-column: 1 / 2 !important;
+    grid-row: 2 / 3 !important;
+    height: auto !important;
+    max-height: none !important;
   }
   
   /* Mobile selection items - smaller hover effect */
   #setup-screen.screen.active .selection-item:hover {
-    transform: scale(1.1) !important;
+    transform: scale(1.15) !important;
   }
   
   /* Mobile title fix */
   #setup-screen.screen.active .game-title {
     margin-bottom: 1rem !important;
     min-height: 2.5rem !important;
+  }
+  
+  /* Mobile tab navigation */
+  .tab-navigation {
+    gap: 0.25rem;
+    max-width: 100%;
+  }
+  
+  .tab-button {
+    min-width: 80px;
+    padding: 0.6rem 0.5rem;
+    font-size: 0.75rem;
+    min-height: 44px;
+  }
+  
+  .tab-content {
+    min-height: 300px;
   }
 }
