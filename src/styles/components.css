@@ -9258,7 +9258,7 @@ html, body {
 /* ── Tutorial / Onboarding overlay (shared by all mini-games) ── */
 /* Use !important throughout: game-canvas * rules override max-width/max-height/overflow */
 .tutorial-overlay {
-  position: fixed !important;
+  position: absolute !important;
   inset: 0 !important;
   background: rgba(0,0,0,0.82) !important;
   display: flex !important;
@@ -9270,8 +9270,8 @@ html, body {
   overflow: auto !important;
   max-width: none !important;
   max-height: none !important;
-  width: 100vw !important;
-  height: 100vh !important;
+  width: 100% !important;
+  height: 100% !important;
 }
 
 .tutorial-card {
@@ -9280,12 +9280,17 @@ html, body {
   border: 2px solid #00ffff !important;
   border-radius: 12px !important;
   padding: 1.5rem 1.75rem 1.25rem !important;
-  max-width: 460px !important;
-  width: min(460px, calc(100vw - 2rem)) !important;
+  max-width: 600px !important;
+  width: min(600px, calc(100% - 2rem)) !important;
+  height: auto !important;
+  min-height: 0 !important;
+  min-width: 0 !important;
   max-height: none !important;
   overflow: visible !important;
   box-shadow: 0 0 30px rgba(0,255,255,0.35) !important;
   box-sizing: border-box !important;
+  flex-shrink: 0 !important;
+  align-self: center !important;
 }
 
 .tutorial-title {
