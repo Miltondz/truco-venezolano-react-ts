@@ -18,36 +18,49 @@ const Card: React.FC<CardProps> = ({
   showPower = false,
   settings
 }) => {
-  const handleClick = () => {
-    if (onClick) onClick();
-  };
+  const content = faceUp && card ? (
+    <>
+      <img
+        src={`/images/decks/${settings.selectedDeck}/${card.imageFile}`}
+        alt={card.name}
+        className="card-image"
+      />
+      {settings.showCardPower && showPower && (
+        <div className="card-power-indicator">
+          {card.power}
+        </div>
+      )}
+    </>
+  ) : (
+    <img
+      src={`/images/decks/${settings.selectedDeck}/card-back.jpg`}
+      alt="Carta boca abajo"
+      className="card-image"
+    />
+  );
+
+  if (onClick) {
+    return (
+      <button
+        type="button"
+        className={`card ${className}`}
+        onClick={onClick}
+        aria-label={faceUp && card ? card.name : 'Carta'}
+        style={{ cursor: 'pointer', background: 'none', border: 'none', padding: 0 }}
+      >
+        {content}
+      </button>
+    );
+  }
 
   return (
     <div
       className={`card ${className}`}
-      onClick={handleClick}
-      style={{ cursor: onClick ? 'pointer' : 'default' }}
+      role={faceUp && card ? 'img' : undefined}
+      aria-label={faceUp && card ? card.name : undefined}
+      style={{ cursor: 'default' }}
     >
-      {faceUp && card ? (
-        <>
-          <img
-            src={`/images/decks/${settings.selectedDeck}/${card.imageFile}`}
-            alt={card.name}
-            className="card-image"
-          />
-          {settings.showCardPower && showPower && (
-            <div className="card-power-indicator">
-              {card.power}
-            </div>
-          )}
-        </>
-      ) : (
-        <img
-          src={`/images/decks/${settings.selectedDeck}/card-back.jpg`}
-          alt="Carta boca abajo"
-          className="card-image"
-        />
-      )}
+      {content}
     </div>
   );
 };

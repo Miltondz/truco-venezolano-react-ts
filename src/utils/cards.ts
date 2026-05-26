@@ -52,7 +52,12 @@ export const cards: Card[] = [
 ];
 
 export function shuffleDeck(): Card[] {
-  return [...cards].sort(() => Math.random() - 0.5);
+  const a = [...cards];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
 }
 
 // Venezuelan Truco helpers

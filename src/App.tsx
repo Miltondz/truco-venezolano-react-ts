@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './styles/App.css';
 import { GameState, GameSettings, PlayerStats, Achievement, DECKS, BOARDS, AVATARS, AICharacter, Tournament, TournamentProgress } from './types';
 import { initializeGameState, startNewHand, playCard, computerPlayCard, evaluateRound, endHand, checkGameEnd, callTruco, callRetruco, callEnvido, acceptCall, rejectCall, resolveEnvido, callFlor, foldHand, getAiDelay, callValeNueve, callValeJuego, callRealEnvido, callFaltaEnvido, callEstarCantando, applyRoundResult } from './utils/gameLogic';
+import { getAICallDecision } from './utils/ai';
 import { initializeAudio, playSound } from './utils/sound';
 import { loadSettings, saveSettings, loadStats, saveStats, loadAchievements, saveAchievements } from './utils/storage';
 import { startTournament, getTournamentProgress, defeatOpponent, completeRound, setCurrentActiveTournament } from './utils/tournamentStorage';
-import { calculateHandStrength } from './utils/cards';
 import { evaluatePlayResult, updateAvatarMood } from './utils/avatarMoods';
 import MainScreen from './components/MainScreen';
 import SetupScreen from './components/SetupScreen';
@@ -168,6 +168,37 @@ const [victoryState, setVictoryState] = useState<{
     }
   }, [gameSettings, playerStats, achievements]);
 
+  // Wire a11y settings to body classes
+  useEffect(() => {
+    document.body.classList.toggle('a11y-large-text', gameSettings.largeText);
+    document.body.classList.toggle('a11y-high-contrast', gameSettings.highContrast);
+    document.body.classList.toggle('a11y-reduce-motion', gameSettings.reduceMotion);
+  }, [gameSettings.largeText, gameSettings.highContrast, gameSettings.reduceMotion]);
+
+  // AI auto-response to player calls
+  useEffect(() => {
+    if (!gameState.waitingForResponse || !gameState.gameInProgress) return;
+    if (gameState.isProcessingAction) return;
+    // Only respond when player made the call (isPlayerTurn still true after player's call)
+    if (!gameState.isPlayerTurn) return;
+
+    const delay = getAiDelay(gameSettings);
+    const timer = setTimeout(() => {
+      const decision = getAICallDecision(gameState);
+
+      if (decision === 'accept' || decision === 'raise') {
+        // raise: existing call functions guard against waitingForResponse, so treat as accept
+        // a dedicated AI-raise path can be added later
+        setGameState(prev => acceptCall(prev, gameSettings));
+      } else {
+        setGameState(prev => rejectCall(prev, gameSettings));
+      }
+    }, delay);
+
+    return () => clearTimeout(timer);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gameState.waitingForResponse, gameState.isPlayerTurn, gameState.lastCall, gameState.gameInProgress]);
+
   // Screen navigation
   const navigateTo = (screen: string) => {
     setCurrentScreen(screen);
@@ -183,11 +214,8 @@ const [victoryState, setVictoryState] = useState<{
     playSound('gameStart', gameSettings);
   };
   const startGame = () => {
-    console.log('App - Starting game with selectedOpponent:', gameState.selectedOpponent);
     const newGameState = initializeGameState(gameState.difficulty, gameState.selectedAvatar, gameState.selectedOpponent);
-    console.log('App - newGameState selectedOpponent:', newGameState.selectedOpponent);
     const gameWithHand = startNewHand(newGameState);
-    console.log('App - gameWithHand selectedOpponent:', gameWithHand.selectedOpponent);
     setGameState(gameWithHand);
     navigateTo('game-board');
     playSound('gameStart', gameSettings);

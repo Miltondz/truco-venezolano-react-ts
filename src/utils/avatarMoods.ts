@@ -86,24 +86,24 @@ export const updateAvatarMood = (
     isPlayerAction ? isPlayerWinning : isComputerWinning
   );
   
-  // Clear existing timer
+  // Clear stale timer before creating new one
   if (gameState.avatarMoodTimer) {
     clearTimeout(gameState.avatarMoodTimer);
   }
-  
-  // Set new mood and timer (increased to 8 seconds for better visibility)
+
   const timerId = setTimeout(() => {
-    setGameState(prevState => ({
-      ...prevState,
+    setGameState(prev => ({
+      ...prev,
       computerAvatarMood: 'default',
       playerAvatarMood: 'default',
       avatarMoodTimer: null
     }));
   }, 8000) as unknown as number;
-  
-  setGameState(prevState => ({
-    ...prevState,
-    ...(isPlayerAction 
+
+  // Single atomic update — prevents second call clobbering first
+  setGameState(prev => ({
+    ...prev,
+    ...(isPlayerAction
       ? { playerAvatarMood: newMood }
       : { computerAvatarMood: newMood }
     ),

@@ -29,11 +29,6 @@ export function initializeGameState(difficulty: string, selectedAvatar: string, 
     ? convertOpponentToPersonality(selectedOpponent)
     : generateRandomPersonality();
   
-  console.log('initializeGameState - Using AI Personality:', {
-    opponent: selectedOpponent?.name,
-    personality: aiPersonality
-  });
-
 return {
     playerScore: 0,
     computerScore: 0,
@@ -128,11 +123,17 @@ export function playCard(gameState: GameState, cardIndex: number, settings: Game
 
   playSound('playCard', settings);
 
+  // Close envido/flor window when first card played
+  const nextPhase = (gameState.currentPhase === 'envido' || gameState.currentPhase === 'flor')
+    ? 'truco' as const
+    : gameState.currentPhase;
+
   return {
     ...gameState,
     playerPlayedCard: playedCard,
     playerHand: newPlayerHand,
-    isPlayerTurn: false
+    isPlayerTurn: false,
+    currentPhase: nextPhase
   };
 }
 
@@ -154,11 +155,11 @@ export function computerPlayCard(gameState: GameState, settings: GameSettings): 
 }
 
 export function evaluateRound(gameState: GameState, settings: GameSettings): { winner: 'player' | 'computer' | 'tie', gameState: GameState } {
-  if (!gameState.playerPlayedCard || !gameState.computerPlayedCard) {
+  if (!gameState.playerPlayedCard || !gameState.computerPlayedCard || !gameState.viraCard) {
     return { winner: 'tie', gameState };
   }
 
-  const vira = gameState.viraCard!;
+  const vira = gameState.viraCard;
   const playerPower = getCardTrucoRank(gameState.playerPlayedCard, vira);
   const computerPower = getCardTrucoRank(gameState.computerPlayedCard, vira);
 
@@ -175,10 +176,6 @@ export function evaluateRound(gameState: GameState, settings: GameSettings): { w
     playSound('roundTie', settings);
   }
 
-  const newRoundsWon = { ...gameState.roundsWon };
-  if (roundWinner === 'player') newRoundsWon.player++;
-  else if (roundWinner === 'computer') newRoundsWon.computer++;
-
   // Build lore explanation for the round
   const pp = gameState.playerPlayedCard;
   const cp = gameState.computerPlayedCard;
@@ -189,9 +186,7 @@ export function evaluateRound(gameState: GameState, settings: GameSettings): { w
     else explanation = `Resultado: Empate (${pp.name} vs ${cp.name})`;
   }
 
-  const updatedState = explanation
-    ? addLore({ ...gameState, roundsWon: newRoundsWon }, explanation)
-    : { ...gameState, roundsWon: newRoundsWon };
+  const updatedState = explanation ? addLore(gameState, explanation) : { ...gameState };
 
   return {
     winner: roundWinner,
@@ -371,6 +366,7 @@ export function acceptCall(gameState: GameState, settings: GameSettings): GameSt
       currentTrucoLevel: level,
       trucoAcceptedPot: offer,
       trucoPendingOffer: null,
+      lastCall: null,
 activeCalls: capLore([...gameState.activeCalls, `Quiero: ${label} aceptado (pote=${offer === 'game' ? 'juego' : offer})`])
     };
   }
@@ -563,6 +559,7 @@ export function applyRoundResult(currentState: GameState, roundWinner: 'player' 
   else if (currentState.currentRound >= currentState.maxRounds) {
     if (newRoundsWon.player > newRoundsWon.computer) handWinner = 'player';
     else if (newRoundsWon.computer > newRoundsWon.player) handWinner = 'computer';
+    else handWinner = currentState.manoIsPlayer ? 'player' : 'computer'; // All tied → mano wins
   }
 
   if (handWinner !== 'tie') {

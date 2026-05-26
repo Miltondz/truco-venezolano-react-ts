@@ -11,8 +11,13 @@ export function saveSettings(settings: GameSettings): void {
 }
 
 export function loadSettings(): GameSettings | null {
-  const saved = localStorage.getItem(SETTINGS_KEY);
-  return saved ? JSON.parse(saved) : null;
+  try {
+    const saved = localStorage.getItem(SETTINGS_KEY);
+    return saved ? JSON.parse(saved) : null;
+  } catch {
+    localStorage.removeItem(SETTINGS_KEY);
+    return null;
+  }
 }
 
 export function saveStats(stats: PlayerStats): void {
@@ -20,8 +25,13 @@ export function saveStats(stats: PlayerStats): void {
 }
 
 export function loadStats(): PlayerStats | null {
-  const saved = localStorage.getItem(STATS_KEY);
-  return saved ? JSON.parse(saved) : null;
+  try {
+    const saved = localStorage.getItem(STATS_KEY);
+    return saved ? JSON.parse(saved) : null;
+  } catch {
+    localStorage.removeItem(STATS_KEY);
+    return null;
+  }
 }
 
 export function saveAchievements(achievements: Record<string, Achievement>): void {
@@ -29,8 +39,13 @@ export function saveAchievements(achievements: Record<string, Achievement>): voi
 }
 
 export function loadAchievements(): Record<string, Achievement> | null {
-  const saved = localStorage.getItem(ACHIEVEMENTS_KEY);
-  return saved ? JSON.parse(saved) : null;
+  try {
+    const saved = localStorage.getItem(ACHIEVEMENTS_KEY);
+    return saved ? JSON.parse(saved) : null;
+  } catch {
+    localStorage.removeItem(ACHIEVEMENTS_KEY);
+    return null;
+  }
 }
 
 export function exportData(): string {

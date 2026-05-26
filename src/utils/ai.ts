@@ -26,7 +26,7 @@ export function getAICallDecision(gameState: GameState): 'accept' | 'reject' | '
       acceptChance = 0.3;
       raiseChance = 0.05;
     }
-  } else if (lastCall === 'truco' || lastCall === 'retruco' || lastCall === 'vale4') {
+  } else if (lastCall === 'truco' || lastCall === 'retruco' || lastCall === 'valeNueve' || lastCall === 'valeJuego') {
     const handStrength = calculateHandStrength(gameState.computerHand);
     acceptChance = handStrength / 100;
     raiseChance = Math.max(0, (handStrength - 70) / 100);
