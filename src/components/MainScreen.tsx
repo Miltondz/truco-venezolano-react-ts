@@ -51,7 +51,10 @@ className="cover-video"
       <div className="screen-content">
         <div className="main-menu-buttons-bottom">
           <button id="play-btn" className="menu-button" onClick={() => onNavigate('setup-screen')}>
-            🎮 Jugar
+            🎮 Truco Venezolano
+          </button>
+          <button id="siete-medio-btn" className="menu-button" onClick={() => onNavigate('siete-medio-screen')}>
+            🃏 Siete y Medio
           </button>
           <button id="tutorial-btn" className="menu-button" onClick={() => onNavigate('tutorial-screen')}>
             🎓 Tutorial

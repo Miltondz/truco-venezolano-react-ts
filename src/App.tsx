@@ -24,6 +24,7 @@ import AchievementPopup from './components/AchievementPopup';
 import { TestScreen } from './components/TestScreen';
 import DynamicTournamentBracket from './components/DynamicTournamentBracket';
 import VictorySplash from './components/VictorySplash';
+import SieteMedioScreen from './components/SieteMedioScreen';
 
 const App: React.FC = () => {
   // State management
@@ -629,6 +630,8 @@ const [victoryState, setVictoryState] = useState<{
         return <TutorialScreen onNavigate={navigateTo} />;
       case 'test-screen':
         return <TestScreen onNavigate={navigateTo} />;
+      case 'siete-medio-screen':
+        return <SieteMedioScreen onNavigate={navigateTo} />;
       default:
         return <MainScreen onNavigate={navigateTo} />;
     }
@@ -644,7 +647,7 @@ const [victoryState, setVictoryState] = useState<{
 
       {!loading && (
         <div className="main-container">
-          {currentScreen === 'game-board' ? (
+          {(currentScreen === 'game-board' || currentScreen === 'siete-medio-screen') ? (
             <div className="game-canvas">
               {renderScreen()}
             </div>
