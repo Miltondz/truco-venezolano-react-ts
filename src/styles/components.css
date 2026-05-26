@@ -8292,6 +8292,12 @@ html, body {
   max-height: 160px !important;
 }
 
+/* Board selection: 3 columns to avoid scroll */
+#setup-screen.screen.active #board-selection.selection-grid {
+  grid-template-columns: repeat(3, 1fr) !important;
+  gap: 0.75rem !important;
+}
+
 /* Critical: Override .game-canvas * and .screen * width restrictions */
 #setup-screen.screen.active .setup-section.opponent-section {
   max-width: 760px !important;
@@ -8501,7 +8507,13 @@ html, body {
 /* Screen wrapper — behaves like game-board (no outer scroll) */
 #siete-medio-screen.screen {
   position: fixed !important;
-  inset: 0 !important;
+  top: 0 !important;
+  left: 50% !important;
+  right: auto !important;
+  bottom: 0 !important;
+  transform: translateX(-50%) !important;
+  width: min(1280px, 100vw) !important;
+  max-width: min(1280px, 100vw) !important;
   height: 100vh !important;
   overflow: hidden !important;
   display: flex !important;
@@ -9382,7 +9394,13 @@ html, body {
 
 #brisca-screen.screen {
   position: fixed !important;
-  inset: 0 !important;
+  top: 0 !important;
+  left: 50% !important;
+  right: auto !important;
+  bottom: 0 !important;
+  transform: translateX(-50%) !important;
+  width: min(1280px, 100vw) !important;
+  max-width: min(1280px, 100vw) !important;
   height: 100vh !important;
   overflow: hidden !important;
   display: flex !important;
@@ -9822,7 +9840,13 @@ html, body {
 
 #chinchon-screen.screen {
   position: fixed !important;
-  inset: 0 !important;
+  top: 0 !important;
+  left: 50% !important;
+  right: auto !important;
+  bottom: 0 !important;
+  transform: translateX(-50%) !important;
+  width: min(1280px, 100vw) !important;
+  max-width: min(1280px, 100vw) !important;
   height: 100vh !important;
   overflow: hidden !important;
   display: flex !important;
