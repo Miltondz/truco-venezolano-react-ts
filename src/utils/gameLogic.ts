@@ -376,7 +376,10 @@ activeCalls: capLore([...gameState.activeCalls, `Quiero: ${label} aceptado (pote
     const playerPoints = gameState.playerEnvidoPoints;
     const computerPoints = gameState.computerEnvidoPoints;
     // Mano wins ties
-    const florWinner = playerPoints >= computerPoints ? 'player' : 'computer';
+    const florWinner: 'player' | 'computer' =
+      playerPoints > computerPoints ? 'player'
+      : computerPoints > playerPoints ? 'computer'
+      : gameState.manoIsPlayer ? 'player' : 'computer';
     const winnerLabel = florWinner === 'player' ? 'Jugador' : 'Computadora';
     return {
       ...gameState,
@@ -525,14 +528,13 @@ export function computerCallFlor(gameState: GameState, settings: GameSettings): 
 
   playSound('florWin', settings);
 
-  // If player also has Flor → wait for player response
+  // If player also has Flor → wait for player response (don't change turn; player responds via UI)
   if (gameState.playerHasFlor) {
     return {
       ...gameState,
       activeCalls: capLore([...gameState.activeCalls, 'Computadora canta: Flor']),
       lastCall: 'flor',
-      waitingForResponse: true,
-      isPlayerTurn: true
+      waitingForResponse: true
     };
   }
 
@@ -541,7 +543,8 @@ export function computerCallFlor(gameState: GameState, settings: GameSettings): 
     ...gameState,
     activeCalls: capLore([...gameState.activeCalls, 'Computadora canta: Flor', 'Flor cobrada: +3 para Computadora']),
     computerScore: gameState.computerScore + 3,
-    currentPhase: 'envido' as const
+    currentPhase: 'envido' as const,
+    lastCall: null
   };
 }
 

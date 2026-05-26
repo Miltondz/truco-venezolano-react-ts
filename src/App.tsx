@@ -91,7 +91,7 @@ const [victoryState, setVictoryState] = useState<{
   useEffect(() => {
     if (!gameState.waitingForResponse || !gameState.gameInProgress) return;
     if (gameState.isProcessingAction) return;
-    // Only respond when player made the call (isPlayerTurn still true after player's call)
+    // Only respond when player made the call (isPlayerTurn stays true after player calls)
     if (!gameState.isPlayerTurn) return;
 
     const delay = getAiDelay(gameSettings);
@@ -233,7 +233,7 @@ const [victoryState, setVictoryState] = useState<{
     setGameState(result.state);
 
     if (result.gameEnded) {
-      const finalWinner = result.state.playerScore >= 24 ? 'player' : 'computer';
+      const finalWinner = result.state.playerScore > result.state.computerScore ? 'player' : 'computer';
       handleGameEnd(result.state, finalWinner as 'player' | 'computer');
       return;
     }
