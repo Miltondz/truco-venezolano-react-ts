@@ -49,34 +49,44 @@ className="cover-video"
       </div>
 
       <div className="screen-content">
-        <div className="main-menu-buttons-bottom">
-          <button id="play-btn" className="menu-button" onClick={() => onNavigate('setup-screen')}>
+        <div className="main-menu-container">
+          <button
+            id="play-btn"
+            className="menu-button menu-button-primary"
+            onClick={() => onNavigate('setup-screen')}
+          >
             🎮 Truco Venezolano
           </button>
-          <button id="siete-medio-btn" className="menu-button" onClick={() => onNavigate('siete-medio-screen')}>
-            🃏 Siete y Medio
-          </button>
-          <button id="brisca-btn" className="menu-button" onClick={() => onNavigate('brisca-screen')}>
-            🎴 Brisca
-          </button>
-          <button id="chinchon-btn" className="menu-button" onClick={() => onNavigate('chinchon-screen')}>
-            🃏 Chinchón
-          </button>
-          <button id="tutorial-btn" className="menu-button" onClick={() => onNavigate('tutorial-screen')}>
-            🎓 Tutorial
-          </button>
-          <button id="instructions-btn" className="menu-button" onClick={() => onNavigate('instructions-screen')}>
-            📖 Instrucciones
-          </button>
-          <button id="tournament-btn" className="menu-button" onClick={() => onNavigate('tournaments-screen')}>
-            🏁 Jugar Torneo
-          </button>
-          <button id="achievements-btn" className="menu-button" onClick={() => onNavigate('achievements-screen')}>
-            🏆 Logros
-          </button>
-          <button id="settings-btn" className="menu-button" onClick={() => onNavigate('settings-screen')}>
-            ⚙️ Configuración
-          </button>
+
+          <div className="main-menu-games-row">
+            <button id="siete-medio-btn" className="menu-button menu-button-game" onClick={() => onNavigate('siete-medio-screen')}>
+              🃏 Siete y Medio
+            </button>
+            <button id="brisca-btn" className="menu-button menu-button-game" onClick={() => onNavigate('brisca-screen')}>
+              🎴 Brisca
+            </button>
+            <button id="chinchon-btn" className="menu-button menu-button-game" onClick={() => onNavigate('chinchon-screen')}>
+              🃏 Chinchón
+            </button>
+          </div>
+
+          <div className="main-menu-aux-row">
+            <button id="tournament-btn" className="menu-button menu-button-aux" onClick={() => onNavigate('tournaments-screen')}>
+              🏁 Torneo
+            </button>
+            <button id="tutorial-btn" className="menu-button menu-button-aux" onClick={() => onNavigate('tutorial-screen')}>
+              🎓 Tutorial
+            </button>
+            <button id="instructions-btn" className="menu-button menu-button-aux" onClick={() => onNavigate('instructions-screen')}>
+              📖 Reglas
+            </button>
+            <button id="achievements-btn" className="menu-button menu-button-aux" onClick={() => onNavigate('achievements-screen')}>
+              🏆 Logros
+            </button>
+            <button id="settings-btn" className="menu-button menu-button-aux" onClick={() => onNavigate('settings-screen')}>
+              ⚙️ Config
+            </button>
+          </div>
         </div>
       </div>
     </div>

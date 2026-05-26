@@ -80,13 +80,13 @@
   --font-size-title: 2rem; /* 32px */
   
   /* Efectos de Glow/Resplandor */
-  --glow-primary: 0 0 10px var(--border-electric), 0 0 20px var(--border-electric), 0 0 30px var(--border-electric);
-  --glow-secondary: 0 0 8px var(--border-teal), 0 0 16px var(--border-teal);
-  --glow-button1: 0 0 15px var(--btn1-icon);
-  --glow-button2: 0 0 15px var(--btn2-icon);
-  --glow-text: 0 0 8px currentColor;
-  --glow-gold: 0 0 20px rgba(255, 215, 0, 0.8);
-  --glow-blue: 0 0 20px rgba(0, 255, 255, 0.8);
+  --glow-primary: 0 0 4px rgba(0, 255, 255, 0.5), 0 0 10px rgba(0, 255, 255, 0.3);
+  --glow-secondary: 0 0 4px rgba(0, 204, 255, 0.45), 0 0 8px rgba(0, 204, 255, 0.25);
+  --glow-button1: 0 0 8px rgba(255, 105, 180, 0.55);
+  --glow-button2: 0 0 8px rgba(135, 206, 235, 0.55);
+  --glow-text: 0 0 4px currentColor;
+  --glow-gold: 0 0 10px rgba(255, 215, 0, 0.55);
+  --glow-blue: 0 0 10px rgba(0, 255, 255, 0.55);
   
   /* Sombras mejoradas */
   --shadow-pixel: 4px 4px 0px rgba(0, 0, 0, 0.5);
@@ -101,9 +101,9 @@
   --transition-bounce: 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
   
   /* Patrón de fondo estrellado/puntos */
-  --bg-pattern: radial-gradient(circle at 25% 25%, #00FFFF 2px, transparent 2px),
-                radial-gradient(circle at 75% 75%, #8A2BE2 1px, transparent 1px),
-                radial-gradient(circle at 50% 10%, #FF69B4 1px, transparent 1px),
-                radial-gradient(circle at 20% 80%, #00BFFF 1px, transparent 1px);
+  --bg-pattern: radial-gradient(circle at 25% 25%, rgba(0, 255, 255, 0.4) 2px, transparent 2px),
+                radial-gradient(circle at 75% 75%, rgba(138, 43, 226, 0.4) 1px, transparent 1px),
+                radial-gradient(circle at 50% 10%, rgba(255, 105, 180, 0.35) 1px, transparent 1px),
+                radial-gradient(circle at 20% 80%, rgba(0, 191, 255, 0.4) 1px, transparent 1px);
   --bg-pattern-size: 50px 50px, 30px 30px, 40px 40px, 60px 60px;
 }

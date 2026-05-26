@@ -40,9 +40,9 @@ body {
   height: 100%;
   background:
     var(--bg-pattern),
-    radial-gradient(circle at 20% 80%, rgba(138, 43, 226, 0.15) 0%, transparent 50%),
-    radial-gradient(circle at 80% 20%, rgba(0, 255, 255, 0.1) 0%, transparent 50%),
-    radial-gradient(circle at 40% 40%, rgba(255, 105, 180, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 20% 80%, rgba(138, 43, 226, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(0, 255, 255, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(255, 105, 180, 0.04) 0%, transparent 50%),
     linear-gradient(135deg, var(--primary-bg) 0%, var(--secondary-bg) 50%, var(--accent-bg) 100%);
   background-size:
     var(--bg-pattern-size),
@@ -77,17 +77,17 @@ body {
 }
 
 @keyframes canvas-pulse {
-  0% { 
-    box-shadow: 
-      var(--glow-primary),
-      inset 0 0 30px rgba(0, 255, 255, 0.1),
-      0 0 80px rgba(0, 255, 255, 0.4);
+  0% {
+    box-shadow:
+      0 0 6px rgba(0, 255, 255, 0.35),
+      inset 0 0 12px rgba(0, 255, 255, 0.05),
+      0 0 24px rgba(0, 255, 255, 0.15);
   }
-  100% { 
-    box-shadow: 
-      var(--glow-primary),
-      inset 0 0 40px rgba(0, 255, 255, 0.15),
-      0 0 100px rgba(0, 255, 255, 0.6);
+  100% {
+    box-shadow:
+      0 0 8px rgba(0, 255, 255, 0.45),
+      inset 0 0 14px rgba(0, 255, 255, 0.07),
+      0 0 30px rgba(0, 255, 255, 0.20);
   }
 }
 
@@ -128,11 +128,11 @@ body {
   background: var(--primary-bg);
   border-radius: var(--border-radius);
   overflow: visible;
-  border: 3px solid var(--border-electric);
-  box-shadow: 
-    var(--glow-primary),
-    inset 0 0 30px rgba(0, 255, 255, 0.1),
-    0 0 80px rgba(0, 255, 255, 0.4);
+  border: 2px solid rgba(0, 255, 255, 0.55);
+  box-shadow:
+    0 0 6px rgba(0, 255, 255, 0.35),
+    inset 0 0 12px rgba(0, 255, 255, 0.05),
+    0 0 24px rgba(0, 255, 255, 0.15);
   flex-shrink: 0;
   max-width: 100vw;
   max-height: 100vh;
@@ -283,10 +283,10 @@ body {
      height: 720px;
      max-width: 1280px;
      max-height: 720px;
-     border: 3px solid rgba(255, 215, 0, 0.4);
-     box-shadow: 
-       0 0 50px rgba(255, 215, 0, 0.3),
-       inset 0 0 30px rgba(255, 215, 0, 0.1);
+     border: 2px solid rgba(255, 215, 0, 0.35);
+     box-shadow:
+       0 0 18px rgba(255, 215, 0, 0.18),
+       inset 0 0 12px rgba(255, 215, 0, 0.06);
    }
 
    .main-container {
