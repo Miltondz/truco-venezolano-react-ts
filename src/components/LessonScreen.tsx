@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { LessonScreenProps, TutorialStep } from '../types';
+import { LessonScreenProps } from '../types';
 
 const LessonScreen: React.FC<LessonScreenProps> = ({
   lesson,

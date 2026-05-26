@@ -11,7 +11,6 @@ interface SetupScreenProps extends BaseScreenProps {
 }
 
 const SetupScreen: React.FC<SetupScreenProps> = ({ onNavigate, gameSettings, setGameSettings, gameState, setGameState, onStartGame }) => {
-  const [avatarError, setAvatarError] = React.useState(false);
   const [currentTab, setCurrentTab] = React.useState(0);
   
   // Track previous selections to detect new selections only
@@ -24,22 +23,6 @@ const SetupScreen: React.FC<SetupScreenProps> = ({ onNavigate, gameSettings, set
     { id: 1, title: '🎯 Tablero', key: 'board' },
     { id: 2, title: '🤖 Oponente', key: 'opponent' }
   ];
-  
-  // Handle avatar image loading errors
-  const handleAvatarError = (e: React.SyntheticEvent<HTMLImageElement>) => {
-    const img = e.target as HTMLImageElement;
-    const fallbackSrc = '/images/avatars/avatar1-default.jpg';
-    
-    if (!avatarError && img.src !== fallbackSrc) {
-      img.src = fallbackSrc;
-      setAvatarError(true);
-    }
-  };
-  
-  // Reset error state when selected avatar changes
-  React.useEffect(() => {
-    setAvatarError(false);
-  }, [gameState.selectedAvatar]);
   
   // Track selections but DON'T auto-advance - let user control tab navigation
   React.useEffect(() => {

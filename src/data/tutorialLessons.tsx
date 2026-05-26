@@ -1161,7 +1161,7 @@ export const tutorialLessons: TutorialLesson[] = [
             <li><strong>Mano:</strong> Cada una de las tres rondas en que se juega una partida.</li>
             <li><strong>Parda:</strong> Empate en una mano.</li>
             <li><strong>Irse al mazo:</strong> Rendirse y no jugar las cartas.</li>
-            <li><strong>Cantar:</strong> Anunciar una jugada como \"Envido\" o \"Truco\".</li>
+            <li><strong>Cantar:</strong> Anunciar una jugada como "Envido" o "Truco".</li>
             <li><strong>Tengo:</strong> Expresión para indicar que se tienen puntos de Envido.</li>
           </ul>
         `,

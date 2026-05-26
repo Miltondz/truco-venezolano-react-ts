@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { BaseScreenProps, AICharacter } from '../types';
-import { AICharactersMap, derivePersonality, deriveDifficulty, toAICharacter, loadAICharacters } from '../utils/aiCharactersLoader';
+import { AICharactersMap, loadAICharacters } from '../utils/aiCharactersLoader';
 
 interface TournamentsScreenProps extends BaseScreenProps {
   onStartTournament: (opponent: AICharacter) => void;

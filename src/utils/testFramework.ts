@@ -15,11 +15,9 @@ import {
   callRealEnvido,
   callFaltaEnvido,
   acceptCall,
-  rejectCall,
   resolveEnvido,
   callFlor,
-  callEstarCantando,
-  foldHand
+  callEstarCantando
 } from './gameLogic';
 import { cards, calculateEnvidoPoints, hasFlor, getPericoCard } from './cards';
 import { applyRoundResult } from './gameLogic';
@@ -107,10 +105,6 @@ export class TrucoTestFramework {
           // If both played a card, evaluate round
           if (gs.playerPlayedCard || gs.computerPlayedCard) {
             const { winner, gameState: afterEval } = evaluateRound(gs, { soundEffectsEnabled: false } as any);
-            const applyRes = (window as any)?.applyRoundResult
-              ? (window as any).applyRoundResult(afterEval, winner, { soundEffectsEnabled: false } as any)
-              : null;
-            // Use imported applyRoundResult from gameLogic directly
             const res = applyRoundResult(afterEval, winner, { soundEffectsEnabled: false } as any);
             gs = res.state;
             if (res.gameEnded) break;
@@ -324,6 +318,7 @@ export class TrucoTestFramework {
       gameState = callValeJuego(gameState, { soundEffectsEnabled: false } as any);
       logs.push('Player called Vale Juego');
 
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       gameState = acceptCall(gameState, { soundEffectsEnabled: false } as any);
       logs.push('Computer accepted Vale Juego');
 

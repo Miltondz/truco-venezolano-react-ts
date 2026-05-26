@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { BaseScreenProps, Tournament, TournamentProgress, AICharacter } from '../types';
-import { getTournamentProgress, defeatOpponent, getCurrentActiveTournament } from '../utils/tournamentStorage';
+import { getTournamentProgress } from '../utils/tournamentStorage';
 import { AICharactersMap, toAICharacter, loadAICharacters } from '../utils/aiCharactersLoader';
 
 interface TournamentBracketScreenProps extends BaseScreenProps {

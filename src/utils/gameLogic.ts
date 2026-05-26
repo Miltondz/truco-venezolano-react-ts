@@ -1,8 +1,8 @@
-import { AICharacter, Card, GameState, GameSettings, PlayerStats } from '../types';
-import { shuffleDeck, calculateEnvidoPoints, hasFlor, calculateHandStrength, getPericoCard, getCardTrucoRank } from './cards';
-import { getAIResponse, selectBestCardForAI } from './ai';
+import { AICharacter, Card, GameState, GameSettings } from '../types';
+import { shuffleDeck, calculateEnvidoPoints, hasFlor, getPericoCard, getCardTrucoRank } from './cards';
+import { selectBestCardForAI } from './ai';
 import { playSound } from './sound';
-import { generateRandomPersonality, getRandomArchetypeName, convertOpponentToPersonality } from './personality';
+import { generateRandomPersonality, convertOpponentToPersonality } from './personality';
 
 // Cap lore/event log to avoid unbounded growth
 const capLore = (events: string[], max: number = 50) => (events.length > max ? events.slice(events.length - max) : events);

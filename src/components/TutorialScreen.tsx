@@ -69,13 +69,6 @@ const TutorialScreen: React.FC<BaseScreenProps> = ({ onNavigate }) => {
     return Math.round((completedSteps.length / lesson.steps.length) * 100);
   };
 
-  const getTotalProgress = () => {
-    const totalSteps = tutorialLessons.reduce((acc, lesson) => acc + lesson.steps.length, 0);
-    const completedSteps = Object.values(progress.completedSteps)
-      .reduce((acc, steps) => acc + steps.length, 0);
-    return Math.round((completedSteps / totalSteps) * 100);
-  };
-
   const getDifficultyClass = (difficulty: string) => {
     switch (difficulty) {
       case 'beginner': return 'difficulty-beginner';

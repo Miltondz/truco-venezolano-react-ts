@@ -3,7 +3,7 @@ import { GameBoardProps } from '../types';
 import Card from './Card';
 import AIPersonalityDisplay from './AIPersonalityDisplay';
 import LorePanel from './LorePanel';
-import { getAvatarImagePath, resetAvatarsToDefault, getFallbackAvatarPath, getSmartFallbackPath } from '../utils/avatarMoods';
+import { getAvatarImagePath, resetAvatarsToDefault, getSmartFallbackPath } from '../utils/avatarMoods';
 
 const GameBoard: React.FC<GameBoardProps> = ({
   onNavigate,
@@ -33,7 +33,8 @@ const GameBoard: React.FC<GameBoardProps> = ({
   // Reset avatars to default at the beginning of each turn
   useEffect(() => {
     resetAvatarsToDefault(gameState, setGameState);
-    setAvatarErrors({computer: false, player: false}); // Reset error states
+    setAvatarErrors({computer: false, player: false});
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameState.isPlayerTurn, gameState.currentRound]);
   
   // Reset error states when moods change to allow new images to load

@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './styles/App.css';
-import { GameState, GameSettings, PlayerStats, Achievement, DECKS, BOARDS, AVATARS, AICharacter, Tournament, TournamentProgress } from './types';
-import { initializeGameState, startNewHand, playCard, computerPlayCard, evaluateRound, endHand, checkGameEnd, callTruco, callRetruco, callEnvido, acceptCall, rejectCall, resolveEnvido, callFlor, computerCallFlor, foldHand, getAiDelay, callValeNueve, callValeJuego, callRealEnvido, callFaltaEnvido, callEstarCantando, applyRoundResult } from './utils/gameLogic';
+import { GameState, AICharacter, Tournament, TournamentProgress } from './types';
+import { initializeGameState, startNewHand, playCard, computerPlayCard, evaluateRound, checkGameEnd, callTruco, callRetruco, callEnvido, acceptCall, rejectCall, callFlor, computerCallFlor, foldHand, getAiDelay, callValeNueve, callValeJuego, callRealEnvido, callFaltaEnvido, callEstarCantando, applyRoundResult } from './utils/gameLogic';
 import { getAICallDecision } from './utils/ai';
 import { playSound } from './utils/sound';
 import { usePersistence } from './hooks/usePersistence';
-import { startTournament, getTournamentProgress, defeatOpponent, completeRound, setCurrentActiveTournament } from './utils/tournamentStorage';
+import { getTournamentProgress, defeatOpponent, completeRound } from './utils/tournamentStorage';
 import { evaluatePlayResult, updateAvatarMood } from './utils/avatarMoods';
 import MainScreen from './components/MainScreen';
 import SetupScreen from './components/SetupScreen';
@@ -22,7 +22,6 @@ import Notification from './components/Notification';
 import Modal from './components/Modal';
 import AchievementPopup from './components/AchievementPopup';
 import { TestScreen } from './components/TestScreen';
-import TournamentBracketScreen from './components/TournamentBracketScreen';
 import DynamicTournamentBracket from './components/DynamicTournamentBracket';
 import VictorySplash from './components/VictorySplash';
 
@@ -43,7 +42,7 @@ const App: React.FC = () => {
   });
 
   // Tournament state
-  const [availableTournaments, setAvailableTournaments] = useState<Tournament[]>([]);
+  const [availableTournaments, setAvailableTournaments] = useState<Tournament[]>([]); // eslint-disable-line @typescript-eslint/no-unused-vars
   const [activeTournament, setActiveTournament] = useState<Tournament | null>(null);
   
   // Victory splash state
@@ -560,32 +559,10 @@ const [victoryState, setVictoryState] = useState<{
     }
   };
   
-  const loadTournamentById = async (tournamentId: string): Promise<Tournament | null> => {
-    try {
-      const response = await fetch('/config/tournament_configuration.json');
-      if (!response.ok) return null;
-      const tournaments: Tournament[] = await response.json();
-      
-      // Add id based on name if not present
-      const processedTournaments = tournaments.map(t => ({
-        ...t,
-        id: t.id || t.name.toLowerCase().replace(/\s+/g, '-')
-      }));
-      
-      return processedTournaments.find(t => t.id === tournamentId) || null;
-    } catch {
-      return null;
-    }
-  };
-
   // UI helpers
   const showNotification = (message: string, type: 'info' | 'success' | 'error' = 'info') => {
     setNotification({ message, type });
     setTimeout(() => setNotification(null), 3000);
-  };
-
-  const showModal = (title: string, message: string, onConfirm?: () => void) => {
-    setModal({ title, message, onConfirm });
   };
 
   const hideModal = () => {
