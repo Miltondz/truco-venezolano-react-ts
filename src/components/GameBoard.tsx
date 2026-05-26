@@ -10,6 +10,9 @@ const GameBoard: React.FC<GameBoardProps> = ({
   gameState,
   setGameState,
   gameSettings,
+  isPaused,
+  onPause,
+  onResume,
   onPlayCard,
   onCallTruco,
   onCallRetruco,
@@ -24,10 +27,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
   onCallFaltaEnvido,
   onCallEstarCantando
 }) => {
-  // Debug logging
-  console.log('GameBoard - selectedOpponent:', gameState.selectedOpponent);
   const [showPersonalityModal, setShowPersonalityModal] = useState(false);
-  const [isPaused, setIsPaused] = useState(false);
   const [avatarErrors, setAvatarErrors] = useState<{computer: boolean, player: boolean}>({computer: false, player: false});
   
   // Reset avatars to default at the beginning of each turn
@@ -65,13 +65,8 @@ const GameBoard: React.FC<GameBoardProps> = ({
     }
   };
 
-  const handlePause = () => {
-    setIsPaused(true);
-  };
-
-  const handleResume = () => {
-    setIsPaused(false);
-  };
+  const handlePause = () => { onPause(); };
+  const handleResume = () => { onResume(); };
 
   const handleQuitGame = () => {
     onNavigate('main-screen');

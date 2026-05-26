@@ -1,22 +1,12 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { BaseScreenProps, Tournament, TournamentProgress, AICharacter } from '../types';
 import { getTournamentProgress, defeatOpponent, getCurrentActiveTournament } from '../utils/tournamentStorage';
+import { AICharactersMap, toAICharacter, loadAICharacters } from '../utils/aiCharactersLoader';
 
 interface TournamentBracketScreenProps extends BaseScreenProps {
   tournament: Tournament;
   onStartMatch: (opponent: AICharacter) => void;
 }
-
-type AICharactersMap = Record<string, {
-  agresividad: number;
-  riesgo: number;
-  blufeo: number;
-  consistencia: number;
-  personaje: string;
-  description: string;
-  avatar: string;
-  activo: boolean;
-}>;
 
 interface ProcessedOpponent {
   name: string;
@@ -48,13 +38,11 @@ const TournamentBracketScreen: React.FC<TournamentBracketScreenProps> = ({
         setProgress(tournamentProgress);
         
         // Load AI characters
-        const response = await fetch('/config/ai_characters.json');
-        if (!response.ok) throw new Error('Failed to load AI characters');
-        const aiData = await response.json();
+        const aiData = await loadAICharacters();
         setCharacters(aiData);
         
-      } catch (err: any) {
-        setError(err.message || 'Error loading tournament data');
+      } catch (err: unknown) {
+        setError(err instanceof Error ? err.message : 'Error loading tournament data');
       } finally {
         setLoading(false);
       }
@@ -63,56 +51,22 @@ const TournamentBracketScreen: React.FC<TournamentBracketScreenProps> = ({
     loadData();
   }, [tournament.id]);
 
-  // Helper functions
-  const derivePersonality = (c: AICharactersMap[string]): 'balanced' | 'aggressive' | 'conservative' | 'unpredictable' => {
-    const { agresividad, blufeo, consistencia, riesgo } = c;
-    if (agresividad >= 8 && blufeo >= 7) return 'aggressive';
-    if (blufeo >= 8 && riesgo >= 7) return 'unpredictable';
-    if (consistencia >= 8 && agresividad <= 4) return 'conservative';
-    return 'balanced';
-  };
-
-  const deriveDifficulty = (c: AICharactersMap[string]): 'easy' | 'medium' | 'intermediate' | 'hard' | 'master' => {
-    const avg = (c.agresividad + c.riesgo + c.blufeo + c.consistencia) / 4;
-    if (avg <= 3.5) return 'easy';
-    if (avg <= 5.0) return 'medium';
-    if (avg <= 6.5) return 'intermediate';
-    if (avg <= 8.0) return 'hard';
-    return 'master';
-  };
-
-  const toAICharacter = (name: string, c: AICharactersMap[string]): AICharacter => {
-    const slug = name.toLowerCase().replace(/\s+/g, '-').normalize('NFD').replace(/[^\w-]/g, '');
-    return {
-      id: slug,
-      name,
-      agresividad: c.agresividad,
-      riesgo: c.riesgo,
-      blufeo: c.blufeo,
-      consistencia: c.consistencia,
-      description: c.description,
-      avatar: c.avatar,
-      activo: c.activo,
-      difficulty: deriveDifficulty(c),
-      personality: derivePersonality(c)
-    };
-  };
-
   // Process rounds with current progress
   const processedRounds = useMemo(() => {
     if (!progress || !characters) return [];
-    
+
     return tournament.rounds.map((round, index) => {
       const roundNumber = index + 1;
       const isCompleted = progress.roundsCompleted[index] || false;
       const isCurrent = progress.currentRound === roundNumber;
       const defeatedInRound = progress.opponentsDefeated[roundNumber] || [];
-      
-      const processedOpponents: ProcessedOpponent[] = round.opponents.map(opponentName => {
+      const firstUndefeatedIndex = round.opponents.findIndex(name => !defeatedInRound.includes(name));
+
+      const processedOpponents: ProcessedOpponent[] = round.opponents.map((opponentName, opponentIndex) => {
         const character = characters[opponentName];
         const defeated = defeatedInRound.includes(opponentName);
-        const active = isCurrent && !defeated && defeatedInRound.length === round.opponents.indexOf(opponentName);
-        
+        const active = isCurrent && !defeated && firstUndefeatedIndex === opponentIndex;
+
         return {
           name: opponentName,
           avatar: character?.avatar || 'avatar1-default.jpg',
@@ -121,15 +75,7 @@ const TournamentBracketScreen: React.FC<TournamentBracketScreenProps> = ({
           aiCharacter: character ? toAICharacter(opponentName, character) : undefined
         };
       });
-      
-      // Find next opponent
-      if (isCurrent && !nextOpponent) {
-        const next = processedOpponents.find(opp => opp.active);
-        if (next?.aiCharacter) {
-          setNextOpponent(next.aiCharacter);
-        }
-      }
-      
+
       return {
         ...round,
         roundNumber,
@@ -138,7 +84,20 @@ const TournamentBracketScreen: React.FC<TournamentBracketScreenProps> = ({
         opponents: processedOpponents
       };
     });
-  }, [tournament, progress, characters, nextOpponent]);
+  }, [tournament, progress, characters]);
+
+  // Derive nextOpponent from processedRounds without calling setState during render
+  useEffect(() => {
+    for (const round of processedRounds) {
+      if (round.isCurrent) {
+        const next = round.opponents.find(opp => opp.active);
+        if (next?.aiCharacter) {
+          setNextOpponent(next.aiCharacter);
+          return;
+        }
+      }
+    }
+  }, [processedRounds]);
 
   const handleStartMatch = () => {
     if (nextOpponent) {

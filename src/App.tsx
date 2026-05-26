@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './styles/App.css';
 import { GameState, GameSettings, PlayerStats, Achievement, DECKS, BOARDS, AVATARS, AICharacter, Tournament, TournamentProgress } from './types';
-import { initializeGameState, startNewHand, playCard, computerPlayCard, evaluateRound, endHand, checkGameEnd, callTruco, callRetruco, callEnvido, acceptCall, rejectCall, resolveEnvido, callFlor, foldHand, getAiDelay, callValeNueve, callValeJuego, callRealEnvido, callFaltaEnvido, callEstarCantando, applyRoundResult } from './utils/gameLogic';
+import { initializeGameState, startNewHand, playCard, computerPlayCard, evaluateRound, endHand, checkGameEnd, callTruco, callRetruco, callEnvido, acceptCall, rejectCall, resolveEnvido, callFlor, computerCallFlor, foldHand, getAiDelay, callValeNueve, callValeJuego, callRealEnvido, callFaltaEnvido, callEstarCantando, applyRoundResult } from './utils/gameLogic';
 import { getAICallDecision } from './utils/ai';
-import { initializeAudio, playSound } from './utils/sound';
-import { loadSettings, saveSettings, loadStats, saveStats, loadAchievements, saveAchievements } from './utils/storage';
+import { playSound } from './utils/sound';
+import { usePersistence } from './hooks/usePersistence';
 import { startTournament, getTournamentProgress, defeatOpponent, completeRound, setCurrentActiveTournament } from './utils/tournamentStorage';
 import { evaluatePlayResult, updateAvatarMood } from './utils/avatarMoods';
 import MainScreen from './components/MainScreen';
@@ -30,51 +30,8 @@ const App: React.FC = () => {
   // State management
   const [currentScreen, setCurrentScreen] = useState<string>('loading');
   const [gameState, setGameState] = useState<GameState>(initializeGameState('medium', 'avatar1.jpg'));
-  const [gameSettings, setGameSettings] = useState<GameSettings>({
-    soundEffectsEnabled: true,
-    backgroundMusicEnabled: false,
-    masterVolume: 70,
-    effectsVolume: 80,
-    musicVolume: 50,
-    animationsEnabled: true,
-    confirmMoves: false,
-    showHints: true,
-    autoPlay: false,
-    gameSpeed: 3,
-    darkMode: true,
-    particlesEnabled: true,
-    hdCards: false,
-    showCardPower: true,
-    handStrengthIndicator: true,
-    showAiThinking: true,
-    aiResponseTime: 5,
-    aiPersonality: 'balanced',
-    largeText: false,
-    highContrast: false,
-    reduceMotion: false,
-    voiceNarration: false,
-    autoSave: true,
-    cloudSync: false,
-    selectedDeck: 'default',
-    selectedBoard: 'tablero-cama.jpg'
-  });
+  const { gameSettings, setGameSettings, playerStats, setPlayerStats, achievements, setAchievements, ready } = usePersistence();
 
-  const [playerStats, setPlayerStats] = useState<PlayerStats>({
-    gamesPlayed: 0,
-    gamesWon: 0,
-    trucosCalled: 0,
-    trucosWon: 0,
-    envidosCalled: 0,
-    envidosWon: 0,
-    floresAchieved: 0,
-    totalPoints: 0,
-    bestStreak: 0,
-    currentStreak: 0,
-    timePlayed: 0,
-    playerLevel: 1,
-    experience: 0
-  });
-  
   // Tournament-specific stats (separate from main stats for now)
   const [tournamentStats, setTournamentStats] = useState({
     tournamentsCompleted: 0,
@@ -83,25 +40,6 @@ const App: React.FC = () => {
     fastestTournament: 0,
     tournamentGamesWon: 0,
     tournamentGamesPlayed: 0
-  });
-
-  const [achievements, setAchievements] = useState<Record<string, Achievement>>({
-    firstWin: { unlocked: false, name: "Primera Victoria", description: "Gana tu primera partida", icon: "🏆" },
-    trucoMaster: { unlocked: false, name: "Maestro del Truco", description: "Gana 10 trucos", icon: "⚡" },
-    envidoExpert: { unlocked: false, name: "Experto en Envido", description: "Gana 10 envidos", icon: "🎵" },
-    florCollector: { unlocked: false, name: "Coleccionista de Flores", description: "Consigue 5 flores", icon: "🌸" },
-    winStreak5: { unlocked: false, name: "Racha de 5", description: "Gana 5 partidas seguidas", icon: "🔥" },
-    winStreak10: { unlocked: false, name: "Racha de 10", description: "Gana 10 partidas seguidas", icon: "🔥🔥" },
-    perfectGame: { unlocked: false, name: "Juego Perfecto", description: "Gana 30-0", icon: "📎" },
-    speedster: { unlocked: false, name: "Velocista", description: "Gana en menos de 5 minutos", icon: "⚡" },
-    veteran: { unlocked: false, name: "Veterano", description: "Juega 100 partidas", icon: "🎖️" },
-    levelUp: { unlocked: false, name: "Subida de Nivel", description: "Alcanza el nivel 10", icon: "⭐" },
-    // Tournament achievements
-    firstTournament: { unlocked: false, name: "Primer Torneo", description: "Completa tu primer torneo", icon: "🏅" },
-    roundMaster: { unlocked: false, name: "Maestro de Rondas", description: "Completa 5 rondas de torneo", icon: "🎯" },
-    tournamentChamp: { unlocked: false, name: "Campeón de Torneos", description: "Gana 3 torneos diferentes", icon: "👑" },
-    perfectTournament: { unlocked: false, name: "Torneo Perfecto", description: "Completa un torneo sin perder ningún juego", icon: "🏆" },
-    tournamentSpeedrun: { unlocked: false, name: "Torneo Rápido", description: "Completa un torneo en menos de 20 minutos", icon: "⏱️" }
   });
 
   // Tournament state
@@ -121,52 +59,26 @@ const [victoryState, setVictoryState] = useState<{
     autoHide?: boolean;
   }>({ show: false, type: 'match', autoHide: true });
 
+  // Pause state — lifted from GameBoard so AI timers can be gated
+  const [isPaused, setIsPaused] = useState(false);
+  const isPausedRef = useRef(false);
+  useEffect(() => { isPausedRef.current = isPaused; }, [isPaused]);
+
   // UI state
   const [loading, setLoading] = useState(true);
   const [notification, setNotification] = useState<{ message: string; type: 'info' | 'success' | 'error' } | null>(null);
   const [modal, setModal] = useState<{ title: string; message: string; onConfirm?: () => void } | null>(null);
   const [achievementPopup, setAchievementPopup] = useState<{ icon: string; title: string; description: string } | null>(null);
 
-  // Initialize app
+  // Show loading splash then transition to welcome screen once persistence is ready
   useEffect(() => {
-    const initializeApp = async () => {
-      // Load saved data
-      const savedSettings = loadSettings();
-      if (savedSettings) {
-        setGameSettings(savedSettings);
-      }
-
-      const savedStats = loadStats();
-      if (savedStats) {
-        setPlayerStats(savedStats);
-      }
-
-      const savedAchievements = loadAchievements();
-      if (savedAchievements) {
-        setAchievements(savedAchievements);
-      }
-
-      // Initialize audio
-      initializeAudio();
-
-      // Simulate loading
-      setTimeout(() => {
-        setLoading(false);
-        setCurrentScreen('welcome-screen');
-      }, 2000);
-    };
-
-    initializeApp();
-  }, []);
-
-  // Auto-save
-  useEffect(() => {
-    if (gameSettings.autoSave) {
-      saveSettings(gameSettings);
-      saveStats(playerStats);
-      saveAchievements(achievements);
-    }
-  }, [gameSettings, playerStats, achievements]);
+    if (!ready) return;
+    const timer = setTimeout(() => {
+      setLoading(false);
+      setCurrentScreen('welcome-screen');
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, [ready]);
 
   // Wire a11y settings to body classes
   useEffect(() => {
@@ -199,6 +111,22 @@ const [victoryState, setVictoryState] = useState<{
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameState.waitingForResponse, gameState.isPlayerTurn, gameState.lastCall, gameState.gameInProgress]);
 
+  // Computer auto-calls Flor when only it has flor (player has no flor to act first)
+  useEffect(() => {
+    if (!gameState.gameInProgress || gameState.currentPhase !== 'flor') return;
+    if (!gameState.computerHasFlor || gameState.waitingForResponse || gameState.isProcessingAction) return;
+    if (gameState.playerHasFlor) return; // Player acts first when both have flor
+
+    const delay = getAiDelay(gameSettings);
+    const timer = setTimeout(() => {
+      if (isPausedRef.current) return;
+      setGameState(prev => computerCallFlor(prev, gameSettings));
+    }, delay);
+
+    return () => clearTimeout(timer);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gameState.currentPhase, gameState.computerHasFlor, gameState.playerHasFlor, gameState.gameInProgress, gameState.waitingForResponse, gameState.isProcessingAction]);
+
   // Screen navigation
   const navigateTo = (screen: string) => {
     setCurrentScreen(screen);
@@ -222,6 +150,7 @@ const [victoryState, setVictoryState] = useState<{
   };
 
   const handlePlayCard = (cardIndex: number) => {
+    if (gameState.isProcessingAction || gameState.waitingForResponse) return;
     if (gameSettings.confirmMoves) {
       setModal({
         title: 'Confirmar Jugada',
@@ -252,6 +181,7 @@ const [victoryState, setVictoryState] = useState<{
 
     // Computer's turn
     setTimeout(() => {
+      if (isPausedRef.current) return;
       const computerStateRaw = computerPlayCard(newGameState, gameSettings);
       const compPlayed = computerStateRaw.computerPlayedCard;
       const computerState = {
@@ -262,6 +192,7 @@ const [victoryState, setVictoryState] = useState<{
 
       // Evaluate round
       setTimeout(() => {
+        if (isPausedRef.current) return;
         const { winner, gameState: evaluatedState } = evaluateRound(computerState, gameSettings);
         setGameState(evaluatedState);
 
@@ -269,23 +200,26 @@ const [victoryState, setVictoryState] = useState<{
         if (winner === 'player') {
           const playerResult = evaluatePlayResult(evaluatedState, true, 'card');
           const computerResult = evaluatePlayResult(evaluatedState, false, 'card');
-          
+
           updateAvatarMood(evaluatedState, setGameState, true, playerResult);
           setTimeout(() => {
+            if (isPausedRef.current) return;
             updateAvatarMood(evaluatedState, setGameState, false, computerResult);
           }, 500);
         } else if (winner === 'computer') {
           const playerResult = evaluatePlayResult(evaluatedState, true, 'card');
           const computerResult = evaluatePlayResult(evaluatedState, false, 'card');
-          
+
           updateAvatarMood(evaluatedState, setGameState, false, computerResult);
           setTimeout(() => {
+            if (isPausedRef.current) return;
             updateAvatarMood(evaluatedState, setGameState, true, playerResult);
           }, 500);
         }
 
         // Handle round result and reset processing state
         setTimeout(() => {
+          if (isPausedRef.current) return;
           const finalState = { ...evaluatedState, isProcessingAction: false };
           setGameState(finalState);
           handleRoundResult(finalState, winner);
@@ -413,10 +347,20 @@ const [victoryState, setVictoryState] = useState<{
   
   const handleCallFlor = () => executeProtectedAction(() => callFlor(gameState, gameSettings), 'call');
   const handleFoldHand = () => {
-    executeProtectedAction(() => foldHand(gameState, gameSettings), 'response', false);
-    // Programar nueva mano para evitar spam de "Me voy"
+    if (gameState.isProcessingAction || gameState.waitingForResponse) return;
+    const newState = foldHand(gameState, gameSettings);
+    if (newState === gameState) return;
+    setGameState(newState);
+    updateAvatarMood(newState, setGameState, true, 'bad');
+
     setTimeout(() => {
-      setGameState(prev => startNewHand(prev));
+      if (isPausedRef.current) return;
+      const gameEnd = checkGameEnd(newState);
+      if (gameEnd !== null) {
+        handleGameEnd(newState, gameEnd);
+      } else {
+        setGameState(prev => startNewHand(prev));
+      }
     }, 3200);
   };
   const handleCallValeNueve = () => executeProtectedAction(() => callValeNueve(gameState, gameSettings), 'call');
@@ -552,7 +496,7 @@ const [victoryState, setVictoryState] = useState<{
     return newLevel > currentLevel;
   };
   
-  const checkTournamentAchievements = (tournamentId: string, stats: typeof tournamentStats, progress: any) => {
+  const checkTournamentAchievements = (tournamentId: string, stats: typeof tournamentStats, progress: TournamentProgress) => {
     const newAchievements = { ...achievements };
     let hasNewAchievements = false;
     
@@ -677,6 +621,9 @@ const [victoryState, setVictoryState] = useState<{
           gameState={gameState}
           setGameState={setGameState}
           gameSettings={gameSettings}
+          isPaused={isPaused}
+          onPause={() => setIsPaused(true)}
+          onResume={() => setIsPaused(false)}
           onPlayCard={handlePlayCard}
           onCallTruco={handleCallTruco}
           onCallRetruco={handleCallRetruco}

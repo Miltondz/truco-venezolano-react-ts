@@ -1,4 +1,4 @@
-import { Card, GameState, GameSettings, PlayerStats } from '../types';
+import { AICharacter, Card, GameState, GameSettings, PlayerStats } from '../types';
 import { shuffleDeck, calculateEnvidoPoints, hasFlor, calculateHandStrength, getPericoCard, getCardTrucoRank } from './cards';
 import { getAIResponse, selectBestCardForAI } from './ai';
 import { playSound } from './sound';
@@ -21,7 +21,7 @@ export function dealCards(): { playerHand: Card[], computerHand: Card[], viraCar
   return { playerHand, computerHand, viraCard };
 }
 
-export function initializeGameState(difficulty: string, selectedAvatar: string, selectedOpponent: any = null): GameState {
+export function initializeGameState(difficulty: string, selectedAvatar: string, selectedOpponent: AICharacter | null = null): GameState {
   // CORRECCIÓN: Usar la personalidad ESPECÍFICA del oponente seleccionado
   // Si hay un oponente seleccionado, convertir sus atributos a AIPersonality
   // Si no, generar una personalidad aleatoria (legacy)
@@ -227,7 +227,7 @@ export function checkGameEnd(gameState: GameState): 'player' | 'computer' | null
 }
 
 export function callEstarCantando(gameState: GameState, settings: GameSettings): GameState {
-  if (!gameState.isPlayerTurn || gameState.playerScore !== 23 || gameState.waitingForResponse) return gameState;
+  if (gameState.playerScore !== 23 || !gameState.gameInProgress || gameState.waitingForResponse) return gameState;
 
   playSound('call', settings);
 
@@ -371,11 +371,28 @@ activeCalls: capLore([...gameState.activeCalls, `Quiero: ${label} aceptado (pote
     };
   }
 
-  // Para flor
+  // Para flor — Contraflor querida: compare flor points, award 6 to winner
+  if (gameState.lastCall === 'flor') {
+    const playerPoints = gameState.playerEnvidoPoints;
+    const computerPoints = gameState.computerEnvidoPoints;
+    // Mano wins ties
+    const florWinner = playerPoints >= computerPoints ? 'player' : 'computer';
+    const winnerLabel = florWinner === 'player' ? 'Jugador' : 'Computadora';
+    return {
+      ...gameState,
+      waitingForResponse: false,
+      playerScore: florWinner === 'player' ? gameState.playerScore + 6 : gameState.playerScore,
+      computerScore: florWinner === 'computer' ? gameState.computerScore + 6 : gameState.computerScore,
+      currentPhase: 'envido' as const,
+      lastCall: null,
+      activeCalls: capLore([...gameState.activeCalls, `Contraflor querida: ${winnerLabel} +6 puntos. Flores: ${playerPoints} vs ${computerPoints}`])
+    };
+  }
+
   return {
     ...gameState,
     waitingForResponse: false,
-    currentPhase: gameState.lastCall === 'flor' ? 'envido' : gameState.currentPhase
+    currentPhase: 'envido' as const
   };
 }
 
@@ -484,25 +501,46 @@ export function callFlor(gameState: GameState, settings: GameSettings): GameStat
 
   playSound('florWin', settings);
 
-  // Computar Flor Reservada simple
-  const isFlorReservada = gameState.playerHasFlorReservada === true;
-  const pointsToAdd = 3; // Flor vale 3 puntos (Reservada mantiene efectos especiales en reglas avanzadas)
-
-  // Si la computadora también tiene Flor, se espera manejo de Envite de Flores (fase 2)
+  // If computer also has Flor → Contraflor: wait for computer response
   if (gameState.computerHasFlor) {
     return {
       ...gameState,
-activeCalls: capLore([...gameState.activeCalls, 'Canto: Flor']),
+      activeCalls: capLore([...gameState.activeCalls, 'Canto: Flor']),
       lastCall: 'flor',
       waitingForResponse: true
     };
   }
 
-  // Flor simple: cobrar 3 y pasar a Envido
+  // Flor uncontested: +3 and advance to Envido
   return {
     ...gameState,
-activeCalls: capLore([...gameState.activeCalls, isFlorReservada ? 'Canto: Flor Reservada' : 'Canto: Flor', `Flor cobrada: +${pointsToAdd}`]),
-    playerScore: gameState.playerScore + pointsToAdd,
+    activeCalls: capLore([...gameState.activeCalls, 'Canto: Flor', 'Flor cobrada: +3']),
+    playerScore: gameState.playerScore + 3,
+    currentPhase: 'envido' as const
+  };
+}
+
+export function computerCallFlor(gameState: GameState, settings: GameSettings): GameState {
+  if (!gameState.computerHasFlor || gameState.currentPhase !== 'flor' || gameState.waitingForResponse) return gameState;
+
+  playSound('florWin', settings);
+
+  // If player also has Flor → wait for player response
+  if (gameState.playerHasFlor) {
+    return {
+      ...gameState,
+      activeCalls: capLore([...gameState.activeCalls, 'Computadora canta: Flor']),
+      lastCall: 'flor',
+      waitingForResponse: true,
+      isPlayerTurn: true
+    };
+  }
+
+  // Computer flor uncontested: +3 to computer, advance to Envido
+  return {
+    ...gameState,
+    activeCalls: capLore([...gameState.activeCalls, 'Computadora canta: Flor', 'Flor cobrada: +3 para Computadora']),
+    computerScore: gameState.computerScore + 3,
     currentPhase: 'envido' as const
   };
 }
@@ -512,11 +550,18 @@ export function foldHand(gameState: GameState, settings: GameSettings): GameStat
 
   playSound('fold', settings);
 
-  // Irse al mazo: 2 tantos al contrario (1 Envite + 1 Truco)
+  // Points = current accepted pot when truco pending, else accepted pot, else 1
+  let pointsToAdd = 1;
+  if (gameState.trucoPendingOffer) {
+    pointsToAdd = gameState.trucoAcceptedPot === 'game' ? 9 : (gameState.trucoAcceptedPot || 1);
+  } else if (gameState.trucoAcceptedPot !== 1) {
+    pointsToAdd = gameState.trucoAcceptedPot === 'game' ? 9 : (gameState.trucoAcceptedPot as number);
+  }
+
   return {
     ...gameState,
-    computerScore: gameState.computerScore + 2,
-    activeCalls: capLore([...gameState.activeCalls, 'Me voy al mazo: +2 para Computadora']),
+    computerScore: gameState.computerScore + pointsToAdd,
+    activeCalls: capLore([...gameState.activeCalls, `Me voy al mazo: +${pointsToAdd} para Computadora`]),
     isProcessingAction: true
   };
 }

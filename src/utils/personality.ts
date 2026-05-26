@@ -1,4 +1,4 @@
-import { AIPersonality } from '../types';
+import { AICharacter, AIPersonality } from '../types';
 
 // Predefined personality archetypes
 export const PERSONALITY_ARCHETYPES: Record<string, AIPersonality> = {
@@ -145,7 +145,7 @@ export function getPersonalityWeaknesses(personality: AIPersonality): string[] {
  * Usa los atributos del oponente (agresividad, riesgo, blufeo, consistencia)
  * para crear una personalidad coherente
  */
-export function convertOpponentToPersonality(opponent: any): AIPersonality {
+export function convertOpponentToPersonality(opponent: AICharacter | null): AIPersonality {
   if (!opponent) {
     return generateRandomPersonality();
   }

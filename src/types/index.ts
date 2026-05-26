@@ -287,6 +287,9 @@ export interface GameBoardProps extends BaseScreenProps {
   gameState: GameState;
   setGameState: React.Dispatch<React.SetStateAction<GameState>>;
   gameSettings: GameSettings;
+  isPaused: boolean;
+  onPause: () => void;
+  onResume: () => void;
   onPlayCard: (cardIndex: number) => void;
   onCallTruco: () => void;
   onCallRetruco: () => void;
@@ -297,7 +300,7 @@ export interface GameBoardProps extends BaseScreenProps {
   onFoldHand: () => void;
   onCallValeNueve: () => void;
   onCallValeJuego: () => void;
-  onCallRealEnvido: () => void; // Usado como "+2 piedras"
+  onCallRealEnvido: () => void;
   onCallFaltaEnvido: () => void;
   onCallEstarCantando: () => void;
 }

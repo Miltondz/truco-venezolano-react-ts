@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { BaseScreenProps, AICharacter } from '../types';
+import { AICharactersMap, derivePersonality, deriveDifficulty, toAICharacter, loadAICharacters } from '../utils/aiCharactersLoader';
 
 interface TournamentsScreenProps extends BaseScreenProps {
   onStartTournament: (opponent: AICharacter) => void;
@@ -23,17 +24,6 @@ type Tournament = {
   unlockConditions?: Record<string, string>;
 };
 
-type AICharactersMap = Record<string, {
-  agresividad: number;
-  riesgo: number;
-  blufeo: number;
-  consistencia: number;
-  personaje: string;
-  description: string;
-  avatar: string;
-  activo: boolean;
-}>;
-
 const TournamentsScreen: React.FC<TournamentsScreenProps> = ({ onNavigate, onStartTournament }) => {
   const [tournaments, setTournaments] = useState<Tournament[]>([]);
   const [characters, setCharacters] = useState<AICharactersMap>({});
@@ -46,21 +36,18 @@ const TournamentsScreen: React.FC<TournamentsScreenProps> = ({ onNavigate, onSta
       try {
         setLoading(true);
         setError(null);
-        const [tRes, cRes] = await Promise.all([
+        const [tRes, cData] = await Promise.all([
           fetch('/config/tournament_configuration.json', { cache: 'no-cache' }),
-          fetch('/config/ai_characters.json', { cache: 'no-cache' })
+          loadAICharacters()
         ]);
         if (!tRes.ok) throw new Error(`Torneos HTTP ${tRes.status}`);
-        if (!cRes.ok) throw new Error(`AI HTTP ${cRes.status}`);
         const tData = await tRes.json();
-        const cData = await cRes.json();
         if (!Array.isArray(tData)) throw new Error('Formato de torneos inválido');
-        if (typeof cData !== 'object' || Array.isArray(cData)) throw new Error('Formato de AI inválido');
         if (!isMounted) return;
         setTournaments(tData as Tournament[]);
         setCharacters(cData as AICharactersMap);
-      } catch (e: any) {
-        if (isMounted) setError(e.message || 'Error cargando configuraciones');
+      } catch (e: unknown) {
+        if (isMounted) setError(e instanceof Error ? e.message : 'Error cargando configuraciones');
       } finally {
         if (isMounted) setLoading(false);
       }
@@ -84,40 +71,6 @@ const TournamentsScreen: React.FC<TournamentsScreenProps> = ({ onNavigate, onSta
     });
     return result;
   }, [tournaments, aiNames]);
-
-  const derivePersonality = (c: AICharactersMap[string]): 'balanced' | 'aggressive' | 'conservative' | 'unpredictable' => {
-    const { agresividad, blufeo, consistencia, riesgo } = c;
-    if (agresividad >= 8 && blufeo >= 7) return 'aggressive';
-    if (blufeo >= 8 && riesgo >= 7) return 'unpredictable';
-    if (consistencia >= 8 && agresividad <= 4) return 'conservative';
-    return 'balanced';
-  };
-
-  const deriveDifficulty = (c: AICharactersMap[string]): 'easy' | 'medium' | 'intermediate' | 'hard' | 'master' => {
-    const avg = (c.agresividad + c.riesgo + c.blufeo + c.consistencia) / 4;
-    if (avg <= 3.5) return 'easy';
-    if (avg <= 5.0) return 'medium';
-    if (avg <= 6.5) return 'intermediate';
-    if (avg <= 8.0) return 'hard';
-    return 'master';
-  };
-
-  const toAICharacter = (name: string, c: AICharactersMap[string]): AICharacter => {
-    const slug = name.toLowerCase().replace(/\s+/g, '-').normalize('NFD').replace(/[^\w-]/g, '');
-    return {
-      id: slug,
-      name,
-      agresividad: c.agresividad,
-      riesgo: c.riesgo,
-      blufeo: c.blufeo,
-      consistencia: c.consistencia,
-      description: c.description,
-      avatar: c.avatar,
-      activo: c.activo,
-      difficulty: deriveDifficulty(c),
-      personality: derivePersonality(c)
-    };
-  };
 
   const handleSelect = (t: Tournament) => {
     const missing = validation[t.name] || [];
