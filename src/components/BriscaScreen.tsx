@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { BaseScreenProps, AICharacter, Card, DECKS } from '../types';
+import { BaseScreenProps, AICharacter, Card, DECKS, BOARDS } from '../types';
+import { AvatarMood, getAvatarImagePath, getSmartFallbackPath } from '../utils/avatarMoods';
 import { getActiveAICharacters } from '../data/aiCharacters';
 import {
   dealBrisca, drawOne, resolveTrick, selectAICard,
@@ -57,9 +58,12 @@ const BriscaScreen: React.FC<BaseScreenProps> = ({ onNavigate }) => {
 
   const [setupDone, setSetupDone] = useState(false);
   const [selectedDeck, setSelectedDeck] = useState('default');
+  const [selectedBoard, setSelectedBoard] = useState('tablero-mesa.jpg');
   const [opponent, setOpponent] = useState<AICharacter | null>(null);
   const [opponents] = useState(() => getActiveAICharacters());
   const [gs, setGs] = useState<BriscaState>(emptyState);
+  const [aiMood, setAiMood] = useState<AvatarMood>('default');
+  const [playerMood, setPlayerMood] = useState<AvatarMood>('default');
 
   // Always-fresh ref so async callbacks don't read stale state
   const gsRef = useRef(gs);
@@ -265,6 +269,31 @@ const BriscaScreen: React.FC<BaseScreenProps> = ({ onNavigate }) => {
     else if (gs.subPhase === 'player-respond') handlePlayerRespond(i);
   };
 
+  // ── Mood triggers ─────────────────────────────────────────────────────────
+
+  useEffect(() => {
+    if (gs.subPhase !== 'trick-resolution' && gs.subPhase !== 'game-over') return;
+    const playerWon = gs.message.startsWith('¡Ganaste');
+    let pMood: AvatarMood;
+    let aMood: AvatarMood;
+    if (gs.subPhase === 'trick-resolution') {
+      pMood = playerWon ? 'happy' : 'sad';
+      aMood = playerWon ? 'sad' : 'happy';
+    } else {
+      pMood = playerWon ? 'smug' : 'sad';
+      aMood = playerWon ? 'sad' : 'smug';
+    }
+    setPlayerMood(pMood);
+    setAiMood(aMood);
+    const t = setTimeout(() => { setPlayerMood('default'); setAiMood('default'); }, 5000);
+    return () => clearTimeout(t);
+  }, [gs.subPhase, gs.message]);
+
+  const aiAvatarBase = opponent?.avatar.replace('-default.jpg', '.jpg') ?? 'avatar1.jpg';
+  const aiAvatarSrc = getAvatarImagePath(aiAvatarBase, aiMood, false);
+  const aiAvatarFallback = getSmartFallbackPath(aiAvatarBase, aiMood, false);
+  const playerAvatarSrc = getAvatarImagePath('', playerMood, true);
+
   // ── Derived UI values ─────────────────────────────────────────────────────
 
   const playerScore = countPoints(gs.playerCaptured);
@@ -315,10 +344,10 @@ const BriscaScreen: React.FC<BaseScreenProps> = ({ onNavigate }) => {
           <h2 className="game-title">🎴 Brisca</h2>
           <p className="sm-subtitle">El clásico juego de bazas venezolano</p>
 
-          <div className="sm-setup-section">
-            <h3 className="setup-title">Elige tu Baraja</h3>
-            <div className="sm-setup-section" style={{ display: 'contents' }}>
-              <div className="selection-grid" style={{ gridTemplateColumns: 'repeat(4,1fr)', gap: '0.6rem' }}>
+          <div className="sm-setup-top-row">
+            <div className="sm-setup-section">
+              <h3 className="setup-title">Elige tu Baraja</h3>
+              <div className="selection-grid" style={{ gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.6rem' }}>
                 {DECKS.map(d => (
                   <div
                     key={d}
@@ -331,12 +360,27 @@ const BriscaScreen: React.FC<BaseScreenProps> = ({ onNavigate }) => {
                 ))}
               </div>
             </div>
+            <div className="sm-setup-section">
+              <h3 className="setup-title">Elige tu Mesa</h3>
+              <div className="selection-grid" style={{ gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.6rem' }}>
+                {BOARDS.map(b => (
+                  <div
+                    key={b}
+                    className={`selection-item ${selectedBoard === b ? 'selected' : ''}`}
+                    onClick={() => setSelectedBoard(b)}
+                  >
+                    <img src={`/images/backgrounds/${b}`} alt={b.replace('.jpg', '')} />
+                    <div className="item-name">{b.replace('tablero-', '').replace('.jpg', '')}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
 
           <div className="sm-setup-section">
             <h3 className="setup-title">Elige tu Oponente</h3>
             <div className="sm-opponent-list">
-              {opponents.slice(0, 4).map(op => (
+              {opponents.map(op => (
                 <div
                   key={op.id}
                   className={`sm-opponent-card ${opponent?.id === op.id ? 'selected' : ''}`}
@@ -368,9 +412,13 @@ const BriscaScreen: React.FC<BaseScreenProps> = ({ onNavigate }) => {
 
       {/* GAME */}
       {setupDone && (
-        <div className="brisca-game">
+        <div
+          className="brisca-game"
+          style={{ backgroundImage: `url(/images/backgrounds/${selectedBoard})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+        >
           {/* Header bar */}
           <div className="brisca-header">
+            <span className="game-name-badge">🎴 Brisca</span>
             {gs.trumpCard && (
               <div className="brisca-trump">
                 <span className="brisca-trump-label">Triunfo</span>
@@ -407,10 +455,10 @@ const BriscaScreen: React.FC<BaseScreenProps> = ({ onNavigate }) => {
             <div className="brisca-avatar-row">
               {opponent && (
                 <img
-                  src={`/images/avatars/${opponent.avatar}`}
+                  src={aiAvatarSrc}
                   alt={opponent.name}
                   className="brisca-avatar"
-                  onError={e => { (e.target as HTMLImageElement).src = '/images/avatars/avatar1-default.jpg'; }}
+                  onError={e => { (e.target as HTMLImageElement).src = aiAvatarFallback; }}
                 />
               )}
               <span className="brisca-area-name">{opponent?.name}</span>
@@ -467,6 +515,15 @@ const BriscaScreen: React.FC<BaseScreenProps> = ({ onNavigate }) => {
 
           {/* Player hand */}
           <div className="brisca-player-area">
+            <div className="brisca-avatar-row">
+              <img
+                src={playerAvatarSrc}
+                alt="Tú"
+                className="brisca-avatar"
+                onError={e => { (e.target as HTMLImageElement).src = '/images/avatars/player-default.jpg'; }}
+              />
+              <span className="brisca-area-name">Tú</span>
+            </div>
             <div className="brisca-hand brisca-hand-player">
               {gs.playerHand.map((card, i) => (
                 <img

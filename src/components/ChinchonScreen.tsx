@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { BaseScreenProps, AICharacter, Card, DECKS } from '../types';
+import { BaseScreenProps, AICharacter, Card, DECKS, BOARDS } from '../types';
+import { AvatarMood, getAvatarImagePath, getSmartFallbackPath } from '../utils/avatarMoods';
 import { getActiveAICharacters } from '../data/aiCharacters';
 import {
   shuffleChinchonDeck, chinchonCardValue, findBestMeldPartition,
@@ -51,8 +52,11 @@ const ChinchonScreen: React.FC<BaseScreenProps> = ({ onNavigate }) => {
 
   const [setupDone, setSetupDone] = useState(false);
   const [selectedDeck, setSelectedDeck] = useState('default');
+  const [selectedBoard, setSelectedBoard] = useState('tablero-mesa.jpg');
   const [opponent, setOpponent] = useState<AICharacter | null>(null);
   const [opponents] = useState(() => getActiveAICharacters());
+  const [aiMood, setAiMood] = useState<AvatarMood>('default');
+  const [playerMood, setPlayerMood] = useState<AvatarMood>('default');
 
   const [gs, setGs] = useState<ChinchonState>({
     deck: [], discardPile: [], playerHand: [], aiHand: [],
@@ -305,6 +309,39 @@ const ChinchonScreen: React.FC<BaseScreenProps> = ({ onNavigate }) => {
     }
   };
 
+  // ── Mood triggers ─────────────────────────────────────────────────────────
+
+  useEffect(() => {
+    if (gs.phase !== 'round-result' && gs.phase !== 'game-over') return;
+    if (!gs.closedBy) return;
+    const playerClosed = gs.closedBy === 'player';
+    let pMood: AvatarMood;
+    let aMood: AvatarMood;
+    if (gs.phase === 'game-over') {
+      const playerWins = gs.roundMsg.includes('¡Ganaste');
+      pMood = playerWins ? 'smug' : 'sad';
+      aMood = playerWins ? 'sad' : 'smug';
+    } else {
+      const isChinchon = gs.roundMsg.includes('CHINCHÓN') || gs.roundMsg.includes('Chinchón');
+      if (playerClosed) {
+        pMood = isChinchon ? 'smug' : 'happy';
+        aMood = 'sad';
+      } else {
+        pMood = 'sad';
+        aMood = isChinchon ? 'smug' : 'happy';
+      }
+    }
+    setPlayerMood(pMood);
+    setAiMood(aMood);
+    const t = setTimeout(() => { setPlayerMood('default'); setAiMood('default'); }, 5000);
+    return () => clearTimeout(t);
+  }, [gs.phase, gs.closedBy, gs.roundMsg]);
+
+  const aiAvatarBase = opponent?.avatar.replace('-default.jpg', '.jpg') ?? 'avatar1.jpg';
+  const aiAvatarSrc = getAvatarImagePath(aiAvatarBase, aiMood, false);
+  const aiAvatarFallback = getSmartFallbackPath(aiAvatarBase, aiMood, false);
+  const playerAvatarSrc = getAvatarImagePath('', playerMood, true);
+
   // ── Derived UI ──────────────────────────────────────────────────────────
 
   const playerMelds = findBestMeldPartition(gs.playerHand) ?? [];
@@ -348,26 +385,43 @@ const ChinchonScreen: React.FC<BaseScreenProps> = ({ onNavigate }) => {
           <h2 className="game-title">🃏 Chinchón</h2>
           <p className="sm-subtitle">El rummy venezolano clásico — forma escaleras y tríos</p>
 
-          <div className="sm-setup-section">
-            <h3 className="setup-title">Elige tu Baraja</h3>
-            <div className="selection-grid" style={{ gridTemplateColumns: 'repeat(4,1fr)', gap: '0.6rem' }}>
-              {DECKS.map(d => (
-                <div
-                  key={d}
-                  className={`selection-item ${selectedDeck === d ? 'selected' : ''}`}
-                  onClick={() => setSelectedDeck(d)}
-                >
-                  <img src={`/images/decks/${d}/deck-preview.jpg`} alt={d} />
-                  <div className="item-name">{d}</div>
-                </div>
-              ))}
+          <div className="sm-setup-top-row">
+            <div className="sm-setup-section">
+              <h3 className="setup-title">Elige tu Baraja</h3>
+              <div className="selection-grid" style={{ gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.6rem' }}>
+                {DECKS.map(d => (
+                  <div
+                    key={d}
+                    className={`selection-item ${selectedDeck === d ? 'selected' : ''}`}
+                    onClick={() => setSelectedDeck(d)}
+                  >
+                    <img src={`/images/decks/${d}/deck-preview.jpg`} alt={d} />
+                    <div className="item-name">{d}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="sm-setup-section">
+              <h3 className="setup-title">Elige tu Mesa</h3>
+              <div className="selection-grid" style={{ gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.6rem' }}>
+                {BOARDS.map(b => (
+                  <div
+                    key={b}
+                    className={`selection-item ${selectedBoard === b ? 'selected' : ''}`}
+                    onClick={() => setSelectedBoard(b)}
+                  >
+                    <img src={`/images/backgrounds/${b}`} alt={b.replace('.jpg', '')} />
+                    <div className="item-name">{b.replace('tablero-', '').replace('.jpg', '')}</div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 
           <div className="sm-setup-section">
             <h3 className="setup-title">Elige tu Oponente</h3>
             <div className="sm-opponent-list">
-              {opponents.slice(0, 4).map(op => (
+              {opponents.map(op => (
                 <div
                   key={op.id}
                   className={`sm-opponent-card ${opponent?.id === op.id ? 'selected' : ''}`}
@@ -399,9 +453,13 @@ const ChinchonScreen: React.FC<BaseScreenProps> = ({ onNavigate }) => {
 
       {/* GAME */}
       {setupDone && (
-        <div className="chinchon-game">
+        <div
+          className="chinchon-game"
+          style={{ backgroundImage: `url(/images/backgrounds/${selectedBoard})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+        >
           {/* Header */}
           <div className="chinchon-header">
+            <span className="game-name-badge">🃏 Chinchón</span>
             <div className="chinchon-score-block">
               <span className="chinchon-score-name">{opponent?.name ?? 'Dealer'}</span>
               <span className="chinchon-score-pts">{gs.aiTotal}</span>
@@ -421,10 +479,10 @@ const ChinchonScreen: React.FC<BaseScreenProps> = ({ onNavigate }) => {
             <div className="chinchon-avatar-row">
               {opponent && (
                 <img
-                  src={`/images/avatars/${opponent.avatar}`}
+                  src={aiAvatarSrc}
                   alt={opponent.name}
                   className="chinchon-avatar"
-                  onError={e => { (e.target as HTMLImageElement).src = '/images/avatars/avatar1-default.jpg'; }}
+                  onError={e => { (e.target as HTMLImageElement).src = aiAvatarFallback; }}
                 />
               )}
               <span className="chinchon-area-label">{gs.aiHand.length} cartas</span>
@@ -490,6 +548,15 @@ const ChinchonScreen: React.FC<BaseScreenProps> = ({ onNavigate }) => {
 
           {/* Player hand */}
           <div className="chinchon-player-area">
+            <div className="chinchon-avatar-row">
+              <img
+                src={playerAvatarSrc}
+                alt="Tú"
+                className="chinchon-avatar"
+                onError={e => { (e.target as HTMLImageElement).src = '/images/avatars/player-default.jpg'; }}
+              />
+              <span className="chinchon-area-label">Tú</span>
+            </div>
             <div className="chinchon-hand chinchon-hand-player">
               {gs.playerHand.map((card, i) => (
                 <div key={i} className="chinchon-card-wrap">

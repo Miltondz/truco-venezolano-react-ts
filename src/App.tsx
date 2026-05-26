@@ -27,6 +27,7 @@ import VictorySplash from './components/VictorySplash';
 import SieteMedioScreen from './components/SieteMedioScreen';
 import BriscaScreen from './components/BriscaScreen';
 import ChinchonScreen from './components/ChinchonScreen';
+import VeintiunoScreen from './components/VeintiunoScreen';
 
 const App: React.FC = () => {
   // State management
@@ -638,6 +639,8 @@ const [victoryState, setVictoryState] = useState<{
         return <BriscaScreen onNavigate={navigateTo} />;
       case 'chinchon-screen':
         return <ChinchonScreen onNavigate={navigateTo} />;
+      case 'veintiuno-screen':
+        return <VeintiunoScreen onNavigate={navigateTo} />;
       default:
         return <MainScreen onNavigate={navigateTo} />;
     }
@@ -653,7 +656,7 @@ const [victoryState, setVictoryState] = useState<{
 
       {!loading && (
         <div className="main-container">
-          {(['game-board', 'siete-medio-screen', 'brisca-screen', 'chinchon-screen'].includes(currentScreen)) ? (
+          {(['game-board', 'siete-medio-screen', 'brisca-screen', 'chinchon-screen', 'veintiuno-screen'].includes(currentScreen)) ? (
             <div className="game-canvas">
               {renderScreen()}
             </div>

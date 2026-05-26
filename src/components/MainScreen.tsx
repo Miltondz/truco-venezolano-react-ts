@@ -68,6 +68,9 @@ className="cover-video"
             <button id="chinchon-btn" className="menu-button menu-button-game" onClick={() => onNavigate('chinchon-screen')}>
               🃏 Chinchón
             </button>
+            <button id="veintiuno-btn" className="menu-button menu-button-game" onClick={() => onNavigate('veintiuno-screen')}>
+              🂡 Veintiuno
+            </button>
           </div>
 
           <div className="main-menu-aux-row">
