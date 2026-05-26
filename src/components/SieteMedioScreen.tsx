@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { BaseScreenProps, AICharacter, Card, DECKS } from '../types';
+import { BaseScreenProps, AICharacter, Card, DECKS, BOARDS } from '../types';
 import { getActiveAICharacters } from '../data/aiCharacters';
 import {
   cardSMValue, handTotal, isBust, shuffleSMDeck, dealCard,
@@ -37,6 +37,7 @@ const SieteMedioScreen: React.FC<BaseScreenProps> = ({ onNavigate }) => {
 
   // Setup
   const [selectedDeck, setSelectedDeck] = useState('default');
+  const [selectedBoard, setSelectedBoard] = useState('tablero-mesa.jpg');
   const [opponent, setOpponent] = useState<AICharacter | null>(null);
   const [opponents] = useState<AICharacter[]>(() => getActiveAICharacters());
 
@@ -307,26 +308,44 @@ const SieteMedioScreen: React.FC<BaseScreenProps> = ({ onNavigate }) => {
           <h2 className="game-title">🃏 Siete y Medio</h2>
           <p className="sm-subtitle">El clásico juego venezolano de cartas</p>
 
-          <div className="sm-setup-section">
-            <h3 className="setup-title">Elige tu Baraja</h3>
-            <div className="selection-grid" style={{ gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.6rem' }}>
-              {DECKS.map(d => (
-                <div
-                  key={d}
-                  className={`selection-item ${selectedDeck === d ? 'selected' : ''}`}
-                  onClick={() => setSelectedDeck(d)}
-                >
-                  <img src={`/images/decks/${d}/deck-preview.jpg`} alt={d} />
-                  <div className="item-name">{d}</div>
-                </div>
-              ))}
+          <div className="sm-setup-top-row">
+            <div className="sm-setup-section">
+              <h3 className="setup-title">Elige tu Baraja</h3>
+              <div className="selection-grid" style={{ gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.6rem' }}>
+                {DECKS.map(d => (
+                  <div
+                    key={d}
+                    className={`selection-item ${selectedDeck === d ? 'selected' : ''}`}
+                    onClick={() => setSelectedDeck(d)}
+                  >
+                    <img src={`/images/decks/${d}/deck-preview.jpg`} alt={d} />
+                    <div className="item-name">{d}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="sm-setup-section">
+              <h3 className="setup-title">Elige tu Mesa</h3>
+              <div className="selection-grid" style={{ gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.6rem' }}>
+                {BOARDS.map(b => (
+                  <div
+                    key={b}
+                    className={`selection-item ${selectedBoard === b ? 'selected' : ''}`}
+                    onClick={() => setSelectedBoard(b)}
+                  >
+                    <img src={`/images/backgrounds/${b}`} alt={b.replace('.jpg', '')} />
+                    <div className="item-name">{b.replace('tablero-', '').replace('.jpg', '')}</div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 
           <div className="sm-setup-section">
             <h3 className="setup-title">Elige tu Oponente</h3>
             <div className="sm-opponent-list">
-              {opponents.slice(0, 4).map(op => (
+              {opponents.map(op => (
                 <div
                   key={op.id}
                   className={`sm-opponent-card ${opponent?.id === op.id ? 'selected' : ''}`}
@@ -362,7 +381,10 @@ const SieteMedioScreen: React.FC<BaseScreenProps> = ({ onNavigate }) => {
       )}
 
       {phase !== 'setup' && (
-        <div className="sm-game-container">
+        <div
+          className="sm-game-container"
+          style={{ backgroundImage: `url(/images/backgrounds/${selectedBoard})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+        >
           {/* Header bar */}
           <div className="sm-header">
             <div className="sm-stat">
