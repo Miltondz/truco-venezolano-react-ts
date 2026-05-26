@@ -56,6 +56,12 @@ className="cover-video"
           <button id="siete-medio-btn" className="menu-button" onClick={() => onNavigate('siete-medio-screen')}>
             🃏 Siete y Medio
           </button>
+          <button id="brisca-btn" className="menu-button" onClick={() => onNavigate('brisca-screen')}>
+            🎴 Brisca
+          </button>
+          <button id="chinchon-btn" className="menu-button" onClick={() => onNavigate('chinchon-screen')}>
+            🃏 Chinchón
+          </button>
           <button id="tutorial-btn" className="menu-button" onClick={() => onNavigate('tutorial-screen')}>
             🎓 Tutorial
           </button>

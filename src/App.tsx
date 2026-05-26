@@ -25,6 +25,8 @@ import { TestScreen } from './components/TestScreen';
 import DynamicTournamentBracket from './components/DynamicTournamentBracket';
 import VictorySplash from './components/VictorySplash';
 import SieteMedioScreen from './components/SieteMedioScreen';
+import BriscaScreen from './components/BriscaScreen';
+import ChinchonScreen from './components/ChinchonScreen';
 
 const App: React.FC = () => {
   // State management
@@ -632,6 +634,10 @@ const [victoryState, setVictoryState] = useState<{
         return <TestScreen onNavigate={navigateTo} />;
       case 'siete-medio-screen':
         return <SieteMedioScreen onNavigate={navigateTo} />;
+      case 'brisca-screen':
+        return <BriscaScreen onNavigate={navigateTo} />;
+      case 'chinchon-screen':
+        return <ChinchonScreen onNavigate={navigateTo} />;
       default:
         return <MainScreen onNavigate={navigateTo} />;
     }
@@ -647,7 +653,7 @@ const [victoryState, setVictoryState] = useState<{
 
       {!loading && (
         <div className="main-container">
-          {(currentScreen === 'game-board' || currentScreen === 'siete-medio-screen') ? (
+          {(['game-board', 'siete-medio-screen', 'brisca-screen', 'chinchon-screen'].includes(currentScreen)) ? (
             <div className="game-canvas">
               {renderScreen()}
             </div>
