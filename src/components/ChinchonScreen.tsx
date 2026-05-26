@@ -40,7 +40,15 @@ function deal(): Pick<ChinchonState, 'deck' | 'discardPile' | 'playerHand' | 'ai
   return { deck, discardPile: [firstDiscard], playerHand, aiHand };
 }
 
+const CHINCHON_TUTORIAL_KEY = 'chinchon-tutorial-seen';
+
 const ChinchonScreen: React.FC<BaseScreenProps> = ({ onNavigate }) => {
+  const [showTutorial, setShowTutorial] = useState(() => localStorage.getItem(CHINCHON_TUTORIAL_KEY) !== 'true');
+  const dismissTutorial = (permanent: boolean) => {
+    if (permanent) localStorage.setItem(CHINCHON_TUTORIAL_KEY, 'true');
+    setShowTutorial(false);
+  };
+
   const [setupDone, setSetupDone] = useState(false);
   const [selectedDeck, setSelectedDeck] = useState('default');
   const [opponent, setOpponent] = useState<AICharacter | null>(null);
@@ -313,6 +321,26 @@ const ChinchonScreen: React.FC<BaseScreenProps> = ({ onNavigate }) => {
   return (
     <div id="chinchon-screen" className="screen active chinchon-screen">
       <button className="back-button" onClick={() => { clearTimers(); onNavigate('main-screen'); }}>← Volver</button>
+
+      {showTutorial && (
+        <div className="tutorial-overlay" role="dialog" aria-modal="true" aria-label="Tutorial Chinchón">
+          <div className="tutorial-card">
+            <h3 className="tutorial-title">🃏 Cómo jugar Chinchón</h3>
+            <ul className="tutorial-rules">
+              <li>Objetivo: evitar acumular <strong>100 puntos</strong> (cartas sin mezclar penalizan)</li>
+              <li><strong>Escalera:</strong> 3+ cartas del mismo palo en orden (ej: 1-2-3 de oros)</li>
+              <li><strong>Trío/Cuarteto:</strong> 3-4 cartas del mismo valor en diferentes palos</li>
+              <li>Roba del mazo o de la pila de descarte; luego descarta una carta</li>
+              <li><strong>Cerrar:</strong> cuando tus 7 cartas formen melds completos sin sobrantes</li>
+              <li><strong>Chinchón:</strong> escalera con las 7 cartas = <strong>-10 puntos</strong></li>
+            </ul>
+            <div className="tutorial-actions">
+              <button className="tutorial-btn-primary" onClick={() => dismissTutorial(false)}>Entendido</button>
+              <button className="tutorial-btn-secondary" onClick={() => dismissTutorial(true)}>No mostrar más</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* SETUP */}
       {!setupDone && (

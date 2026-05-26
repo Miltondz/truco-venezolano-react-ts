@@ -3163,7 +3163,7 @@ html, body {
 /* Override any overflow visible settings for screens that are not the game board */
 /* CRITICAL: Exceptuar .lesson-screen para permitir scroll en lecciones */
 .screen:not(.game-board):not(.welcome-screen):not(#tutorial-screen):not(#achievements-screen):not(#setup-screen):not(.lesson-screen),
-.screen:not(.game-board):not(.welcome-screen):not(#tutorial-screen):not(#achievements-screen):not(#setup-screen):not(.lesson-screen) *:not(.lessons-grid):not(.lesson-card):not(.tips-grid):not(.tip-card):not(.setup-grid):not(.selection-grid):not(.selection-item),
+.screen:not(.game-board):not(.welcome-screen):not(#tutorial-screen):not(#achievements-screen):not(#setup-screen):not(.lesson-screen) *:not(.lessons-grid):not(.lesson-card):not(.tips-grid):not(.tip-card):not(.setup-grid):not(.selection-grid):not(.selection-item):not(.tutorial-overlay):not(.tutorial-card):not(.tutorial-rules):not(.tutorial-actions),
 .screen:not(.game-board):not(.welcome-screen):not(#tutorial-screen):not(#achievements-screen):not(#setup-screen):not(.lesson-screen) .screen-content {
   overflow: hidden !important;
 }
@@ -8365,12 +8365,12 @@ html, body {
   flex: 1 1 auto;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  padding: 1rem 1.5rem 2rem;
+  padding: 3.5rem 1.5rem 2rem !important;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.25rem;
-  max-width: 700px;
+  gap: 1rem;
+  max-width: min(680px, 100%) !important;
   margin: 0 auto;
   width: 100%;
 }
@@ -8398,7 +8398,8 @@ html, body {
   border-radius: var(--border-radius-sm);
   overflow: hidden;
   transition: border-color var(--transition-fast), transform var(--transition-fast);
-  aspect-ratio: 3/4;
+  height: 100px !important;
+  aspect-ratio: unset !important;
 }
 
 .sm-setup-section .selection-item img {
@@ -8883,12 +8884,16 @@ html, body {
 /* ── Responsive ── */
 @media (max-width: 768px) {
   .sm-setup {
-    padding: 0.75rem 1rem 1.5rem;
-    gap: 1rem;
+    padding: 3rem 0.75rem 1.5rem !important;
+    gap: 0.75rem;
   }
 
   .sm-setup-section .selection-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .sm-setup-section .selection-item {
+    height: 80px !important;
   }
 
   .sm-opponent-list {
@@ -8979,6 +8984,139 @@ html, body {
   }
 }
 
+
+/* ── Tutorial / Onboarding overlay (shared by all mini-games) ── */
+/* Use !important throughout: game-canvas * rules override max-width/max-height/overflow */
+.tutorial-overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  background: rgba(0,0,0,0.82) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 5000 !important;
+  padding: 1rem !important;
+  overflow: auto !important;
+  max-width: none !important;
+  max-height: none !important;
+  width: 100vw !important;
+  height: 100vh !important;
+}
+
+.tutorial-card {
+  display: block !important;
+  background: #1a1a3e !important;
+  border: 2px solid #00ffff !important;
+  border-radius: 12px !important;
+  padding: 1.5rem 1.75rem 1.25rem !important;
+  max-width: 460px !important;
+  width: min(460px, calc(100vw - 2rem)) !important;
+  max-height: none !important;
+  overflow: visible !important;
+  box-shadow: 0 0 30px rgba(0,255,255,0.35) !important;
+  box-sizing: border-box !important;
+}
+
+.tutorial-title {
+  display: block !important;
+  font-size: 1.05rem !important;
+  font-weight: 700 !important;
+  color: #fff !important;
+  margin: 0 0 1rem !important;
+  text-align: center !important;
+  white-space: normal !important;
+  overflow: visible !important;
+  max-width: none !important;
+  max-height: none !important;
+}
+
+.tutorial-rules {
+  list-style: none !important;
+  padding: 0 !important;
+  margin: 0 0 1.25rem !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0.4rem !important;
+  overflow: visible !important;
+  max-height: none !important;
+  max-width: none !important;
+}
+
+.tutorial-rules li {
+  display: block !important;
+  font-size: 0.85rem !important;
+  color: #b0b8d4 !important;
+  padding: 0.35rem 0.6rem !important;
+  border-left: 3px solid rgba(0,255,255,0.5) !important;
+  overflow: visible !important;
+  white-space: normal !important;
+  max-width: none !important;
+}
+
+.tutorial-rules strong {
+  color: #fff !important;
+}
+
+.tutorial-actions {
+  display: flex !important;
+  flex-direction: row !important;
+  gap: 0.75rem !important;
+  justify-content: center !important;
+  flex-wrap: wrap !important;
+  max-width: none !important;
+  overflow: visible !important;
+}
+
+.tutorial-btn-primary {
+  display: inline-flex !important;
+  align-items: center !important;
+  padding: 0.55rem 1.5rem !important;
+  background: linear-gradient(135deg, #7b2fff, #9b59b6) !important;
+  color: #fff !important;
+  border: 2px solid #9b59b6 !important;
+  border-radius: 8px !important;
+  font-size: 0.9rem !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: all 0.2s !important;
+  max-width: none !important;
+  white-space: nowrap !important;
+}
+
+.tutorial-btn-primary:hover {
+  background: linear-gradient(135deg, #9b59b6, #7b2fff) !important;
+  transform: translateY(-1px) !important;
+}
+
+.tutorial-btn-secondary {
+  display: inline-flex !important;
+  align-items: center !important;
+  padding: 0.5rem 1rem !important;
+  background: transparent !important;
+  color: #6b7b99 !important;
+  border: 1px solid rgba(255,255,255,0.2) !important;
+  border-radius: 8px !important;
+  font-size: 0.78rem !important;
+  cursor: pointer !important;
+  transition: all 0.2s !important;
+  max-width: none !important;
+  white-space: nowrap !important;
+}
+
+.tutorial-btn-secondary:hover {
+  color: #b0b8d4 !important;
+  border-color: rgba(0,255,255,0.4) !important;
+}
+
+@media (max-width: 480px) {
+  .tutorial-card {
+    padding: 1.25rem 1rem !important;
+  }
+  .tutorial-rules li {
+    font-size: 0.8rem !important;
+  }
+}
 
 /* ========================================
    BRISCA GAME

@@ -25,7 +25,16 @@ interface SMGameState {
   result: SMResult | null;
 }
 
+const SM_TUTORIAL_KEY = 'sm-tutorial-seen';
+
 const SieteMedioScreen: React.FC<BaseScreenProps> = ({ onNavigate }) => {
+  // Tutorial
+  const [showTutorial, setShowTutorial] = useState(() => localStorage.getItem(SM_TUTORIAL_KEY) !== 'true');
+  const dismissTutorial = (permanent: boolean) => {
+    if (permanent) localStorage.setItem(SM_TUTORIAL_KEY, 'true');
+    setShowTutorial(false);
+  };
+
   // Setup
   const [selectedDeck, setSelectedDeck] = useState('default');
   const [opponent, setOpponent] = useState<AICharacter | null>(null);
@@ -273,6 +282,26 @@ const SieteMedioScreen: React.FC<BaseScreenProps> = ({ onNavigate }) => {
     <div id="siete-medio-screen" className="screen active sm-screen">
       <button className="back-button" onClick={() => onNavigate('main-screen')}>← Volver</button>
 
+      {showTutorial && (
+        <div className="tutorial-overlay" role="dialog" aria-modal="true" aria-label="Tutorial Siete y Medio">
+          <div className="tutorial-card">
+            <h3 className="tutorial-title">🃏 Cómo jugar Siete y Medio</h3>
+            <ul className="tutorial-rules">
+              <li>Objetivo: llega a <strong>7½</strong> o acércate sin pasarte</li>
+              <li>Figuras (J, Q, K) valen <strong>½ punto</strong>; números valen su valor</li>
+              <li><strong>Pedir:</strong> toma una carta más del mazo</li>
+              <li><strong>Plantarse:</strong> el dealer juega su turno</li>
+              <li><strong>Doblar:</strong> dobla la apuesta y recibes exactamente una carta más</li>
+              <li>7½ exacto paga <strong>2:1</strong> sobre tu apuesta</li>
+            </ul>
+            <div className="tutorial-actions">
+              <button className="tutorial-btn-primary" onClick={() => dismissTutorial(false)}>Entendido</button>
+              <button className="tutorial-btn-secondary" onClick={() => dismissTutorial(true)}>No mostrar más</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {phase === 'setup' && (
         <div className="sm-setup screen-content">
           <h2 className="game-title">🃏 Siete y Medio</h2>
@@ -280,7 +309,7 @@ const SieteMedioScreen: React.FC<BaseScreenProps> = ({ onNavigate }) => {
 
           <div className="sm-setup-section">
             <h3 className="setup-title">Elige tu Baraja</h3>
-            <div className="selection-grid" style={{ gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.75rem' }}>
+            <div className="selection-grid" style={{ gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.6rem' }}>
               {DECKS.map(d => (
                 <div
                   key={d}

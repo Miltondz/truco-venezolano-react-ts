@@ -46,7 +46,15 @@ function emptyState(): BriscaState {
 
 const TRICK_SHOW_MS = 1800;
 
+const BRISCA_TUTORIAL_KEY = 'brisca-tutorial-seen';
+
 const BriscaScreen: React.FC<BaseScreenProps> = ({ onNavigate }) => {
+  const [showTutorial, setShowTutorial] = useState(() => localStorage.getItem(BRISCA_TUTORIAL_KEY) !== 'true');
+  const dismissTutorial = (permanent: boolean) => {
+    if (permanent) localStorage.setItem(BRISCA_TUTORIAL_KEY, 'true');
+    setShowTutorial(false);
+  };
+
   const [setupDone, setSetupDone] = useState(false);
   const [selectedDeck, setSelectedDeck] = useState('default');
   const [opponent, setOpponent] = useState<AICharacter | null>(null);
@@ -281,6 +289,25 @@ const BriscaScreen: React.FC<BaseScreenProps> = ({ onNavigate }) => {
   return (
     <div id="brisca-screen" className="screen active brisca-screen">
       <button className="back-button" onClick={() => { clearTimers(); onNavigate('main-screen'); }}>← Volver</button>
+
+      {showTutorial && (
+        <div className="tutorial-overlay" role="dialog" aria-modal="true" aria-label="Tutorial Brisca">
+          <div className="tutorial-card">
+            <h3 className="tutorial-title">🎴 Cómo jugar Brisca</h3>
+            <ul className="tutorial-rules">
+              <li>Objetivo: llega a <strong>61 puntos</strong> antes que tu oponente</li>
+              <li>El <strong>triunfo</strong> (última carta del mazo) gana a todos los demás palos</li>
+              <li>Rango: <strong>As &gt; Tres &gt; Rey &gt; Caballo &gt; Sota &gt; 7 &gt; 6 &gt; 5 &gt; 4</strong></li>
+              <li>Puntos: As=11 · Tres=10 · Rey=4 · Caballo=3 · Sota=2 · resto=0</li>
+              <li>El ganador de la baza lidera la siguiente; ambos roban una carta</li>
+            </ul>
+            <div className="tutorial-actions">
+              <button className="tutorial-btn-primary" onClick={() => dismissTutorial(false)}>Entendido</button>
+              <button className="tutorial-btn-secondary" onClick={() => dismissTutorial(true)}>No mostrar más</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* SETUP */}
       {!setupDone && (
