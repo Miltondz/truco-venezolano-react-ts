@@ -29,6 +29,15 @@ Todos los juegos comparten:
 ## 🆕 Historial de versiones
 
 ### Mayo 2026
+- **Mobile UX overhaul** en los 4 mini-juegos (SyM, Brisca, Chinchón, Veintiuno):
+  - Setup screen con tabs separados (Baraja / Mesa / Oponente) — imágenes grandes por panel
+  - Párrafo de descripción del juego en cada pantalla de configuración
+  - Header en dos filas en móvil — badge arriba, stats abajo (sin solapamiento)
+  - Cartas ~2x más grandes en móvil: 80×112px (≤768px) / 68×95px (≤480px)
+  - Chinchón mano completa (7 cartas) con scroll horizontal en móvil
+  - Controles de apuesta compactos en móvil
+  - Avatares y columnas de grid ajustados para no cubrir el área de juego
+  - Estado de mesa limpiado al iniciar nueva ronda en todos los juegos
 - **Veintiuno (Blackjack)** implementado: As suave/duro, blackjack 3:2, doblar apuesta, dealer para en 17+, flash de blackjack animado, tema naranja distintivo
 - Avatares con moods reactivos en los 4 mini-juegos
 - UI consistente entre todos los juegos: header 64px, badge de nombre, áreas de juego con fondo de tablero, tarjetas visibles sobre cualquier fondo

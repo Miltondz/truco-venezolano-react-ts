@@ -45,6 +45,7 @@ const VeintiunoScreen: React.FC<BaseScreenProps> = ({ onNavigate }) => {
   const [roundsWon, setRoundsWon] = useState(0);
   const [roundsLost, setRoundsLost] = useState(0);
 
+  const [setupTab, setSetupTab] = useState<'baraja' | 'mesa' | 'oponente'>('baraja');
   const [phase, setPhase] = useState<Phase>('setup');
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -334,7 +335,52 @@ const VeintiunoScreen: React.FC<BaseScreenProps> = ({ onNavigate }) => {
         <div className="sm-setup screen-content">
           <h2 className="game-title v21-accent-text">🂡 Veintiuno</h2>
           <p className="sm-subtitle">El clásico Blackjack con cartas españolas</p>
+          <p className="sm-game-desc">Llega a 21 sin pasarte. El As vale 1 u 11. Blackjack con 2 cartas paga 3:2. El dealer para en 17.</p>
 
+          {/* Mobile tab navigation */}
+          <div className="sm-setup-tabs">
+            <button className={`sm-tab-btn${setupTab === 'baraja' ? ' active' : ''}`} onClick={() => setSetupTab('baraja')}>🃏 Baraja</button>
+            <button className={`sm-tab-btn${setupTab === 'mesa' ? ' active' : ''}`} onClick={() => setSetupTab('mesa')}>🟩 Mesa</button>
+            <button className={`sm-tab-btn${setupTab === 'oponente' ? ' active' : ''}`} onClick={() => setSetupTab('oponente')}>👤 Oponente</button>
+          </div>
+          <div className="sm-setup-panel">
+            {setupTab === 'baraja' && (
+              <div className="sm-panel-grid-2">
+                {DECKS.map(d => (
+                  <div key={d} className={`sm-panel-item${selectedDeck === d ? ' selected' : ''}`} onClick={() => setSelectedDeck(d)}>
+                    <img src={`/images/decks/${d}/deck-preview.jpg`} alt={d} className="sm-panel-img sm-panel-img-deck" />
+                    <span className="sm-panel-item-name">{d}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+            {setupTab === 'mesa' && (
+              <div className="sm-panel-grid-2">
+                {BOARDS.map(b => (
+                  <div key={b} className={`sm-panel-item${selectedBoard === b ? ' selected' : ''}`} onClick={() => setSelectedBoard(b)}>
+                    <img src={`/images/backgrounds/${b}`} alt={b.replace('.jpg', '')} className="sm-panel-img sm-panel-img-board" />
+                    <span className="sm-panel-item-name">{b.replace('tablero-', '').replace('.jpg', '')}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+            {setupTab === 'oponente' && (
+              <div className="sm-opponent-list-panel">
+                {opponents.map(op => (
+                  <div key={op.id} className={`sm-opponent-card${opponent?.id === op.id ? ' selected' : ''}`} onClick={() => setOpponent(op)}>
+                    <img src={`/images/avatars/${op.avatar}`} alt={op.name} className="sm-panel-avatar"
+                      onError={e => { (e.target as HTMLImageElement).src = '/images/avatars/avatar1-default.jpg'; }} />
+                    <div className="sm-opponent-info">
+                      <span className="sm-opponent-name">{op.name}</span>
+                      <span className="sm-opponent-diff">{op.difficulty}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Desktop layout (hidden on mobile via CSS) */}
           <div className="sm-setup-top-row">
             <div className="sm-setup-section">
               <h3 className="setup-title">Elige tu Baraja</h3>
@@ -361,7 +407,7 @@ const VeintiunoScreen: React.FC<BaseScreenProps> = ({ onNavigate }) => {
             </div>
           </div>
 
-          <div className="sm-setup-section">
+          <div className="sm-setup-section sm-setup-desktop-opponents">
             <h3 className="setup-title">Elige tu Oponente</h3>
             <div className="sm-opponent-list">
               {opponents.map(op => (
