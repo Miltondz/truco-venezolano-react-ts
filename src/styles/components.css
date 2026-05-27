@@ -8488,12 +8488,13 @@ html, body {
    SIETE Y MEDIO GAME
    ======================================== */
 
-/* T17 — Header band for mini-game setup screens (back-button area) */
+/* T17 — Header gradient strip on setup screens (back-button readability) */
 #siete-medio-screen.screen::before,
 #brisca-screen.screen::before,
-#chinchon-screen.screen::before {
+#chinchon-screen.screen::before,
+#veintiuno-screen.screen::before {
   content: '';
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   right: 0;
@@ -8504,21 +8505,27 @@ html, body {
   pointer-events: none;
 }
 
-/* Screen wrapper — behaves like game-board (no outer scroll) */
-#siete-medio-screen.screen {
-  position: fixed !important;
+/* Screen wrapper — contained inside .game-canvas (position: relative, height: 720px) */
+#siete-medio-screen.screen,
+#brisca-screen.screen,
+#chinchon-screen.screen,
+#veintiuno-screen.screen {
+  position: absolute !important;
   top: 0 !important;
-  left: 50% !important;
-  right: auto !important;
+  left: 0 !important;
+  right: 0 !important;
   bottom: 0 !important;
-  transform: translateX(-50%) !important;
-  width: min(1280px, 100vw) !important;
-  max-width: min(1280px, 100vw) !important;
-  height: 100vh !important;
+  transform: none !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  height: min(720px, 100vh) !important;
+  max-height: min(720px, 100vh) !important;
+  padding: 0 !important;
   overflow: hidden !important;
   display: flex !important;
   flex-direction: column !important;
   align-items: stretch !important;
+  justify-content: flex-start !important;
 }
 
 /* T18 — Siete y Medio: acento verde */
@@ -8698,10 +8705,12 @@ html, body {
 
 /* ── Game container (fixed layout) ── */
 .sm-game-container {
-  flex: 1 1 auto;
+  flex: 1 1 0;
+  min-height: 0;
+  max-height: min(720px, 100vh) !important;
   width: 100% !important;
   display: grid;
-  grid-template-rows: 64px minmax(185px, 1fr) 2px minmax(195px, 1fr) auto;
+  grid-template-rows: 64px minmax(150px, 1fr) 2px minmax(160px, 1fr) auto;
   overflow: hidden;
   padding: 0;
   gap: 0;
@@ -9551,31 +9560,18 @@ html, body {
    BRISCA GAME
    ======================================== */
 
-#brisca-screen.screen {
-  position: fixed !important;
-  top: 0 !important;
-  left: 50% !important;
-  right: auto !important;
-  bottom: 0 !important;
-  transform: translateX(-50%) !important;
-  width: min(1280px, 100vw) !important;
-  max-width: min(1280px, 100vw) !important;
-  height: 100vh !important;
-  overflow: hidden !important;
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: stretch !important;
-}
+/* #brisca-screen.screen positioning now handled by shared rule above */
 
 .brisca-game {
-  flex: 1 1 auto;
+  flex: 1 1 0;
+  min-height: 0;
+  max-height: min(720px, 100vh) !important;
   width: 100% !important;
   display: grid;
-  grid-template-rows: 64px minmax(185px, 0.9fr) minmax(130px, 1fr) minmax(195px, 0.9fr);
+  grid-template-rows: 64px minmax(140px, 0.9fr) minmax(110px, 1fr) minmax(150px, 0.9fr);
   overflow: hidden;
   padding: 0 0.75rem;
   gap: 2px;
-  min-height: 0;
 }
 
 /* ── Header ── */
@@ -9993,31 +9989,18 @@ html, body {
    CHINCHÓN GAME
    ======================================== */
 
-#chinchon-screen.screen {
-  position: fixed !important;
-  top: 0 !important;
-  left: 50% !important;
-  right: auto !important;
-  bottom: 0 !important;
-  transform: translateX(-50%) !important;
-  width: min(1280px, 100vw) !important;
-  max-width: min(1280px, 100vw) !important;
-  height: 100vh !important;
-  overflow: hidden !important;
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: stretch !important;
-}
+/* #chinchon-screen.screen positioning now handled by shared rule above */
 
 .chinchon-game {
-  flex: 1 1 auto;
+  flex: 1 1 0;
+  min-height: 0;
+  max-height: min(720px, 100vh) !important;
   width: 100% !important;
   display: grid;
-  grid-template-rows: 64px minmax(185px, 1fr) minmax(120px, 1.1fr) minmax(195px, 1.1fr) auto;
+  grid-template-rows: 64px minmax(140px, 1fr) minmax(100px, 1.1fr) minmax(150px, 1.1fr) auto;
   overflow: hidden;
   padding: 0 0.75rem;
   gap: 3px;
-  min-height: 0;
   position: relative;
 }
 
