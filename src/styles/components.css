@@ -10795,13 +10795,17 @@ html, body {
   .sm-panel-img {
     width: 100%;
     border-radius: 4px;
-    object-fit: cover;
+    object-fit: contain;
+    display: block;
   }
   .sm-panel-img-deck {
-    aspect-ratio: 3 / 4;
+    /* Let card render at natural ratio — no crop */
+    height: auto;
+    max-height: 160px;
   }
   .sm-panel-img-board {
     aspect-ratio: 16 / 9;
+    object-fit: cover;
   }
   .sm-panel-item-name {
     font-size: 0.7rem;
