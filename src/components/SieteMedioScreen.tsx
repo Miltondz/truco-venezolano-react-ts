@@ -261,15 +261,20 @@ const SieteMedioScreen: React.FC<BaseScreenProps> = ({ onNavigate }) => {
     }
   };
 
+  const clearTable = () => {
+    setGs(prev => ({ ...prev, playerHand: [], dealerHand: [], result: null, doubled: false, dealerVisible: false, playerTotal: 0, dealerTotal: 0 }));
+    setResultMsg('');
+    setIsProcessing(false);
+  };
+
   const handleNextRound = () => {
-    if (chips < MIN_BET) {
-      setPhase('gameover');
-      return;
-    }
+    if (chips < MIN_BET) { setPhase('gameover'); return; }
+    clearTable();
     setPhase('betting');
   };
 
   const handleReset = () => {
+    clearTable();
     setChips(INITIAL_CHIPS);
     setCurrentBet(MIN_BET);
     setRoundsWon(0);
